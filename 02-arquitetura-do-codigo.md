@@ -1,4 +1,4 @@
-# Arquitetura do `saneamento_mapps.html`
+# Arquitetura do `index.html`
 
 Arquivo único, cerca de 300 KB e 3.700 linhas: `<head>` com todo o CSS, `<body>` com
 a marcação, e nove blocos `<script>` sequenciais. Tudo em JavaScript simples, sem

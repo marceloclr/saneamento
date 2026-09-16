@@ -1,10 +1,12 @@
 # Saneamento MAPPs
 
-Aplicação web de página única (`saneamento_mapps.html`) para importação, consolidação e saneamento de MAPPs (Metas e Ações do Plano Plurianual), com motor de regras, diagnóstico, apuração de saldo, auditoria e exportações.
+Aplicação web de página única (`index.html`) para importação, consolidação e saneamento de MAPPs (Metas e Ações do Plano Plurianual), com motor de regras, diagnóstico, apuração de saldo, auditoria e exportações.
+
+Disponível em: https://marceloclr.github.io/saneamento
 
 ## Como usar
 
-Abra `saneamento_mapps.html` diretamente no navegador e importe a planilha (`.xlsx`) com os dados a serem processados. Nenhum dado é enviado a servidores — todo o processamento ocorre localmente no navegador.
+Abra `index.html` diretamente no navegador (ou acesse a URL acima) e importe a planilha (`.xlsx`) com os dados a serem processados. Nenhum dado é enviado a servidores — todo o processamento ocorre localmente no navegador.
 
 ## Arquitetura
 
