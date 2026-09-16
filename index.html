@@ -430,10 +430,10 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   <div class="resumo-panorama" id="resumoPanorama" aria-live="polite"></div>
   <nav class="segmentos indice" id="segPanorama" aria-label="Índice do panorama">
     <button class="seg" data-seg="importacao" aria-current="true" style="--cor:var(--grafite)" data-tip="Rito do saneamento, leitura da planilha, reconhecimento de colunas, normalização dos estágios e retrato das três bases. Um clique rola a página até o bloco." data-tip-t="Importação"><i class="ponto"></i>Importação</button>
-    <button class="seg" data-seg="indicadores" aria-current="false" style="--cor:var(--latao)" data-tip="Indicadores gerais do universo e da base integral, populações e saldo por regra, e gráficos de execução. Um clique rola a página até o bloco." data-tip-t="Indicadores"><i class="ponto"></i>Indicadores</button>
-    <button class="seg" data-seg="universo" aria-current="false" style="--cor:var(--musgo)" data-tip="Demonstração aritmética de como cada população se formou, interseções entre regras e situações à margem. Um clique rola a página até o bloco." data-tip-t="Universo"><i class="ponto"></i>Universo</button>
-    <button class="seg" data-seg="regras" aria-current="false" style="--cor:var(--ferrugem)" data-tip="As quatro regras de saneamento tal como o sistema as aplica, com os parâmetros em vigor e a âncora temporal resolvida. Um clique rola a página até o bloco." data-tip-t="Regras aplicadas"><i class="ponto"></i>Regras aplicadas</button>
-    <button class="seg" data-seg="saldo" aria-current="false" style="--cor:var(--petroleo)" data-tip="Saldo do programado por exercício — anos anteriores, três exercícios retroativos, corrente e futuros — seguido dos indícios de programação. Um clique rola a página até o bloco." data-tip-t="Saldo"><i class="ponto"></i>Saldo</button>
+    <button class="seg oculto" data-seg="indicadores" aria-current="false" style="--cor:var(--latao)" data-tip="Indicadores gerais do universo e da base integral, populações e saldo por regra, e gráficos de execução. Um clique rola a página até o bloco." data-tip-t="Indicadores"><i class="ponto"></i>Indicadores</button>
+    <button class="seg oculto" data-seg="universo" aria-current="false" style="--cor:var(--musgo)" data-tip="Demonstração aritmética de como cada população se formou, interseções entre regras e situações à margem. Um clique rola a página até o bloco." data-tip-t="Universo"><i class="ponto"></i>Universo</button>
+    <button class="seg oculto" data-seg="regras" aria-current="false" style="--cor:var(--ferrugem)" data-tip="As quatro regras de saneamento tal como o sistema as aplica, com os parâmetros em vigor e a âncora temporal resolvida. Um clique rola a página até o bloco." data-tip-t="Regras aplicadas"><i class="ponto"></i>Regras aplicadas</button>
+    <button class="seg oculto" data-seg="saldo" aria-current="false" style="--cor:var(--petroleo)" data-tip="Saldo do programado por exercício — anos anteriores, três exercícios retroativos, corrente e futuros — seguido dos indícios de programação. Um clique rola a página até o bloco." data-tip-t="Saldo"><i class="ponto"></i>Saldo</button>
   </nav>
   <div class="segmento" id="seg-importacao" style="--acento:var(--grafite)">
   <div class="marco-segmento"><span>Importação</span></div>
@@ -456,12 +456,11 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     </div>
 
     <div id="painelPlanilha" class="oculto" style="margin-top:14px">
-      <div class="grade g3">
-        <label class="campo"><span>Aba de dados <i class="sigla" tabindex="0" data-tip="Escolha a aba que contém o detalhamento por MAPP e fonte. A aba CONSULTA é a referência; DADOS PAINEL traz também ANO_APROVACAO e Total Empenhado.">?</i></span>
+      <div class="grade g2">
+        <label class="campo"><span>Aba de dados <i class="sigla" tabindex="0" data-tip="Escolha a aba que contém o detalhamento por MAPP e fonte. A aba CONSULTA é a referência; DADOS PAINEL traz também ANO_APROVACAO e Total Empenhado. Trocar a aba reprocessa a importação automaticamente.">?</i></span>
           <select id="selAba"></select></label>
-        <label class="campo"><span>Linhas de subtotal <i class="sigla" tabindex="0" data-tip="Linhas cujo conteúdo indica totalização (por exemplo, “0. SUBTOTAL”) não representam projetos e são descartadas da base de trabalho.">?</i></span>
+        <label class="campo"><span>Linhas de subtotal <i class="sigla" tabindex="0" data-tip="Linhas cujo conteúdo indica totalização (por exemplo, “0. SUBTOTAL”) não representam projetos e são descartadas da base de trabalho. Trocar a opção reprocessa a importação automaticamente.">?</i></span>
           <select id="selSubtotal"><option value="descartar">Descartar da análise</option><option value="manter">Manter (não recomendado)</option></select></label>
-        <div style="display:flex;align-items:flex-end"><button class="btn principal" id="btnProcessar" data-tip="Lê a aba escolhida, normaliza os campos, consolida os registros por MAPP e executa o motor de regras. Não altera o arquivo de origem.">Importar e diagnosticar</button></div>
       </div>
     </div>
   </div>
@@ -482,7 +481,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     </div>
   </div>
 
-  <div class="bloco">
+  <div class="bloco oculto" id="blocoTresBases">
     <header><h3>As três bases</h3></header>
     <div class="grade g3">
       <div class="prova" style="--cor:var(--grafite)"><h5>Base original</h5><div class="pequeno tenue">Todas as linhas importadas, tal como vieram da planilha. Nunca é alterada pelo sistema.</div><div class="pequeno mono" id="qtdBaseOriginal">—</div></div>
@@ -491,7 +490,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     </div>
   </div>
   </div>
-  <div class="segmento" id="seg-indicadores" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
+  <div class="segmento oculto" id="seg-indicadores" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
   <div class="marco-segmento"><span>Indicadores</span></div>
   <div class="bloco">
     <header><h2>Indicadores gerais</h2><span class="legenda" id="painelCriterio"></span></header>
@@ -515,7 +514,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     <div class="grafico-caixa" style="--cor:var(--grafite)"><header><h4>MAPPs por órgão</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores órgãos por quantidade de MAPPs. Alterne para ver por valor programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="valor" data-tip="Ordena pelo valor programado.">Valor</button></div></header><div class="tela"><canvas id="gOrgaos"></canvas></div></div>
   </div>
   </div>
-  <div class="segmento" id="seg-universo" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
+  <div class="segmento oculto" id="seg-universo" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
   <div class="marco-segmento"><span>Universo</span></div>
   <div class="bloco">
     <header><h2>Composição do universo</h2><span class="legenda">Demonstração aritmética de como cada população se formou.</span></header>
@@ -534,7 +533,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     <div class="grade g3" id="cartoesMargem"></div>
   </div>
   </div>
-  <div class="segmento" id="seg-regras" style="--acento:var(--ferrugem);--acento-tenue:rgba(138,82,64,.10);--acento-medio:rgba(138,82,64,.3)">
+  <div class="segmento oculto" id="seg-regras" style="--acento:var(--ferrugem);--acento-tenue:rgba(138,82,64,.10);--acento-medio:rgba(138,82,64,.3)">
   <div class="marco-segmento"><span>Regras aplicadas</span></div>
   <div class="bloco">
     <header><h2>Regras aplicadas</h2><span class="legenda" id="regrasLegenda"></span></header>
@@ -546,7 +545,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     <div class="tabela-caixa" style="max-height:none"><table id="tabParametros"><thead><tr><th data-tip="Parâmetro de configuração que governa o enquadramento." data-tip-t="Parâmetro">Parâmetro</th><th data-tip="Valor atualmente em vigor, já resolvido pela âncora temporal quando for o caso." data-tip-t="Em vigor">Em vigor</th><th data-tip="O que o parâmetro determina no cálculo das regras." data-tip-t="O que governa">O que governa</th></tr></thead><tbody></tbody></table></div>
   </div>
   </div>
-  <div class="segmento" id="seg-saldo" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
+  <div class="segmento oculto" id="seg-saldo" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
   <div class="marco-segmento"><span>Saldo</span></div>
   <div class="bloco">
     <header><h2>Saldo do programado por exercício</h2><span class="legenda" id="saldoLegenda"></span></header>
@@ -1550,7 +1549,7 @@ function acompanharRolagem(){
   if(E.rolagemTravada && Date.now()<E.rolagemTravada) return;
   const indice=$('#segPanorama');
   const limite=(indice?indice.getBoundingClientRect().bottom:0)+48;
-  const segs=$$('#p-panorama .segmento');
+  const segs=$$('#p-panorama .segmento').filter(function(d){ return !d.classList.contains('oculto'); });
   let atual=segs.length?segs[0].id.slice(4):'importacao';
   segs.forEach(function(d){ if(d.getBoundingClientRect().top<=limite) atual=d.id.slice(4); });
   const doc=document.documentElement;
@@ -1592,21 +1591,26 @@ function lerArquivo(file){
     $('#progresso').firstElementChild.style.width='80%';
     if(/\.csv$/i.test(file.name)){
       E.buffer=null; E.abas=['(arquivo CSV)']; E.textoCSV=leitor.result;
-      preencherAbas(); $('#progressoTexto').textContent='Arquivo CSV pronto para importação.';
+      preencherAbas(); $('#progressoTexto').textContent='Arquivo CSV pronto. Importando…';
+      $('#progresso').firstElementChild.style.width='100%';
+      await importar();
     } else {
       E.buffer=leitor.result;
       await veuCarga('Inspecionando as abas da pasta de trabalho…');
+      let abaOk=false;
       try{
         const wb=XLSX.read(E.buffer,{type:'array',bookSheets:true});
         E.abas=wb.SheetNames.slice();
         preencherAbas();
-        $('#progressoTexto').textContent='Pasta de trabalho com '+E.abas.length+' abas. Escolha a aba de dados.';
+        abaOk=true;
+        $('#progressoTexto').textContent='Pasta de trabalho com '+E.abas.length+' aba(s). Importando a aba “'+$('#selAba').value+'”…';
       }catch(err){
         $('#progressoTexto').textContent='Não foi possível ler o arquivo: '+err.message;
       }
       veuCarga(false);
+      $('#progresso').firstElementChild.style.width='100%';
+      if(abaOk) await importar();
     }
-    $('#progresso').firstElementChild.style.width='100%';
   };
   if(/\.csv$/i.test(file.name)) leitor.readAsText(file,'utf-8');
   else leitor.readAsArrayBuffer(file);
@@ -1724,10 +1728,21 @@ async function importar(){
   diagnosticar();
   await veuCarga('Compondo painéis…');
   E.passo=4; pintarFluxo();
+  mostrarBlocosPosImportacao();
   renderTudo();
   veuCarga(false);
   irParaAba('panorama'); irParaSegmento('indicadores');
   recado('Base importada: '+n(E.linhas.length)+' linhas e '+n(E.mapps.length)+' MAPPs.');
+}
+
+/* Blocos e pílulas do índice que só fazem sentido depois de uma importação
+   bem-sucedida ficam ocultos até aqui. Revelados antes de renderTudo() para
+   que os gráficos (Chart.js) meçam contêineres com tamanho real. */
+function mostrarBlocosPosImportacao(){
+  ['blocoTresBases','seg-indicadores','seg-universo','seg-regras','seg-saldo'].forEach(function(id){
+    const el=document.getElementById(id); if(el) el.classList.remove('oculto');
+  });
+  $$('#segPanorama .seg').forEach(function(b){ b.classList.remove('oculto'); });
 }
 
 function montarBase(linhas,aba){
@@ -4576,7 +4591,8 @@ function ligarEventos(){
   ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
   ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
   area.addEventListener('drop',function(ev){ if(ev.dataTransfer.files[0]) lerArquivo(ev.dataTransfer.files[0]); });
-  $('#btnProcessar').addEventListener('click',importar);
+  $('#selAba').addEventListener('change',function(){ if(E.buffer||E.textoCSV) importar(); });
+  $('#selSubtotal').addEventListener('change',function(){ if(E.buffer||E.textoCSV) importar(); });
 
   ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca'].forEach(function(s){
     $(s).addEventListener('change',function(){ E.pagina=1; renderDiagnostico(); });
