@@ -1433,14 +1433,21 @@ function casaMulti(valores,valor){ return !valores.length || valores.indexOf(val
 
 const TABELAS_PROPRIAS=['tabDiag','tabSaneamento'];
 
+/* Números que este próprio sistema formatou em pt-BR (via n()): sem vírgula,
+   o ponto é sempre separador de milhar, nunca decimal — ao contrário de
+   paraNumero(), que interpreta valores digitados ou vindos da planilha. */
+function paraNumeroExibido(txt){
+  if(txt.indexOf(',')<0 && /^[+-]?\d{1,3}(\.\d{3})+$/.test(txt)) return parseFloat(txt.replace(/\./g,''));
+  return paraNumero(txt);
+}
 function valorOrdenavel(td){
   const txt=limpo(td.textContent);
   if(!txt||txt==='—') return {n:null,s:''};
   const data=txt.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
   if(data) return {n:Date.UTC(+data[3],+data[2]-1,+data[1]),s:txt};
   const num=txt.replace(/\s|R\$|%|\u00a0/g,'');
-  if(/^-?[\d.]*\d(,\d+)?$/.test(num) || /^-?\d+(\.\d+)?$/.test(num)){
-    const x=paraNumero(txt.replace(/R\$|%/g,''));
+  if(/^[+-]?[\d.]*\d(,\d+)?$/.test(num) || /^[+-]?\d+(\.\d+)?$/.test(num)){
+    const x=paraNumeroExibido(txt.replace(/R\$|%/g,''));
     let m=1;
     if(/\bbi\b/.test(txt)) m=1e9; else if(/\bmi\b/.test(txt)) m=1e6;
     if(isFinite(x)) return {n:x*m,s:txt};
@@ -4260,8 +4267,8 @@ function desenharAntesDepois(){
   }).slice(0,15);
   grafico('gAdEstrato',{ type:'bar',
     data:{labels:estr.map(function(o){ return o.nome; }),datasets:[
-      {label:'Ativos antes',data:estr.map(function(o){ return medida==='valor'?o.antesV:o.antes; }),backgroundColor:PALETA[8],borderWidth:0},
-      {label:'Ativos depois',data:estr.map(function(o){ return medida==='valor'?o.depoisV:o.depois; }),backgroundColor:PALETA[2],borderWidth:0}
+      {label:'Ativos antes',data:estr.map(function(o){ return medida==='valor'?o.antesV:o.antes; }),backgroundColor:PALETA[0],borderWidth:0},
+      {label:'Ativos depois',data:estr.map(function(o){ return medida==='valor'?o.depoisV:o.depois; }),backgroundColor:PALETA[1],borderWidth:0}
     ]},
     options:{indexAxis:'y',plugins:{tooltip:{callbacks:{label:rotuloTip}}},
       scales:{x:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:fmtEixo}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
@@ -4270,9 +4277,9 @@ function desenharAntesDepois(){
   grafico('gAdAnos',{ type:tiposGrafico.adAnos==='bar'?'bar':'line',
     data:{labels:anos,datasets:[
       {label:'Ativos antes',data:anos.map(function(y){ const o=a.anos.get(y); return medida==='valor'?o.antesV:o.antes; }),
-        borderColor:PALETA[8],backgroundColor:PALETA[8],borderWidth:2,tension:.25,pointRadius:2},
+        borderColor:PALETA[0],backgroundColor:PALETA[0],borderWidth:2,tension:.25,pointRadius:2},
       {label:'Ativos depois',data:anos.map(function(y){ const o=a.anos.get(y); return medida==='valor'?o.depoisV:o.depois; }),
-        borderColor:PALETA[2],backgroundColor:PALETA[2],borderWidth:2,tension:.25,pointRadius:2}
+        borderColor:PALETA[1],backgroundColor:PALETA[1],borderWidth:2,tension:.25,pointRadius:2}
     ]},
     options:{plugins:{tooltip:{callbacks:{label:rotuloTip}}},
       scales:{y:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:fmtEixo}},x:{grid:{display:false}}}}});
