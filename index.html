@@ -1468,10 +1468,10 @@ function valorOrdenavel(td){
     if(/\bbi\b/.test(txt)) m=1e9; else if(/\bmi\b/.test(txt)) m=1e6;
     if(isFinite(x)) return {n:x*m,s:txt};
   }
-  const mult=txt.match(/^R\$\s*([\d.,]+)\s*(bi|mi)?$/);
+  const mult=txt.match(/^\+?R\$\s*(-?[\d.,]+)\s*(bi|mi)?$/);
   if(mult){
     const x=paraNumero(mult[1]);
-    return {n:x*(mult[2]==='bi'?1e9:(mult[2]==='mi'?1e6:1)),s:txt};
+    if(isFinite(x)) return {n:x*(mult[2]==='bi'?1e9:(mult[2]==='mi'?1e6:1)),s:txt};
   }
   return {n:null,s:norm(txt)};
 }
