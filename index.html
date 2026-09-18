@@ -450,6 +450,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
       <div class="barra-acoes" style="justify-content:center;margin-top:10px">
         <button class="btn principal" id="btnEscolher" data-tip="Abre o seletor de arquivos do sistema para escolher a planilha de execução dos MAPPs.">Selecionar arquivo</button>
         <input type="file" id="arquivo" accept=".xlsx,.xlsm,.xls,.csv" class="oculto">
+        <button class="btn" id="btnCarregarRepo" data-tip="Baixa a planilha mais recente diretamente do repositório do GitHub, sem precisar selecioná-la manualmente.">Carregar do repositório</button>
       </div>
       <div class="progresso oculto" id="progresso"><i></i></div>
       <div class="pequeno tenue" id="progressoTexto" style="margin-top:6px"></div>
@@ -1595,25 +1596,52 @@ function lerArquivo(file){
       $('#progresso').firstElementChild.style.width='100%';
       await importar();
     } else {
-      E.buffer=leitor.result;
-      await veuCarga('Inspecionando as abas da pasta de trabalho…');
-      let abaOk=false;
-      try{
-        const wb=XLSX.read(E.buffer,{type:'array',bookSheets:true});
-        E.abas=wb.SheetNames.slice();
-        preencherAbas();
-        abaOk=true;
-        $('#progressoTexto').textContent='Pasta de trabalho com '+E.abas.length+' aba(s). Importando a aba “'+$('#selAba').value+'”…';
-      }catch(err){
-        $('#progressoTexto').textContent='Não foi possível ler o arquivo: '+err.message;
-      }
-      veuCarga(false);
-      $('#progresso').firstElementChild.style.width='100%';
-      if(abaOk) await importar();
+      await processarPastaDeTrabalho(leitor.result);
     }
   };
   if(/\.csv$/i.test(file.name)) leitor.readAsText(file,'utf-8');
   else leitor.readAsArrayBuffer(file);
+}
+
+/* Inspeciona as abas de uma pasta de trabalho já carregada em memória (ArrayBuffer) e importa. */
+async function processarPastaDeTrabalho(buffer){
+  E.buffer=buffer;
+  await veuCarga('Inspecionando as abas da pasta de trabalho…');
+  let abaOk=false;
+  try{
+    const wb=XLSX.read(E.buffer,{type:'array',bookSheets:true});
+    E.abas=wb.SheetNames.slice();
+    preencherAbas();
+    abaOk=true;
+    $('#progressoTexto').textContent='Pasta de trabalho com '+E.abas.length+' aba(s). Importando a aba “'+$('#selAba').value+'”…';
+  }catch(err){
+    $('#progressoTexto').textContent='Não foi possível ler o arquivo: '+err.message;
+  }
+  veuCarga(false);
+  $('#progresso').firstElementChild.style.width='100%';
+  if(abaOk) await importar();
+  return abaOk;
+}
+
+/* Baixa a planilha diretamente do repositório GitHub e a processa pelo mesmo fluxo do upload manual. */
+const URL_PLANILHA_REPO='https://raw.githubusercontent.com/marceloclr/saneamento/main/mapps-regis18-09.xlsx';
+async function carregarPlanilhaDoRepositorio(){
+  const nomeArquivo=URL_PLANILHA_REPO.split('/').pop();
+  E.arquivo={name:nomeArquivo};
+  $('#progresso').classList.remove('oculto');
+  $('#progresso').firstElementChild.style.width='0%';
+  $('#progressoTexto').textContent='Baixando '+nomeArquivo+' do repositório…';
+  try{
+    const resp=await fetch(URL_PLANILHA_REPO,{cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    $('#progresso').firstElementChild.style.width='60%';
+    const buffer=await resp.arrayBuffer();
+    await processarPastaDeTrabalho(buffer);
+  }catch(err){
+    veuCarga(false);
+    $('#progresso').classList.add('oculto');
+    $('#progressoTexto').textContent='Falha ao baixar a planilha do repositório: '+err.message;
+  }
 }
 
 function preencherAbas(){
@@ -4587,6 +4615,7 @@ function ligarEventos(){
 
   const area=$('#areaSolta');
   $('#btnEscolher').addEventListener('click',function(){ $('#arquivo').click(); });
+  $('#btnCarregarRepo').addEventListener('click',carregarPlanilhaDoRepositorio);
   $('#arquivo').addEventListener('change',function(ev){ if(ev.target.files[0]) lerArquivo(ev.target.files[0]); });
   ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
   ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
