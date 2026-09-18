@@ -431,6 +431,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   <nav class="segmentos indice" id="segPanorama" aria-label="Índice do panorama">
     <button class="seg" data-seg="importacao" aria-current="true" style="--cor:var(--grafite)" data-tip="Rito do saneamento, leitura da planilha, reconhecimento de colunas, normalização dos estágios e retrato das três bases. Um clique rola a página até o bloco." data-tip-t="Importação"><i class="ponto"></i>Importação</button>
     <button class="seg oculto" data-seg="indicadores" aria-current="false" style="--cor:var(--latao)" data-tip="Indicadores gerais do universo e da base integral, populações e saldo por regra, e gráficos de execução. Um clique rola a página até o bloco." data-tip-t="Indicadores"><i class="ponto"></i>Indicadores</button>
+    <button class="seg oculto" data-seg="contratos" aria-current="false" style="--cor:var(--ameixa)" data-tip="Instrumentos de receita e de despesa vinculados aos MAPPs, conforme as colunas QTD_INSTRUMENTOS_RECEITA e QTD_INSTRUMENTOS_DESPESA da planilha. Um clique rola a página até o bloco." data-tip-t="Contratos"><i class="ponto"></i>Contratos</button>
     <button class="seg oculto" data-seg="universo" aria-current="false" style="--cor:var(--musgo)" data-tip="Demonstração aritmética de como cada população se formou, interseções entre regras e situações à margem. Um clique rola a página até o bloco." data-tip-t="Universo"><i class="ponto"></i>Universo</button>
     <button class="seg oculto" data-seg="regras" aria-current="false" style="--cor:var(--ferrugem)" data-tip="As quatro regras de saneamento tal como o sistema as aplica, com os parâmetros em vigor e a âncora temporal resolvida. Um clique rola a página até o bloco." data-tip-t="Regras aplicadas"><i class="ponto"></i>Regras aplicadas</button>
     <button class="seg oculto" data-seg="saldo" aria-current="false" style="--cor:var(--petroleo)" data-tip="Saldo do programado por exercício — anos anteriores, três exercícios retroativos, corrente e futuros — seguido dos indícios de programação. Um clique rola a página até o bloco." data-tip-t="Saldo"><i class="ponto"></i>Saldo</button>
@@ -513,6 +514,21 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     <div class="grafico-caixa" style="--cor:var(--ameixa)"><header><h4>MAPPs por estágio</h4><i class="sigla" tabindex="0" data-tip="Distribuição dos MAPPs consolidados pelos grupos de estágio normalizados.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="estagios" data-tipo="bar" data-tip="Exibe em barras horizontais.">Barras</button><button class="btn pequeno discreto" data-graf="estagios" data-tipo="doughnut" data-tip="Exibe em rosca.">Rosca</button></div></header><div class="tela"><canvas id="gEstagios"></canvas></div></div>
     <div class="grafico-caixa" style="--cor:var(--ferrugem)"><header><h4>MAPPs por secretaria</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores secretarias por quantidade de MAPPs. Alterne para ver por valor programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="valor" data-tip="Ordena pelo valor programado.">Valor</button></div></header><div class="tela"><canvas id="gSecretarias"></canvas></div></div>
     <div class="grafico-caixa" style="--cor:var(--grafite)"><header><h4>MAPPs por órgão</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores órgãos por quantidade de MAPPs. Alterne para ver por valor programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="valor" data-tip="Ordena pelo valor programado.">Valor</button></div></header><div class="tela"><canvas id="gOrgaos"></canvas></div></div>
+  </div>
+  </div>
+  <div class="segmento oculto" id="seg-contratos" style="--acento:var(--ameixa);--acento-tenue:rgba(115,92,130,.10);--acento-medio:rgba(115,92,130,.3)">
+  <div class="marco-segmento"><span>Contratos</span></div>
+  <div class="bloco">
+    <header><h2>Instrumentos contratuais</h2><span class="legenda">Contagem de instrumentos de receita e de despesa por MAPP, tal como consta da planilha — sem número, valor ou vigência individual do contrato.</span></header>
+    <div class="aviso nota"><span class="marca">Origem</span><span>Vem das colunas <span class="mono">QTD_INSTRUMENTOS_RECEITA</span> e <span class="mono">QTD_INSTRUMENTOS_DESPESA</span>, apuradas no universo submetido às regras. Não há, na planilha atual, número de contrato, valor contratado ou vigência — só a quantidade de instrumentos vinculados a cada MAPP.</span></div>
+    <div class="cartoes" id="cartoesContratos" style="margin-top:12px"></div>
+  </div>
+  <div class="bloco">
+    <header><h2>Instrumentos por órgão</h2><span class="legenda">Quinze maiores órgãos por quantidade de instrumentos vinculados aos seus MAPPs.</span></header>
+    <div class="grade g2">
+      <div class="grafico-caixa" style="--cor:var(--ameixa)"><header><h4>Instrumentos de receita por órgão</h4><i class="sigla" tabindex="0" data-tip="Soma de QTD_INSTRUMENTOS_RECEITA dos MAPPs de cada órgão, quinze maiores.">?</i></header><div class="tela"><canvas id="gInstrumentosReceita"></canvas></div></div>
+      <div class="grafico-caixa" style="--cor:var(--ferrugem)"><header><h4>Instrumentos de despesa por órgão</h4><i class="sigla" tabindex="0" data-tip="Soma de QTD_INSTRUMENTOS_DESPESA dos MAPPs de cada órgão, quinze maiores.">?</i></header><div class="tela"><canvas id="gInstrumentosDespesa"></canvas></div></div>
+    </div>
   </div>
   </div>
   <div class="segmento oculto" id="seg-universo" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
@@ -1790,7 +1806,7 @@ async function importar(){
    bem-sucedida ficam ocultos até aqui. Revelados antes de renderTudo() para
    que os gráficos (Chart.js) meçam contêineres com tamanho real. */
 function mostrarBlocosPosImportacao(){
-  ['blocoTresBases','seg-indicadores','seg-universo','seg-regras','seg-saldo'].forEach(function(id){
+  ['blocoTresBases','seg-indicadores','seg-contratos','seg-universo','seg-regras','seg-saldo'].forEach(function(id){
     const el=document.getElementById(id); if(el) el.classList.remove('oculto');
   });
   $$('#segPanorama .seg').forEach(function(b){ b.classList.remove('oculto'); });
@@ -2592,6 +2608,30 @@ function renderPainel(){
     'MAPPs que não se enquadram em nenhuma das quatro regras da primeira fase.'));
   $('#cartoesRegras').innerHTML=c.join('');
   renderSaldoPorRegra();
+  renderContratos();
+}
+
+/* Instrumentos de receita e de despesa por MAPP (QTD_INSTRUMENTOS_RECEITA/
+   DESPESA). É a única informação de contrato presente na planilha atual —
+   não há número, valor ou vigência individual de contrato. */
+function renderContratos(){
+  const d=E.diag; if(!d) return;
+  const base=d.noUniverso;
+  let comReceita=0, comDespesa=0, semNenhum=0, totalReceita=0, totalDespesa=0;
+  base.forEach(function(m){
+    const qr=m.qr||0, qd=m.qd||0;
+    if(qr>0) comReceita++;
+    if(qd>0) comDespesa++;
+    if(!qr && !qd) semNenhum++;
+    totalReceita+=qr; totalDespesa+=qd;
+  });
+  $('#cartoesContratos').innerHTML=
+    cartao('Instrumentos de receita', n(totalReceita), n(comReceita)+' MAPP(s) com ao menos um', 'var(--ameixa)',
+      'Soma de QTD_INSTRUMENTOS_RECEITA no universo submetido às regras ('+n(base.length)+' MAPPs).')+
+    cartao('Instrumentos de despesa', n(totalDespesa), n(comDespesa)+' MAPP(s) com ao menos um', 'var(--ferrugem)',
+      'Soma de QTD_INSTRUMENTOS_DESPESA no universo submetido às regras ('+n(base.length)+' MAPPs).')+
+    cartao('MAPPs sem nenhum instrumento', n(semNenhum), pct(semNenhum,base.length||1)+' do universo', 'var(--neutro)',
+      'MAPPs cujas colunas de instrumentos de receita e de despesa vêm ambas zeradas ou ausentes.');
 }
 
 /* Saldo do programado (programado − empenhado) por conjunto de regra, com o
@@ -2755,6 +2795,26 @@ function desenharGraficos(){
 
   desenharAgregado('gSecretarias','secretaria',tiposGrafico.secretarias);
   desenharAgregado('gOrgaos','orgao',tiposGrafico.orgaos);
+  desenharInstrumentos('gInstrumentosReceita','qr',PALETA[4]);
+  desenharInstrumentos('gInstrumentosDespesa','qd',PALETA[3]);
+}
+
+/* Soma de instrumentos (receita ou despesa) por órgão, quinze maiores. */
+function desenharInstrumentos(id,campo,cor){
+  const mapa=new Map();
+  E.diag.noUniverso.forEach(function(m){
+    const v=m[campo]||0; if(!v) return;
+    const k=m.orgao||'(não informado)';
+    mapa.set(k,(mapa.get(k)||0)+v);
+  });
+  const arr=Array.from(mapa.entries()).sort(function(a,b){ return b[1]-a[1]; }).slice(0,15);
+  grafico(id,{ type:'bar',
+    data:{labels:arr.map(function(p){ return p[0]; }),
+      datasets:[{label:'Instrumentos',data:arr.map(function(p){ return p[1]; }),backgroundColor:cor,borderWidth:0}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:function(c){ return n(c.raw)+' instrumento(s)'; }}}},
+      scales:{x:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:function(v){return n(v);}}},
+              y:{grid:{display:false},ticks:{font:{size:10}}}}}});
 }
 
 function desenharAgregado(id,campo,modo){
