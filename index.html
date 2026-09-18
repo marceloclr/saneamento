@@ -3793,7 +3793,7 @@ async function ocultarMapps(chaves,rotulo){
   });
   E.selecionadosSan.clear();
   marcarPasso(8);
-  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); atualizarSelo();
+  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); renderAntesDepois(); atualizarSelo();
   recado(n(chaves.length)+' MAPP(s) ocultado(s) do saneamento.');
 }
 
@@ -3809,7 +3809,7 @@ function restabelecerMapps(chaves){
   });
   if(!q){ recado('Nenhum dos MAPPs selecionados estava ocultado.'); return; }
   E.selecionadosSan.clear();
-  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); atualizarSelo();
+  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); renderAntesDepois(); atualizarSelo();
   recado(n(q)+' MAPP(s) restabelecido(s).');
 }
 
