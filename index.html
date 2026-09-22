@@ -671,7 +671,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
     <header><h2>Programação</h2><span class="legenda">Concentração, programação sem execução e ausência de programação futura.</span></header>
     <div class="cartoes" id="cartoesProgramacao"></div>
     <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
-    <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody></table></div>
+    <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th class="num" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028 — coluna totalizadora das duas colunas de Programado anteriores." data-tip-t="Programado total">Programado total</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
   </div>
 </section>
@@ -725,6 +725,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
           <th class="ordenavel num" data-ord="acomp" data-tip="Data do último acompanhamento. Serve a análise complementar; não constitui regra de saneamento." data-tip-t="Últ. acomp.">Últ. acomp.</th>
           <th class="ordenavel num" data-ord="empAte" data-tip="Soma dos empenhos dos exercícios de 2007 a 2022.">Exec. até 2022</th>
           <th class="ordenavel num" data-ord="empPos" data-tip="Soma dos empenhos dos exercícios de 2023 a 2026.">Exec. 2023–26</th>
+          <th class="ordenavel num" data-ord="empenhado" data-tip="Soma do empenhado de todos os exercícios do MAPP — coluna totalizadora de Exec. até 2022 e Exec. 2023–26." data-tip-t="Exec. total">Exec. total</th>
           <th class="ordenavel num" data-ord="programado" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028." data-tip-t="Programado">Programado</th>
           <th class="ordenavel" data-ord="regra" data-tip="Regras da primeira fase que o MAPP satisfaz. Passe o ponteiro sobre cada etiqueta para ler o critério completo." data-tip-t="Regra">Regra</th>
           <th class="ordenavel" data-ord="confianca" data-tip="Grau de suficiência probatória do enquadramento: alta, média ou baixa." data-tip-t="Confiança">Confiança</th>
@@ -732,6 +733,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
           <th class="ordenavel" data-ord="revisao" data-tip="Situação da revisão humana: pendente, acatada, rejeitada ou ocultada do saneamento." data-tip-t="Revisão">Revisão</th>
         </tr></thead>
         <tbody></tbody>
+        <tfoot></tfoot>
       </table>
     </div>
     <div class="paginacao">
@@ -756,7 +758,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   </div>
   <div class="bloco">
     <header><h2>Possíveis fusões</h2><span class="legenda">Agrupamentos por órgão, programa e semelhança de título. Nunca automáticos.</span></header>
-    <div class="tabela-caixa" style="max-height:38vh"><table id="tabFusoes"><thead><tr><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Programa orçamentário ao qual o MAPP está vinculado." data-tip-t="Programa">Programa</th><th data-tip="Radicais iniciais do título, usados para aproximar projetos semelhantes." data-tip-t="Núcleo do título">Núcleo do título</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th><th class="num" data-tip="Soma do programado dos MAPPs do agrupamento." data-tip-t="Programado somado">Programado somado</th><th data-tip="Códigos dos MAPPs reunidos no agrupamento." data-tip-t="Códigos">Códigos</th></tr></thead><tbody></tbody></table></div>
+    <div class="tabela-caixa" style="max-height:38vh"><table id="tabFusoes"><thead><tr><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Programa orçamentário ao qual o MAPP está vinculado." data-tip-t="Programa">Programa</th><th data-tip="Radicais iniciais do título, usados para aproximar projetos semelhantes." data-tip-t="Núcleo do título">Núcleo do título</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th><th class="num" data-tip="Soma do programado dos MAPPs do agrupamento." data-tip-t="Programado somado">Programado somado</th><th data-tip="Códigos dos MAPPs reunidos no agrupamento." data-tip-t="Códigos">Códigos</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportFusoes" data-tip="Exporta os agrupamentos sugeridos.">Exportar sugestões</button></div>
   </div>
   <div class="bloco">
@@ -833,6 +835,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
           <th class="ordenavel" data-ords="situacao" data-tip="Situação do MAPP no saneamento: mantido, com decisão humana registrada ou ocultado do resultado." data-tip-t="Situação">Situação</th>
         </tr></thead>
         <tbody></tbody>
+        <tfoot></tfoot>
       </table>
     </div>
     <div class="paginacao">
@@ -905,7 +908,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
 
   <div class="bloco">
     <header><h2>Quadro estratificado</h2><span class="legenda" id="adLegendaTabela"></span></header>
-    <div class="tabela-caixa"><table id="tabAntesDepois"><thead><tr></tr></thead><tbody></tbody></table></div>
+    <div class="tabela-caixa"><table id="tabAntesDepois"><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportarAntesDepois" data-tip="Exporta o quadro estratificado com os valores de antes, depois e variação.">Exportar quadro</button></div>
   </div>
 </section>
@@ -915,12 +918,13 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   <div class="aviso nota"><span class="marca">Alcance</span><span>Ação de médio prazo prevista no documento. São <strong>indícios para exame</strong>: nada aqui altera a base de trabalho nem gera recomendação automática.</span></div>
   <div class="bloco">
     <header><h2>Despesas de continuidade</h2><span class="legenda">Candidatos à migração de MAPP investimento para custeio finalístico.</span></header>
+    <div class="cartoes" id="cartoesContinuidade" style="margin-bottom:12px"></div>
     <div class="barra-acoes" style="margin-bottom:10px">
       <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Exercícios consecutivos com empenho <i class="sigla" tabindex="0" data-tip="Número mínimo de anos seguidos com empenho para que o MAPP seja sinalizado como possível despesa de continuidade.">?</i></span><select id="limContinuidade"><option value="2">2 exercícios</option><option value="3">3 exercícios</option><option value="4">4 exercícios</option><option value="5" selected>5 exercícios</option><option value="6">6 exercícios</option><option value="7">7 exercícios</option><option value="8">8 exercícios</option><option value="9">9 exercícios</option><option value="10">10 exercícios</option><option value="11">11 exercícios</option><option value="12">12 exercícios</option></select></label>
       <button class="btn" id="btnRecalcFase2" data-tip="Recalcula os indícios da segunda fase com os limiares informados.">Recalcular indícios</button>
       <button class="btn" id="btnExportContinuidade" data-tip="Exporta os candidatos a despesa de continuidade.">Exportar</button>
     </div>
-    <div class="tabela-caixa" style="max-height:38vh"><table id="tabContinuidade"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Quantidade de exercícios com empenho positivo em toda a série." data-tip-t="Anos com empenho">Anos com empenho</th><th class="num" data-tip="Maior número de exercícios consecutivos com empenho — indício de despesa de natureza continuada." data-tip-t="Sequência máxima">Sequência máxima</th><th class="num" data-tip="Soma dos empenhos de todos os exercícios do MAPP." data-tip-t="Empenhado total">Empenhado total</th><th class="num" data-tip="Valor de QTD_INSTRUMENTOS_DESPESA registrado para o MAPP." data-tip-t="Instrumentos de despesa">Instrumentos de despesa</th></tr></thead><tbody></tbody></table></div>
+    <div class="tabela-caixa" style="max-height:38vh"><table id="tabContinuidade"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Quantidade de exercícios com empenho positivo em toda a série." data-tip-t="Anos com empenho">Anos com empenho</th><th class="num" data-tip="Maior número de exercícios consecutivos com empenho — indício de despesa de natureza continuada." data-tip-t="Sequência máxima">Sequência máxima</th><th class="num" data-tip="Soma dos empenhos de todos os exercícios do MAPP." data-tip-t="Empenhado total">Empenhado total</th><th class="num" data-tip="Valor de QTD_INSTRUMENTOS_DESPESA registrado para o MAPP." data-tip-t="Instrumentos de despesa">Instrumentos de despesa</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
 </section>
 
@@ -3051,6 +3055,7 @@ function filtrar(){
     titulo:function(m){return m.titulo;}, ano:function(m){return m.ano||0;},
     estagio:function(m){return m.estagio;}, acomp:function(m){return m.dtAcomp||0;},
     empAte:function(m){return m.empHist;}, empPos:function(m){return m.empPres;},
+    empenhado:function(m){return m.empenhado;},
     programado:function(m){return m.programado;},
     regra:function(m){return m.d.regras.join('+')||('zz '+m.d.classificacao);},
     confianca:function(m){return {'Alta':1,'Média':2,'Baixa':3}[m.d.confianca]||9;},
@@ -3084,8 +3089,15 @@ function renderDiagnostico(){
   $('#resumoFiltro').textContent = 'Programado filtrado: '+rs(somaProgramado(lista))+' · empenhado: '+rs(somaEmpenhado(lista));
   $('#infoPagina').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
 
+  let tEmpAte=0,tEmpPos=0,tEmp=0,tProg=0;
+  lista.forEach(function(m){ tEmpAte+=m.empHist; tEmpPos+=m.empPres; tEmp+=m.empenhado; tProg+=m.programado; });
+  $('#tabDiag').querySelector('tfoot').innerHTML = total
+    ? '<tr><td colspan="9">Total filtrado ('+n(total)+' MAPPs)</td><td class="num">'+rsCurto(tEmpAte)+'</td><td class="num">'+
+      rsCurto(tEmpPos)+'</td><td class="num">'+rsCurto(tEmp)+'</td><td class="num">'+rsCurto(tProg)+'</td><td colspan="4"></td></tr>'
+    : '';
+
   const corpo=$('#tabDiag').querySelector('tbody');
-  if(!pagina.length){ corpo.innerHTML='<tr><td colspan="16" class="vazio">Nenhum MAPP atende aos filtros informados.</td></tr>'; atualizarSelecao(); return; }
+  if(!pagina.length){ corpo.innerHTML='<tr><td colspan="17" class="vazio">Nenhum MAPP atende aos filtros informados.</td></tr>'; atualizarSelecao(); return; }
   corpo.innerHTML = pagina.map(function(m){
     const d=m.d, dec=E.decisoes[m.chave];
     const etqRegras = d.regras.length
@@ -3122,6 +3134,7 @@ function renderDiagnostico(){
       '<td class="num"'+tip('Data do último acompanhamento registrado no Webmapp. Serve apenas a análise complementar; não constitui regra de saneamento.','Último acompanhamento')+'>'+dataBR(m.dtAcomp)+'</td>'+
       '<td class="num">'+rsCurto(m.empHist)+'</td>'+
       '<td class="num">'+rsCurto(m.empPres)+'</td>'+
+      '<td class="num">'+rsCurto(m.empenhado)+'</td>'+
       '<td class="num">'+rsCurto(m.programado)+'</td>'+
       '<td>'+etqRegras+extra+'</td>'+
       '<td><span class="etq '+conf+'"'+tip(dicaConfianca(m),'Confiança')+'>'+d.confianca+'</span></td>'+
@@ -3465,12 +3478,32 @@ function mostrarAchado(id){
 
 function renderFase2(){
   const f=E.fase2;
+  const orgaosContinuidade=new Set(f.continuidade.map(function(c){ return c.m.orgao; }));
+  const empenhadoContinuidade=f.continuidade.reduce(function(t,c){ return t+c.m.empenhado; },0);
+  const programadoContinuidade=f.continuidade.reduce(function(t,c){ return t+c.m.programado; },0);
+  const seqMedia=f.continuidade.length ? f.continuidade.reduce(function(t,c){ return t+c.seq; },0)/f.continuidade.length : 0;
+  const seqMax=f.continuidade.length ? Math.max.apply(null,f.continuidade.map(function(c){ return c.seq; })) : 0;
+  $('#cartoesContinuidade').innerHTML=
+    cartao('MAPPs identificados',n(f.continuidade.length),'≥ '+f.limSeq+' exercícios seguidos','var(--petroleo)',
+      'Quantidade de MAPPs com empenho em ao menos '+f.limSeq+' exercícios consecutivos — indício de despesa de natureza continuada.')+
+    cartao('Órgãos envolvidos',n(orgaosContinuidade.size),'entre os MAPPs identificados','var(--ardosia)',
+      'Quantidade de órgãos distintos com ao menos um MAPP candidato à migração para custeio finalístico.')+
+    cartao('Empenhado total',rsCurto(empenhadoContinuidade),'todos os exercícios','var(--musgo)',
+      'Soma do empenhado de todos os exercícios dos MAPPs identificados como despesa de continuidade.',true)+
+    cartao('Programado total',rsCurto(programadoContinuidade),'todos os exercícios, inclusive futuros','var(--latao)',
+      'Soma do programado de todos os exercícios dos MAPPs identificados como despesa de continuidade.',true)+
+    cartao('Sequência média',seqMedia.toFixed(1).replace('.',',')+' anos','máxima observada: '+n(seqMax)+' anos','var(--ameixa)',
+      'Média de exercícios consecutivos com empenho entre os MAPPs identificados.');
+
   $('#tabContinuidade').querySelector('tbody').innerHTML = f.continuidade.length ? f.continuidade.slice(0,500).map(function(c){
     const m=c.m;
     return '<tr class="linha-clicavel" data-chave="'+esc(m.chave)+'"><td class="mono">'+esc(m.codigo)+'</td><td>'+esc(m.orgao)+
       '</td><td class="titulo-mapp">'+esc(m.titulo)+'</td><td class="num">'+n(c.anos)+'</td><td class="num">'+n(c.seq)+
       '</td><td class="num">'+rsCurto(m.empenhado)+'</td><td class="num">'+n(m.qd)+'</td></tr>';
   }).join('') : '<tr><td colspan="7" class="vazio">Nenhum MAPP atinge o limiar de exercícios consecutivos informado.</td></tr>';
+  $('#tabContinuidade').querySelector('tfoot').innerHTML = f.continuidade.length
+    ? '<tr><td colspan="5">Total ('+n(f.continuidade.length)+' MAPPs)</td><td class="num">'+rsCurto(empenhadoContinuidade)+'</td><td></td></tr>'
+    : '';
 
   const semExecProg=f.programacao.filter(function(p){ return p.indicios.indexOf('Programação sem execução')>=0; });
   const concentrados=f.programacao.filter(function(p){ return p.indicios.indexOf('Concentração no exercício corrente')>=0; });
@@ -3494,8 +3527,15 @@ function renderFase2(){
     return '<tr class="linha-clicavel" data-chave="'+esc(m.chave)+'"><td class="mono">'+esc(m.codigo)+'</td><td>'+esc(m.orgao)+
       '</td><td class="titulo-mapp">'+esc(m.titulo)+'</td><td class="num">'+rsCurto(p.progAtual)+'</td><td class="num">'+
       p.participacao.toFixed(1).replace('.',',')+'%</td><td class="num">'+rsCurto(m.progFuturo)+'</td><td class="num">'+
-      rsCurto(m.empPres)+'</td><td class="pequeno">'+esc(p.indicios.join(' · '))+'</td></tr>';
-  }).join('') : '<tr><td colspan="8" class="vazio">Nenhum indício de programação apontado.</td></tr>';
+      rsCurto(m.empPres)+'</td><td class="num">'+rsCurto(m.programado)+'</td><td class="pequeno">'+esc(p.indicios.join(' · '))+'</td></tr>';
+  }).join('') : '<tr><td colspan="9" class="vazio">Nenhum indício de programação apontado.</td></tr>';
+  if(f.programacao.length){
+    let tAtual=0,tFuturo=0,tEmpPres=0,tProgTotal=0;
+    f.programacao.forEach(function(p){ tAtual+=p.progAtual; tFuturo+=p.m.progFuturo; tEmpPres+=p.m.empPres; tProgTotal+=p.m.programado; });
+    $('#tabProgramacao').querySelector('tfoot').innerHTML='<tr><td colspan="3">Total ('+n(f.programacao.length)+' MAPPs)</td>'+
+      '<td class="num">'+rsCurto(tAtual)+'</td><td></td><td class="num">'+rsCurto(tFuturo)+'</td>'+
+      '<td class="num">'+rsCurto(tEmpPres)+'</td><td class="num">'+rsCurto(tProgTotal)+'</td><td></td></tr>';
+  } else $('#tabProgramacao').querySelector('tfoot').innerHTML='';
 
   $('#tabFusoes').querySelector('tbody').innerHTML = f.fusoes.length ? f.fusoes.map(function(g){
     return '<tr><td>'+esc(g.orgao)+'</td><td class="pequeno">'+esc(g.programa)+'</td><td>'+esc(g.nucleo)+
@@ -3503,6 +3543,11 @@ function renderFase2(){
       '</td><td class="pequeno mono">'+esc(g.itens.slice(0,12).map(function(m){return m.codigo;}).join(', '))+
       (g.itens.length>12?' …':'')+'</td></tr>';
   }).join('') : '<tr><td colspan="6" class="vazio">Nenhum agrupamento sugerido.</td></tr>';
+  $('#tabFusoes').querySelector('tfoot').innerHTML = f.fusoes.length
+    ? '<tr><td colspan="3">Total ('+n(f.fusoes.length)+' agrupamentos)</td><td class="num">'+
+      n(f.fusoes.reduce(function(t,g){ return t+g.itens.length; },0))+'</td><td class="num">'+
+      rsCurto(f.fusoes.reduce(function(t,g){ return t+g.programado; },0))+'</td><td></td></tr>'
+    : '';
 
   $('#tabTitulos').querySelector('tbody').innerHTML = f.titulos.length ? f.titulos.slice(0,500).map(function(t){
     return '<tr class="linha-clicavel" data-chave="'+esc(t.m.chave)+'"><td class="mono">'+esc(t.m.codigo)+'</td><td>'+esc(t.m.orgao)+
@@ -3689,6 +3734,9 @@ function renderSaneamento(){
   $('#resumoSaneamento').textContent='Programado filtrado: '+rs(somaProgramado(lista))+' · ocultados no filtro: '+
     n(lista.filter(function(m){ return estaOculto(m.chave); }).length);
   $('#infoPaginaSan').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
+  $('#tabSaneamento').querySelector('tfoot').innerHTML = total
+    ? '<tr><td colspan="10">Total filtrado ('+n(total)+' MAPPs)</td><td class="num">'+rsCurto(somaProgramado(lista))+'</td><td></td></tr>'
+    : '';
 
   const corpo=$('#tabSaneamento').querySelector('tbody');
   if(!base.length){
@@ -4211,6 +4259,22 @@ function renderAntesDepois(){
         '\nEsses MAPPs foram enquadrados pelas regras, mas retirados do resultado do saneamento — a projeção os mantém como estavam.','Excluídos')+
       '>'+fmtAD(medida==='valor'?o.excV:o.exc)+'</td></tr>';
   }).join('') : '<tr><td colspan="10" class="vazio">Nenhum estrato a exibir.</td></tr>';
+
+  if(linhas.length){
+    let tA=0,tD=0,tExc=0; const tR={'1a':0,'1b':0,'1.2':0,'1.3':0};
+    linhas.forEach(function(o){
+      tA+=vA(o); tD+=vD(o); tExc+=medida==='valor'?o.excV:o.exc;
+      ['1a','1b','1.2','1.3'].forEach(function(r){ tR[r]+=vR(o,r); });
+    });
+    const tDif=tD-tA;
+    $('#tabAntesDepois').querySelector('tfoot').innerHTML='<tr><td>Total</td>'+
+      '<td class="num">'+fmtAD(tA)+'</td>'+
+      '<td class="num">'+fmtAD(tD)+'</td>'+
+      '<td class="num" style="color:'+(tDif<0?'var(--risco)':'var(--tinta-2)')+'">'+(tDif>0?'+':'')+fmtAD(tDif)+'</td>'+
+      '<td class="num">'+(tA?((100*tDif/tA).toFixed(1).replace('.',',')+'%'):'—')+'</td>'+
+      ['1a','1b','1.2','1.3'].map(function(r){ return '<td class="num">'+fmtAD(tR[r])+'</td>'; }).join('')+
+      '<td class="num">'+fmtAD(tExc)+'</td></tr>';
+  } else $('#tabAntesDepois').querySelector('tfoot').innerHTML='';
 
   const gs=$('#dicaGrafRegras');
   if(gs) gs.setAttribute('data-tip',
