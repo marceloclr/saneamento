@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="claro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saneamento MAPPs · Versão simplificada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* Paleta e tipografia reaproveitadas do sistema completo (../index.html), para
+   consistência visual. O restante do CSS (abas, gaveta, modais, gráficos) não
+   se aplica aqui: esta é uma página única, sem esses componentes. */
+:root{
+  --papel:#f3f1ec; --papel-2:#e9e6e0; --carta:#fffefc; --carta-2:#faf8f4;
+  --tinta:#1c1f23; --tinta-2:#4a5058; --tinta-3:#737a83;
+  --linha:#d9d4cb; --linha-forte:#c1bab0;
+  --grafite:#3f4750; --ardosia:#3f5c78; --musgo:#4c6847; --carmim:#8b3a3a; --ferrugem:#8a5240;
+  --ok:#4c6847; --alerta:#867123; --risco:#8b3a3a;
+  --sombra:0 1px 1px rgba(28,31,35,.05), 0 10px 26px -18px rgba(28,31,35,.35);
+  --raio:12px; --raio-p:7px;
+  --acento:var(--grafite); --acento-tenue:rgba(63,71,80,.09); --acento-medio:rgba(63,71,80,.30);
+}
+html[data-tema="escuro"]{
+  --papel:#14171b; --papel-2:#1a1e23; --carta:#1f242a; --carta-2:#242a31;
+  --tinta:#e9e6e0; --tinta-2:#bab5ac; --tinta-3:#8d949d;
+  --linha:#2e343b; --linha-forte:#3e454e;
+  --grafite:#9fa9b4; --ardosia:#7ba3c8; --musgo:#87ab7f; --carmim:#cf7d7d; --ferrugem:#c68a74;
+  --ok:#87ab7f; --alerta:#c0aa4e; --risco:#cf7d7d;
+  --sombra:0 1px 1px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--papel);color:var(--tinta);font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:"IBM Plex Serif",Georgia,serif;font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:19px} h2{font-size:16px}
+p{margin:0 0 8px}
+.mono,.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.tenue{color:var(--tinta-3)} .pequeno{font-size:12px}
+.oculto{display:none!important}
+main{padding:20px;max-width:1200px;margin:0 auto}
+.topo{position:sticky;top:0;z-index:10;background:var(--carta);border-bottom:1px solid var(--linha);box-shadow:var(--sombra)}
+.topo-linha{display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap}
+.brasao{width:32px;height:32px;border-radius:9px;flex:0 0 auto;background:linear-gradient(150deg,var(--grafite),var(--ardosia));display:grid;place-items:center;color:#fff;font-family:"IBM Plex Serif",serif;font-weight:600;font-size:14px}
+html[data-tema="escuro"] .brasao{color:#14171b}
+.titulo-bloco{display:flex;flex-direction:column;line-height:1.25}
+.titulo-bloco .sub{font-size:11px;color:var(--tinta-3)}
+.topo-acoes{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bloco{background:var(--carta);border:1px solid var(--linha);border-left:3px solid var(--acento);border-radius:var(--raio);box-shadow:var(--sombra);padding:16px 18px;margin-bottom:16px}
+.bloco > header{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.bloco > header h2{color:var(--acento)}
+.bloco > header .legenda{font-size:12px;color:var(--tinta-3)}
+.grade{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:760px){.g4{grid-template-columns:1fr}}
+.area-solta{border:1.5px dashed var(--linha-forte);border-radius:var(--raio);background:var(--carta-2);padding:22px;text-align:center;transition:border-color .15s,background .15s}
+.area-solta.pairando{border-color:var(--acento);background:var(--acento-tenue)}
+.area-solta h3{margin-bottom:6px;font-size:14px}
+button,select,input{font-family:inherit;font-size:13px;color:var(--tinta)}
+.btn{appearance:none;border:1px solid var(--linha-forte);background:var(--carta);color:var(--tinta);padding:7px 13px;border-radius:var(--raio-p);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .14s,border-color .14s}
+.btn:hover{background:var(--papel-2);border-color:var(--acento)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.principal{background:var(--acento);border-color:var(--acento);color:var(--carta)}
+html[data-tema="escuro"] .btn.principal{color:#14171b}
+.btn.principal:hover{filter:brightness(1.08)}
+.btn.risco{border-color:var(--risco);color:var(--risco)}
+.btn.pequeno{padding:4px 9px;font-size:12px}
+input[type="file"]{display:none}
+label.campo{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--tinta-3)}
+select,input[type="text"]{background:var(--carta-2);border:1px solid var(--linha);border-radius:var(--raio-p);padding:6px 9px;font-size:13px;color:var(--tinta)}
+select:focus,input:focus{outline:2px solid var(--acento-medio);outline-offset:-1px;border-color:var(--acento)}
+select[multiple]{padding:2px}
+.etq{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:99px;font-size:11px;border:1px solid var(--cor,var(--linha-forte));color:var(--cor,var(--tinta-2));white-space:nowrap;cursor:help}
+.etq.r1a{--cor:var(--carmim)} .etq.r1b{--cor:var(--ferrugem)} .etq.r12{--cor:var(--ardosia)} .etq.r13{--cor:var(--musgo)}
+.tabela-caixa{overflow:auto;border:1px solid var(--linha);border-radius:var(--raio);background:var(--carta);max-height:60vh}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+thead th{position:sticky;top:0;z-index:2;background:var(--papel-2);color:var(--tinta-2);text-align:left;padding:8px 10px;border-bottom:1px solid var(--linha-forte);font-weight:600;font-size:11.5px;white-space:nowrap}
+tfoot td{position:sticky;bottom:0;background:var(--papel-2);font-weight:600;border-top:1px solid var(--linha-forte)}
+tbody td,tfoot td{padding:7px 10px;border-bottom:1px solid var(--linha);vertical-align:top}
+tbody tr:hover{background:var(--acento-tenue)}
+td.num,th.num{text-align:right;font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+td.titulo{max-width:320px}
+.vazio{padding:24px;text-align:center;color:var(--tinta-3);font-size:13px}
+.aviso{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--linha);border-left:3px solid var(--ardosia);background:var(--carta);border-radius:var(--raio-p);padding:9px 12px;font-size:12.5px;margin-bottom:14px}
+.aviso b{color:var(--ardosia)}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-linha">
+    <div class="brasao">S</div>
+    <div class="titulo-bloco">
+      <h1>Saneamento MAPPs</h1>
+      <span class="sub">Versão simplificada · <a href="../index.html" style="color:inherit">sistema completo aqui</a></span>
+    </div>
+    <div class="topo-acoes">
+      <button class="btn" id="btnTema">Tema</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="aviso"><b>Alcance</b>&nbsp;— mostra só o essencial: em qual regra cada MAPP se enquadra e um clique para remover ou restaurar. Nenhuma decisão exige justificativa aqui; para revisão completa, auditoria e demais análises, use o <a href="../index.html">sistema completo</a>.</div>
+
+  <div class="bloco" id="blocoImportar">
+    <header><h2>Importar planilha</h2></header>
+    <div class="area-solta" id="areaSolta">
+      <h3>Traga a planilha de execução</h3>
+      <p class="tenue pequeno">Arraste o arquivo <span class="mono">.xlsx</span> para esta área ou selecione-o. O processamento ocorre inteiramente no navegador — nenhum dado é enviado a servidores.</p>
+      <button class="btn principal" id="btnSelecionar">Selecionar arquivo</button>
+      <input type="file" id="arquivo" accept=".xlsx,.xlsm">
+    </div>
+    <div class="grade g4 oculto" id="painelAba" style="margin-top:12px">
+      <label class="campo"><span>Aba de dados</span><select id="selAba"></select></label>
+      <div style="display:flex;align-items:flex-end"><button class="btn principal" id="btnImportar">Importar</button></div>
+    </div>
+    <p class="pequeno tenue" id="status" style="margin-top:10px"></p>
+  </div>
+
+  <div class="bloco oculto" id="blocoFiltro">
+    <header><h2>Filtro</h2></header>
+    <label class="campo"><span>Fonte — mostra os MAPPs com ao menos uma linha da fonte escolhida; as demais fontes do MAPP continuam aparecendo na linha. Nenhuma marcada = sem restrição. (Ctrl/Cmd + clique para marcar várias)</span>
+      <select id="fFonte" multiple size="6" style="width:100%"></select></label>
+  </div>
+
+  <div class="bloco oculto" id="blocoSaneada">
+    <header>
+      <h2>Base saneada</h2><span class="legenda" id="legendaSaneada"></span>
+      <button class="btn principal" id="btnExportar" style="margin-left:auto" disabled>Exportar .xlsx</button>
+    </header>
+    <div class="tabela-caixa"><table>
+      <thead><tr><th>MAPP</th><th>Título</th><th>Órgão</th><th>Regra(s)</th><th class="num">Programado</th><th class="num">Empenhado</th><th></th></tr></thead>
+      <tbody id="tabManTbody"></tbody>
+      <tfoot id="tabManTfoot"></tfoot>
+    </table></div>
+  </div>
+
+  <div class="bloco oculto" id="blocoExcluidos">
+    <header><h2>Excluídos</h2><span class="legenda" id="legendaExcluidos"></span></header>
+    <div class="tabela-caixa"><table>
+      <thead><tr><th>MAPP</th><th>Título</th><th>Órgão</th><th>Regra(s)</th><th class="num">Programado</th><th class="num">Empenhado</th><th></th></tr></thead>
+      <tbody id="tabExcTbody"></tbody>
+    </table></div>
+  </div>
+</main>
+
+<script>
+"use strict";
+/* ==========================================================================
+   Saneamento MAPPs · versão simplificada.
+   Núcleo de importação, consolidação e motor de regras copiado do sistema
+   completo (../index.html), sem alteração de lógica — só sem a interface em
+   volta (configuração, revisão, auditoria, manual). Ver 03-backlog.md do
+   repositório para o registro dessa decisão.
+   ========================================================================== */
+
+/* ----------------------------- Constantes -------------------------------- */
+
+const REGRAS = {
+  '1a':  { nome:'Regra 1.a', classe:'r1a',
+           descricao:'MAPPs aprovados até o ano de corte e sem qualquer execução. Ação: tornar pendente.' },
+  '1b':  { nome:'Regra 1.b', classe:'r1b',
+           descricao:'MAPPs aprovados no ano de referência e sem qualquer execução. Ação: enviar ao órgão, manifestação em 30 dias.' },
+  '1.2': { nome:'Regra 1.2', classe:'r12',
+           descricao:'MAPPs com execução até o ano anterior e sem execução no exercício corrente. Ação: concluído físico e financeiro.' },
+  '1.3': { nome:'Regra 1.3', classe:'r13',
+           descricao:'MAPPs com estágio de execução física concluída. Ação: enviar ao órgão, depois concluído físico e financeiro.' }
+};
+const GRUPOS_ESTAGIO = {
+  CONCLUIDO_FISICO_FINANCEIRO:{ rotulo:'Concluído físico e financeiro' },
+  CONCLUIDO_FISICO:           { rotulo:'Execução física concluída' },
+  EM_EXECUCAO:                { rotulo:'Em execução' },
+  NAO_INICIADO:               { rotulo:'Não iniciado' },
+  PREPARATORIAS:              { rotulo:'Atividades preparatórias' },
+  LICITACAO:                  { rotulo:'Licitação e contratação' },
+  PARALISADO:                 { rotulo:'Paralisado' },
+  CANCELADO:                  { rotulo:'Cancelado' },
+  NAO_DEFINIDO:                { rotulo:'Não definido' },
+  DESCONHECIDO:                { rotulo:'Estágio desconhecido' }
+};
+function grupoEstagio(txt){
+  const t=norm(txt);
+  if(!t) return 'DESCONHECIDO';
+  if(/CANCEL/.test(t)) return 'CANCELADO';
+  if(/PARALIS/.test(t)) return 'PARALISADO';
+  if(/FISIC.*FINAN|FINAN.*FISIC/.test(t) && /CONCLU/.test(t)) return 'CONCLUIDO_FISICO_FINANCEIRO';
+  if(/FISIC/.test(t) && /CONCLU/.test(t)) return 'CONCLUIDO_FISICO';
+  if(/CONCLU/.test(t)) return 'CONCLUIDO_FISICO_FINANCEIRO';
+  if(/EM EXECUCAO|EXECUCAO INICIADA/.test(t)) return 'EM_EXECUCAO';
+  if(/NAO INICIAD/.test(t)) return 'NAO_INICIADO';
+  if(/PREPARAT/.test(t)) return 'PREPARATORIAS';
+  if(/LICITA|CONTRATAD|CONVENIAD/.test(t)) return 'LICITACAO';
+  if(/NAO DEFINID/.test(t)) return 'NAO_DEFINIDO';
+  return 'DESCONHECIDO';
+}
+/* Parâmetros oficiais — os mesmos do sistema completo. Sem tela de
+   configuração aqui: a âncora temporal é sempre automática (relógio do
+   sistema) e o critério de execução é sempre Empenhado > 0. */
+const CFG_OFICIAL = {
+  ancora:'relogio', criterio:'empenho', baseValor:'positivo',
+  ano1a:0, ano1b:0, presenteIni:0, presenteFim:0,
+  histIni:2007, histFim:0, universo:'saneamento'
+};
+function anoRelogio(){ return new Date().getFullYear(); }
+function anoCorrenteEfetivo(){
+  const relogio=anoRelogio();
+  if(E.ultimoExec && relogio>E.ultimoExec) return E.ultimoExec;
+  return relogio;
+}
+function aplicarAncora(){
+  const c=anoCorrenteEfetivo();
+  E.cfg.ano1b=c; E.cfg.presenteIni=c; E.cfg.presenteFim=c;
+  E.cfg.ano1a=c-1; E.cfg.histFim=c-1;
+  E.cfg.histIni=(E.anos && E.anos.length)?E.anos[0]:2007;
+}
+function marcarPasso(){} /* sem stepper nesta versão */
+
+/* ------------------------------- Estado ----------------------------------- */
+
+const E = {
+  buffer:null, abas:[], abaEscolhida:null,
+  colunas:[], mapaColunas:null, anos:[], metricas:[], nMet:0, nAnos:0, idxAno:{}, idxMet:{},
+  dic:{}, linhas:[], mapps:[], indice:new Map(), serie:[], ultimoExec:null, faixaIndicador:null,
+  cfg:Object.assign({},CFG_OFICIAL),
+  diag:null,
+  exclusoes:new Set()
+};
+
+/* ----------------------------- Utilitários -------------------------------- */
+
+function $(s,r){ return (r||document).querySelector(s); }
+function norm(s){ return String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim(); }
+function limpo(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim(); }
+const fmtInt=new Intl.NumberFormat('pt-BR');
+const fmtRS=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+function n(v){ return fmtInt.format(v||0); }
+function rs(v){ return 'R$ '+fmtRS.format(v||0); }
+function dataBR(ms){
+  if(ms==null||isNaN(ms)) return '—';
+  const d=new Date(ms);
+  return String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0')+'/'+d.getUTCFullYear();
+}
+function hojeISO(){ return new Date().toISOString().slice(0,10); }
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+/* ------------------- Reconhecimento de colunas e leitura ------------------ */
+
+const ALVOS = {
+  secretaria:[/^SECRETARIA$/], orgao:[/^ORGAO$/,/^ORGÃO$/,/^ÓRGAO$/], mapp:[/^MAPP$/],
+  chave:[/^ORGAO MAPP$/,/^ÓRGÃO MAPP$/], programa:[/^PROGRAMA$/],
+  dataAprovacao:[/^DATA_?APROVACAO$/], anoAprovacao:[/^ANO_?APROVACAO$/],
+  estagio:[/^ESTAGIO_?EXECUCAO$/], acompanhamento:[/^ULTIMO_?ACOMPANHAMENTO$/],
+  qtdReceita:[/^QTD_?INSTRUMENTOS_?RECEITA$/], qtdDespesa:[/^QTD_?INSTRUMENTOS_?DESPESA$/],
+  fonte:[/^FONTE$/], semExec:[/^SEM EXEC/]
+};
+/* Aliases de métrica usados na extração direta do banco (colunas VLR_<METRICA>_<ANO>). */
+const ALIAS_METRICA_VLR = {PLANEJADO:'PROGRAMADO', EMPENHO:'EMPENHADO', PAGO:'PAGO', LIMITE:'LIMITE'};
+function nomeMetrica(bruta){ return bruta==='TOTAL EMP'?'Total Emp':(bruta[0]+bruta.slice(1).toLowerCase()); }
+function reconhecerColunas(cabecalho){
+  const mapa={}; const usadas=new Set();
+  cabecalho.forEach(function(h,i){
+    const t=norm(h);
+    Object.keys(ALVOS).forEach(function(k){
+      if(mapa[k]!=null) return;
+      if(ALVOS[k].some(function(rx){ return rx.test(t); })){ mapa[k]=i; usadas.add(i); }
+    });
+  });
+  const serie=[]; const anos=new Set(); const metricas=[]; const limitesSemAno=[];
+  cabecalho.forEach(function(h,i){
+    const t=norm(h);
+    let m=t.match(/^(PROGRAMADO|EMPENHADO|PAGO|LIMITE|TOTAL EMP)\s*(\d{2,4})$/);
+    let metBruta=m&&m[1];
+    if(!m){
+      m=t.match(/^VLR_(PLANEJADO|EMPENHO|PAGO|LIMITE|TOTAL[ _]?EMP)_(\d{2,4})$/);
+      if(m) metBruta=ALIAS_METRICA_VLR[m[1]]||m[1];
+    }
+    if(m){
+      let ano=parseInt(m[2],10); if(ano<100) ano=2000+ano;
+      const met=nomeMetrica(metBruta);
+      if(metricas.indexOf(met)<0) metricas.push(met);
+      anos.add(ano); serie.push({col:i,met:met,ano:ano}); usadas.add(i);
+    } else if(/^VLR_LIMITE$/.test(t)){
+      limitesSemAno.push(i);
+    }
+  });
+  limitesSemAno.forEach(function(i){
+    let melhor=null, melhorDist=Infinity;
+    serie.forEach(function(s){ const d=Math.abs(s.col-i); if(d<melhorDist){ melhorDist=d; melhor=s; } });
+    if(melhor){
+      if(metricas.indexOf('Limite')<0) metricas.push('Limite');
+      anos.add(melhor.ano); serie.push({col:i,met:'Limite',ano:melhor.ano}); usadas.add(i);
+    }
+  });
+  const ordemMet=['Programado','Empenhado','Pago','Limite','Total Emp'];
+  metricas.sort(function(a,b){ return ordemMet.indexOf(a)-ordemMet.indexOf(b); });
+  return { mapa:mapa, serie:serie, anos:Array.from(anos).sort(function(a,b){return a-b;}), metricas:metricas };
+}
+function paraNumero(v){
+  if(v==null||v==='') return 0;
+  if(typeof v==='number') return isFinite(v)?v:0;
+  let s=String(v).replace(/\s|R\$| /g,'');
+  if(s.indexOf(',')>=0 && s.indexOf('.')>=0) s=s.replace(/\./g,'').replace(',','.');
+  else if(s.indexOf(',')>=0) s=s.replace(',','.');
+  const x=parseFloat(s); return isFinite(x)?x:0;
+}
+function paraData(v){
+  if(v==null||v==='') return null;
+  if(v instanceof Date) return Date.UTC(v.getUTCFullYear(),v.getUTCMonth(),v.getUTCDate());
+  if(typeof v==='number'){
+    if(v>20000 && v<80000){ const d=new Date(Date.UTC(1899,11,30)+v*86400000); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()); }
+    return null;
+  }
+  const s=String(v).trim();
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return Date.UTC(+m[1],+m[2]-1,+m[3]);
+  m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);   if(m) return Date.UTC(+m[3],+m[2]-1,+m[1]);
+  const d=new Date(s); return isNaN(d.getTime())?null:Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());
+}
+function ehSubtotal(linha){
+  const t=norm(linha[0]);
+  if(!t) return false;
+  return /^(\d+[.)]?\s*)?(SUB\s?)?TOTAL( GERAL)?$/.test(t);
+}
+
+function montarBase(linhas,aba){
+  if(!linhas || linhas.length<2) throw new Error('A aba não contém linhas de dados.');
+  const cabecalho=linhas[0].map(function(c){ return limpo(c); });
+  const rec=reconhecerColunas(cabecalho);
+  if(rec.mapa.mapp==null && rec.mapa.chave==null) throw new Error('Não foram encontradas as colunas MAPP ou ÓRGÃO MAPP.');
+  E.colunas=cabecalho; E.mapaColunas=rec.mapa; E.serie=rec.serie;
+  E.anos=rec.anos; E.metricas=rec.metricas; E.nAnos=rec.anos.length; E.nMet=rec.metricas.length;
+  E.abaEscolhida=aba;
+
+  const iAno={}, iMet={};
+  E.anos.forEach(function(a,i){ iAno[a]=i; });
+  E.metricas.forEach(function(m,i){ iMet[m]=i; });
+  E.idxAno=iAno; E.idxMet=iMet;
+
+  const dic={secretaria:[],orgao:[],mapp:[],programa:[],estagio:[],fonte:[],chave:[]};
+  const rev={secretaria:new Map(),orgao:new Map(),mapp:new Map(),programa:new Map(),estagio:new Map(),fonte:new Map(),chave:new Map()};
+  function idx(campo,valor){
+    const v=limpo(valor);
+    let i=rev[campo].get(v);
+    if(i==null){ i=dic[campo].length; dic[campo].push(v); rev[campo].set(v,i); }
+    return i;
+  }
+
+  const M=rec.mapa, larg=E.nMet*E.nAnos;
+  const registros=[];
+  const descartarSub=true; /* sem opção de manter subtotal nesta versão */
+
+  for(let r=1;r<linhas.length;r++){
+    const L=linhas[r];
+    if(!L || L.length===0) continue;
+    if(ehSubtotal(L)){ if(descartarSub) continue; }
+    const mappTxt = M.mapp!=null ? limpo(L[M.mapp]) : '';
+    const orgTxt  = M.orgao!=null ? limpo(L[M.orgao]) : '';
+    let chaveTxt  = M.chave!=null ? limpo(L[M.chave]) : '';
+    if(!chaveTxt) chaveTxt = (orgTxt+' '+mappTxt).trim();
+    if(!chaveTxt) continue;
+    const v=new Float64Array(larg);
+    for(let s=0;s<rec.serie.length;s++){
+      const item=rec.serie[s];
+      const val=paraNumero(L[item.col]);
+      if(val) v[iMet[item.met]*E.nAnos + iAno[item.ano]] = val;
+    }
+    let semExec=null;
+    if(M.semExec!=null){
+      const cru=L[M.semExec];
+      semExec = (cru==null||cru==='') ? 0 : (paraNumero(cru)===1 || norm(cru)==='SIM' ? 1 : 0);
+    }
+    let dtAprov = M.dataAprovacao!=null ? paraData(L[M.dataAprovacao]) : null;
+    let anoAprov = M.anoAprovacao!=null ? parseInt(paraNumero(L[M.anoAprovacao]),10) : null;
+    if(!anoAprov && dtAprov!=null) anoAprov=new Date(dtAprov).getUTCFullYear();
+    if(anoAprov && !(anoAprov>1980 && anoAprov<2100)) anoAprov=null;
+    registros.push({
+      s:idx('secretaria',M.secretaria!=null?L[M.secretaria]:''),
+      o:idx('orgao',orgTxt), m:idx('mapp',mappTxt), k:idx('chave',chaveTxt),
+      p:idx('programa',M.programa!=null?L[M.programa]:''),
+      e:idx('estagio',M.estagio!=null?L[M.estagio]:''),
+      f:idx('fonte',M.fonte!=null?L[M.fonte]:''),
+      dtA:dtAprov, ano:anoAprov,
+      dtAc:M.acompanhamento!=null?paraData(L[M.acompanhamento]):null,
+      qr:M.qtdReceita!=null?paraNumero(L[M.qtdReceita]):null,
+      qd:M.qtdDespesa!=null?paraNumero(L[M.qtdDespesa]):null,
+      se:semExec, v:v
+    });
+  }
+  E.dic=dic; E.linhas=registros;
+  if(!registros.length) throw new Error('Nenhuma linha de dados aproveitável foi encontrada.');
+  if(E.anos.length){
+    E.ultimoExec=maiorAnoComValor('Empenhado')||E.anos[E.anos.length-1];
+    aplicarAncora();
+  }
+  E.faixaIndicador=null;
+  if(M.semExec!=null){
+    const cab=E.colunas[M.semExec]||'';
+    const f=cab.match(/(\d{2,4})\s*[-–a]\s*(\d{2,4})/);
+    if(f){
+      let i=parseInt(f[1],10), j=parseInt(f[2],10);
+      if(i<100) i=2000+i; if(j<100) j=2000+j;
+      E.faixaIndicador=[i,j];
+    }
+  }
+}
+function maiorAnoComValor(metrica){
+  const im=E.idxMet[metrica]; if(im==null) return null;
+  let ultimo=null;
+  for(let a=0;a<E.nAnos;a++){
+    let soma=0;
+    for(let i=0;i<E.linhas.length;i++) soma+=E.linhas[i].v[im*E.nAnos+a];
+    if(soma!==0) ultimo=E.anos[a];
+  }
+  return ultimo;
+}
+
+/* --------------------------- Consolidação por MAPP ------------------------ */
+
+function consolidar(){
+  const larg=E.nMet*E.nAnos;
+  const porChave=new Map();
+  for(let i=0;i<E.linhas.length;i++){
+    const L=E.linhas[i];
+    let m=porChave.get(L.k);
+    if(!m){
+      m={ chave:E.dic.chave[L.k], k:L.k, linhas:[], v:new Float64Array(larg), vp:new Float64Array(larg),
+          fontes:new Set(), porFonte:new Map(), secretarias:new Map(), orgaos:new Map(), programas:new Map(), estagios:new Map(),
+          dtAprov:null, dtAcomp:null, anos:new Set(), qr:0, qd:0 };
+      porChave.set(L.k,m);
+    }
+    m.linhas.push(i);
+    let vf=m.porFonte.get(L.f);
+    if(!vf){ vf=new Float64Array(larg); m.porFonte.set(L.f,vf); }
+    for(let j=0;j<larg;j++){
+      const x=L.v[j];
+      if(x){ m.v[j]+=x; if(x>0) m.vp[j]+=x; vf[j]+=x; }
+    }
+    m.fontes.add(L.f);
+    contar(m.secretarias,L.s); contar(m.orgaos,L.o); contar(m.programas,L.p); contar(m.estagios,L.e);
+    if(L.dtA!=null && (m.dtAprov==null||L.dtA<m.dtAprov)) m.dtAprov=L.dtA;
+    if(L.ano) m.anos.add(L.ano);
+    if(L.dtAc!=null && (m.dtAcomp==null||L.dtAc>m.dtAcomp)) m.dtAcomp=L.dtAc;
+    if(L.qr) m.qr=Math.max(m.qr,L.qr);
+    if(L.qd) m.qd=Math.max(m.qd,L.qd);
+    if(L.m!=null) m.mappIdx=L.m;
+  }
+  function contar(mapa,chave){ mapa.set(chave,(mapa.get(chave)||0)+1); }
+  function moda(mapa,dic){
+    let melhor=null,q=-1;
+    mapa.forEach(function(v,k){ if(v>q){q=v;melhor=k;} });
+    return melhor==null?'':dic[melhor];
+  }
+  function somaMetricaEmArray(arr,metrica){
+    const im=E.idxMet[metrica]; if(im==null) return 0;
+    let t=0; for(let a=0;a<E.nAnos;a++) t+=arr[im*E.nAnos+a];
+    return t;
+  }
+
+  const lista=[];
+  porChave.forEach(function(m){
+    const mappTxt=E.dic.mapp[m.mappIdx]||m.chave;
+    const corte=mappTxt.indexOf(' - ');
+    const codigo = corte>0 ? mappTxt.slice(0,corte).trim() : mappTxt;
+    const titulo = corte>0 ? mappTxt.slice(corte+3).trim() : '';
+    const estagioRaw=moda(m.estagios,E.dic.estagio);
+    const anos=Array.from(m.anos).sort();
+    const porFonte=[];
+    m.porFonte.forEach(function(arr,fIdx){
+      porFonte.push({
+        fonte: E.dic.fonte[fIdx]||'(sem fonte)', serie: arr,
+        programado: somaMetricaEmArray(arr,'Programado'),
+        empenhado: somaMetricaEmArray(arr,'Empenhado'),
+        pago: somaMetricaEmArray(arr,'Pago')
+      });
+    });
+    porFonte.sort(function(a,b){ return b.programado-a.programado; });
+    lista.push({
+      chave:m.chave, codigo:codigo, titulo:titulo, mappTxt:mappTxt,
+      orgao:moda(m.orgaos,E.dic.orgao), secretaria:moda(m.secretarias,E.dic.secretaria),
+      programa:moda(m.programas,E.dic.programa),
+      estagioRaw:estagioRaw, estagio:grupoEstagio(estagioRaw),
+      dtAprov:m.dtAprov, ano: anos.length?anos[0]:(m.dtAprov!=null?new Date(m.dtAprov).getUTCFullYear():null),
+      dtAcomp:m.dtAcomp, nLinhas:m.linhas.length,
+      fontes:m.fontes.size, porFonte:porFonte, qr:m.qr, qd:m.qd,
+      v:m.v, vp:m.vp
+    });
+  });
+  lista.sort(function(a,b){ return a.chave<b.chave?-1:1; });
+  E.mapps=lista;
+  E.indice=new Map(); lista.forEach(function(m,i){ E.indice.set(m.chave,i); });
+}
+
+function soma(m,metrica,ini,fim,positivo){
+  const im=E.idxMet[metrica]; if(im==null) return 0;
+  const fonte = positivo ? m.vp : m.v;
+  let t=0;
+  for(let i=0;i<E.nAnos;i++){
+    const ano=E.anos[i];
+    if((ini==null||ano>=ini) && (fim==null||ano<=fim)) t+=fonte[im*E.nAnos+i];
+  }
+  return t;
+}
+function somaProgramado(lista){ let t=0; for(let i=0;i<lista.length;i++) t+=lista[i].programado; return t; }
+function somaEmpenhado(lista){ let t=0; for(let i=0;i<lista.length;i++) t+=lista[i].empenhado; return t; }
+/* Fonte é N-para-1 com o MAPP: "tem ao menos uma linha com esta fonte", não
+   "é desta fonte" — um MAPP típico tem várias. */
+function casaFonte(selecionadas,m){ return !selecionadas.length || m.porFonte.some(function(pf){ return selecionadas.indexOf(pf.fonte)>=0; }); }
+
+/* -------------------------------- Motor de regras -------------------------- */
+
+function executou(m,ini,fim){
+  const cfg=E.cfg, pos=cfg.baseValor==='positivo';
+  const emp=soma(m,'Empenhado',ini,fim,pos), pg=soma(m,'Pago',ini,fim,pos);
+  return { exec: emp>0, emp:emp, pago:pg };
+}
+function noUniverso(m){
+  return m.estagio!=='CONCLUIDO_FISICO_FINANCEIRO' && m.estagio!=='CANCELADO';
+}
+function avaliar(m){
+  const cfg=E.cfg;
+  const total=executou(m,null,null);
+  const historia=executou(m,cfg.histIni,cfg.histFim);
+  const presente=executou(m,cfg.presenteIni,cfg.presenteFim);
+  const semAno=!m.ano;
+  const estagioDesconhecido=(m.estagio==='DESCONHECIDO');
+
+  const c1a=(m.ano!=null && m.ano<=cfg.ano1a) && !total.exec;
+  const c1b=(m.ano===cfg.ano1b) && !total.exec;
+  const c12=historia.exec && !presente.exec;
+  const c13=(m.estagio==='CONCLUIDO_FISICO');
+  const regras=[]; if(c1a) regras.push('1a'); if(c1b) regras.push('1b'); if(c12) regras.push('1.2'); if(c13) regras.push('1.3');
+
+  const insuficiente=semAno||estagioDesconhecido;
+  let classificacao;
+  if(insuficiente) classificacao='DADOS INSUFICIENTES';
+  else if(regras.length===0) classificacao='SEM REGRA';
+  else if(regras.length===1) classificacao='REGRA ÚNICA';
+  else classificacao='MÚLTIPLAS REGRAS';
+
+  return { regras:regras, classificacao:classificacao, insuficiente:insuficiente };
+}
+function diagnosticar(){
+  const cfg=E.cfg;
+  const res={ noUniverso:[] };
+  for(let i=0;i<E.mapps.length;i++){
+    const m=E.mapps[i];
+    m.programado=soma(m,'Programado',null,null,false);
+    m.empenhado =soma(m,'Empenhado',null,null,false);
+    m.pago      =soma(m,'Pago',null,null,false);
+    const d=avaliar(m);
+    m.d=d;
+    if(!noUniverso(m)) continue;
+    res.noUniverso.push(m);
+  }
+  E.diag=res;
+}
+function conjuntoEnquadrado(){ return E.diag.noUniverso.filter(function(m){ return m.d.regras.length>0; }); }
+function mantidos(){ return conjuntoEnquadrado().filter(function(m){ return !E.exclusoes.has(m.chave); }); }
+function ocultados(){ return conjuntoEnquadrado().filter(function(m){ return E.exclusoes.has(m.chave); }); }
+
+/* ------------------------------ Importação -------------------------------- */
+
+function lerArquivo(file){
+  E.arquivo=file;
+  const leitor=new FileReader();
+  $('#status').textContent='Lendo '+file.name+'…';
+  leitor.onload=function(){
+    E.buffer=leitor.result;
+    try{
+      const wb=XLSX.read(E.buffer,{type:'array',bookSheets:true});
+      E.abas=wb.SheetNames.slice();
+      preencherAbas();
+    }catch(err){
+      $('#status').textContent='Não foi possível ler o arquivo: '+err.message;
+    }
+  };
+  leitor.onerror=function(){ $('#status').textContent='Falha ao ler o arquivo.'; };
+  leitor.readAsArrayBuffer(file);
+}
+function preencherAbas(){
+  const sel=$('#selAba');
+  sel.innerHTML=E.abas.map(function(a){ return '<option value="'+esc(a)+'">'+esc(a)+'</option>'; }).join('');
+  const preferida=E.abas.find(function(a){ return /consulta/i.test(a); }) || E.abas[0];
+  sel.value=preferida;
+  if(E.abas.length===1){
+    $('#painelAba').classList.add('oculto');
+    processarImportacao();
+  } else {
+    $('#painelAba').classList.remove('oculto');
+    $('#status').textContent='Pasta de trabalho com '+E.abas.length+' abas. Escolha a aba de dados.';
+  }
+}
+async function processarImportacao(){
+  const aba=$('#selAba').value;
+  $('#status').textContent='Lendo a aba "'+aba+'"…';
+  await new Promise(function(r){ setTimeout(r,10); }); /* deixa o texto acima pintar antes do trabalho síncrono */
+  let linhas;
+  try{
+    const wb=XLSX.read(E.buffer,{type:'array',cellDates:true,dense:true,sheets:[aba]});
+    const ws=wb.Sheets[aba];
+    if(!ws) throw new Error('Aba não encontrada.');
+    linhas=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null,blankrows:false});
+  }catch(err){ $('#status').textContent='Falha na leitura: '+err.message; return; }
+  try{
+    montarBase(linhas,aba);
+    consolidar();
+    diagnosticar();
+  }catch(err){ $('#status').textContent='Falha: '+err.message; return; }
+  E.exclusoes=new Set();
+  $('#blocoFiltro').classList.remove('oculto');
+  $('#blocoSaneada').classList.remove('oculto');
+  $('#blocoExcluidos').classList.remove('oculto');
+  $('#btnExportar').disabled=false;
+  renderGrade();
+  $('#status').textContent='Base importada: '+n(E.linhas.length)+' linhas, '+n(E.mapps.length)+' MAPPs consolidados, '+
+    n(conjuntoEnquadrado().length)+' enquadrados em ao menos uma regra.';
+}
+
+/* -------------------------------- Renderização ----------------------------- */
+
+function badgeFontes(m){
+  if(m.fontes<=1) return '';
+  const texto=m.porFonte.map(function(pf){ return pf.fonte+': '+rs(pf.programado)+' programado, '+rs(pf.empenhado)+' empenhado'; }).join('\n');
+  return ' <span class="etq" title="'+esc(texto)+'">'+m.fontes+' fontes</span>';
+}
+function linhaGrade(m,restaurar){
+  const regras=m.d.regras.map(function(r){
+    return '<span class="etq '+REGRAS[r].classe+'" title="'+esc(REGRAS[r].descricao)+'">'+REGRAS[r].nome+'</span>';
+  }).join(' ');
+  return '<tr><td class="mono">'+esc(m.codigo)+'</td>'+
+    '<td class="titulo">'+esc(m.titulo||m.mappTxt)+badgeFontes(m)+'</td>'+
+    '<td>'+esc(m.orgao)+'</td>'+
+    '<td>'+regras+'</td>'+
+    '<td class="num">'+rs(m.programado)+'</td>'+
+    '<td class="num">'+rs(m.empenhado)+'</td>'+
+    '<td><button class="btn pequeno'+(restaurar?'':' risco')+'" data-chave="'+esc(m.chave)+'">'+(restaurar?'Restaurar':'Remover')+'</button></td></tr>';
+}
+function renderGrade(){
+  const fontesSet=new Set();
+  E.mapps.forEach(function(m){ m.porFonte.forEach(function(pf){ fontesSet.add(pf.fonte); }); });
+  const selFonte=$('#fFonte');
+  if(selFonte.options.length!==fontesSet.size){
+    const marcadas=new Set(Array.from(selFonte.selectedOptions).map(function(o){ return o.value; }));
+    selFonte.innerHTML=Array.from(fontesSet).sort().map(function(v){
+      return '<option value="'+esc(v)+'"'+(marcadas.has(v)?' selected':'')+'>'+esc(v)+'</option>';
+    }).join('');
+  }
+  const fontesEscolhidas=Array.from(selFonte.selectedOptions).map(function(o){ return o.value; });
+
+  const base=conjuntoEnquadrado().filter(function(m){ return casaFonte(fontesEscolhidas,m); });
+  const man=base.filter(function(m){ return !E.exclusoes.has(m.chave); });
+  const exc=base.filter(function(m){ return E.exclusoes.has(m.chave); });
+  E.ultimaGradeMan=man; E.ultimaGradeExc=exc;
+
+  $('#legendaSaneada').textContent=n(man.length)+' MAPP(s)'+(fontesEscolhidas.length?' · filtrado por fonte':'');
+  $('#legendaExcluidos').textContent=n(exc.length)+' MAPP(s)';
+
+  $('#tabManTbody').innerHTML = man.length
+    ? man.map(function(m){ return linhaGrade(m,false); }).join('')
+    : '<tr><td colspan="7" class="vazio">Nenhum MAPP enquadrado com os filtros atuais.</td></tr>';
+  $('#tabManTfoot').innerHTML = man.length
+    ? '<tr><td colspan="4">Total ('+n(man.length)+' MAPPs)</td><td class="num">'+rs(somaProgramado(man))+
+      '</td><td class="num">'+rs(somaEmpenhado(man))+'</td><td></td></tr>'
+    : '';
+  $('#tabExcTbody').innerHTML = exc.length
+    ? exc.map(function(m){ return linhaGrade(m,true); }).join('')
+    : '<tr><td colspan="7" class="vazio">Nenhum MAPP removido.</td></tr>';
+}
+function alternarExclusao(chave){
+  if(E.exclusoes.has(chave)) E.exclusoes.delete(chave); else E.exclusoes.add(chave);
+  renderGrade();
+}
+
+/* -------------------------------- Exportação ------------------------------- */
+
+function linhasSimplificadas(lista){
+  return lista.map(function(m){
+    return {
+      'MAPP':m.codigo, 'TÍTULO':m.titulo, 'ÓRGÃO':m.orgao, 'SECRETARIA':m.secretaria,
+      'CHAVE (ÓRGÃO MAPP)':m.chave, 'DATA APROVAÇÃO':dataBR(m.dtAprov),
+      'ESTÁGIO':m.estagioRaw, 'REGRAS ATENDIDAS':m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + '),
+      'PROGRAMADO':m.programado, 'EMPENHADO':m.empenhado, 'PAGO':m.pago, 'FONTES':m.fontes
+    };
+  });
+}
+function linhasPorFonte(lista){
+  const linhas=[];
+  lista.forEach(function(m){
+    if(m.fontes<=1) return;
+    m.porFonte.forEach(function(pf){
+      linhas.push({ 'MAPP':m.codigo, 'TÍTULO':m.titulo, 'ÓRGÃO':m.orgao, 'FONTE':pf.fonte,
+        'PROGRAMADO':pf.programado, 'EMPENHADO':pf.empenhado, 'PAGO':pf.pago });
+    });
+  });
+  return linhas;
+}
+function exportarBaseSaneada(){
+  const man=E.ultimaGradeMan||[], exc=E.ultimaGradeExc||[];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,
+    XLSX.utils.json_to_sheet(man.length?linhasSimplificadas(man):[{'MAPP':'(nenhum MAPP mantido)'}]),
+    'BASE SANEADA');
+  XLSX.utils.book_append_sheet(wb,
+    XLSX.utils.json_to_sheet(exc.length?linhasSimplificadas(exc):[{'MAPP':'(nenhum MAPP excluído)'}]),
+    'EXCLUIDOS');
+  const porFonte=linhasPorFonte(man.concat(exc));
+  if(porFonte.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(porFonte),'POR FONTE');
+  XLSX.writeFile(wb,'base_saneada_'+hojeISO()+'.xlsx');
+}
+
+/* --------------------------------- Eventos --------------------------------- */
+
+function iniciar(){
+  $('#btnTema').addEventListener('click',function(){
+    const atual=document.documentElement.getAttribute('data-tema');
+    document.documentElement.setAttribute('data-tema',atual==='escuro'?'claro':'escuro');
+  });
+  $('#btnSelecionar').addEventListener('click',function(){ $('#arquivo').click(); });
+  $('#arquivo').addEventListener('change',function(ev){ if(ev.target.files[0]) lerArquivo(ev.target.files[0]); });
+  const area=$('#areaSolta');
+  area.addEventListener('dragover',function(ev){ ev.preventDefault(); area.classList.add('pairando'); });
+  area.addEventListener('dragleave',function(){ area.classList.remove('pairando'); });
+  area.addEventListener('drop',function(ev){
+    ev.preventDefault(); area.classList.remove('pairando');
+    if(ev.dataTransfer.files[0]) lerArquivo(ev.dataTransfer.files[0]);
+  });
+  $('#btnImportar').addEventListener('click',processarImportacao);
+  $('#fFonte').addEventListener('change',renderGrade);
+  $('#btnExportar').addEventListener('click',exportarBaseSaneada);
+  document.body.addEventListener('click',function(ev){
+    const b=ev.target.closest('button[data-chave]');
+    if(b) alternarExclusao(b.getAttribute('data-chave'));
+  });
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciar); else iniciar();
+</script>
+</body>
+</html>
