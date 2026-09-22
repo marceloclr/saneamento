@@ -919,7 +919,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
       <button class="btn" id="btnRecalcFase2" data-tip="Recalcula os indícios da segunda fase com os limiares informados.">Recalcular indícios</button>
       <button class="btn" id="btnExportContinuidade" data-tip="Exporta os candidatos a despesa de continuidade.">Exportar</button>
     </div>
-    <div class="tabela-caixa" style="max-height:38vh"><table id="tabContinuidade"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Quantidade de exercícios com empenho positivo em toda a série." data-tip-t="Anos com empenho">Anos com empenho</th><th class="num" data-tip="Maior número de exercícios consecutivos com empenho — indício de despesa de natureza continuada." data-tip-t="Sequência máxima">Sequência máxima</th><th class="num" data-tip="Soma dos empenhos de todos os exercícios do MAPP." data-tip-t="Empenhado total">Empenhado total</th><th class="num" data-tip="Valor de QTD_INSTRUMENTOS_DESPESA registrado para o MAPP." data-tip-t="Instrumentos de despesa">Instrumentos de despesa</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <div class="tabela-caixa" style="max-height:38vh"><table id="tabContinuidade"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Quantidade de exercícios com empenho positivo em toda a série, seguida da maior sequência de exercícios consecutivos com empenho — indício de despesa de natureza continuada." data-tip-t="Anos com empenho / Sequência máxima">Anos com empenho/Sequência máxima</th><th class="num" data-tip="Soma dos empenhos de todos os exercícios do MAPP." data-tip-t="Empenhado total">Empenhado total</th><th class="num" data-tip="Valor de QTD_INSTRUMENTOS_DESPESA registrado para o MAPP." data-tip-t="Quantidade de contratos">Quantidade de contratos</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
 </section>
 
@@ -929,7 +929,6 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
     <header><h2>Exportações</h2><span class="legenda">Planilhas .xlsx geradas a partir do estado corrente da análise.</span></header>
     <div class="cartoes" id="cartoesExport"></div>
     <div class="barra-acoes" style="margin-top:14px">
-      <button class="btn principal" id="btnExportTudo" data-tip="Gera uma pasta de trabalho única contendo todas as relações em abas separadas.">Gerar pasta de trabalho completa</button>
       <button class="btn" id="btnExportCSV" data-tip="Exporta a base consolidada por MAPP em formato CSV, separado por ponto e vírgula.">Base consolidada em CSV</button>
     </div>
   </div>
@@ -3477,11 +3476,11 @@ function renderFase2(){
   $('#tabContinuidade').querySelector('tbody').innerHTML = f.continuidade.length ? f.continuidade.slice(0,500).map(function(c){
     const m=c.m;
     return '<tr class="linha-clicavel" data-chave="'+esc(m.chave)+'"><td class="mono">'+esc(m.codigo)+'</td><td>'+esc(m.orgao)+
-      '</td><td class="titulo-mapp">'+esc(m.titulo)+'</td><td class="num">'+n(c.anos)+'</td><td class="num">'+n(c.seq)+
+      '</td><td class="titulo-mapp">'+esc(m.titulo)+'</td><td class="num">'+n(c.anos)+'/'+n(c.seq)+
       '</td><td class="num">'+rsCurto(m.empenhado)+'</td><td class="num">'+n(m.qd)+'</td></tr>';
-  }).join('') : '<tr><td colspan="7" class="vazio">Nenhum MAPP atinge o limiar de exercícios consecutivos informado.</td></tr>';
+  }).join('') : '<tr><td colspan="6" class="vazio">Nenhum MAPP atinge o limiar de exercícios consecutivos informado.</td></tr>';
   $('#tabContinuidade').querySelector('tfoot').innerHTML = f.continuidade.length
-    ? '<tr><td colspan="5">Total ('+n(f.continuidade.length)+' MAPPs)</td><td class="num">'+rsCurto(empenhadoContinuidade)+'</td><td></td></tr>'
+    ? '<tr><td colspan="4">Total ('+n(f.continuidade.length)+' MAPPs)</td><td class="num">'+rsCurto(empenhadoContinuidade)+'</td><td></td></tr>'
     : '';
 
   const semExecProg=f.programacao.filter(function(p){ return p.indicios.indexOf('Programação sem execução')>=0; });
@@ -4439,7 +4438,7 @@ function conjuntos(){
     { id:'contin', nome:'Continuidade', aba:'CONTINUIDADE', dica:'Indícios de despesa de natureza continuada.',
       dados:function(){ return f.continuidade.map(function(c){ return {
         'MAPP':c.m.codigo,'ÓRGÃO':c.m.orgao,'TÍTULO':c.m.titulo,'ANOS COM EMPENHO':c.anos,
-        'SEQUÊNCIA MÁXIMA':c.seq,'EMPENHADO TOTAL':c.m.empenhado,'INSTRUMENTOS DE DESPESA':c.m.qd }; }); } },
+        'SEQUÊNCIA MÁXIMA':c.seq,'EMPENHADO TOTAL':c.m.empenhado,'QUANTIDADE DE CONTRATOS':c.m.qd }; }); } },
     { id:'progr', nome:'Programação', aba:'PROGRAMACAO', dica:'Concentração, programação sem execução e ausência de programação futura.',
       dados:function(){ return f.programacao.map(function(p){ return {
         'MAPP':p.m.codigo,'ÓRGÃO':p.m.orgao,'TÍTULO':p.m.titulo,['PROGRAMADO '+E.cfg.presenteFim]:p.progAtual,
@@ -4487,27 +4486,6 @@ async function exportar(id){
     XLSX.writeFile(wb,'saneamento_'+c.id+'_'+hojeISO()+'.xlsx');
     recado('Arquivo gerado.');
   }catch(err){ recado('Falha ao exportar: '+err.message); }
-  veuCarga(false);
-}
-
-async function exportarTudo(){
-  const r=await dialogo({titulo:'Pasta de trabalho completa',
-    texto:'Serão geradas todas as relações em abas separadas.',
-    corpo:'<label class="chk"><input type="checkbox" data-campo="incluirOriginal" value="sim"> Incluir a base original ('+n(E.linhas.length)+' linhas — o arquivo fica bastante extenso)</label>',
-    confirmar:'Gerar pasta de trabalho'});
-  if(!r) return;
-  await veuCarga('Compondo a pasta de trabalho…');
-  try{
-    const wb=XLSX.utils.book_new();
-    conjuntos().forEach(function(c){
-      if(c.aoa && !(r.incluirOriginal==='sim')) return;
-      const ws = c.aoa ? XLSX.utils.aoa_to_sheet(c.dados()) : XLSX.utils.json_to_sheet(c.dados());
-      XLSX.utils.book_append_sheet(wb,ws,c.aba.slice(0,31));
-    });
-    XLSX.writeFile(wb,'saneamento_mapps_completo_'+hojeISO()+'.xlsx');
-    marcarPasso(9);
-    recado('Pasta de trabalho gerada.');
-  }catch(err){ recado('Falha: '+err.message); }
   veuCarga(false);
 }
 
@@ -4766,7 +4744,6 @@ function ligarEventos(){
   $('#cartoesExport').addEventListener('click',function(ev){
     const c=ev.target.closest('[data-export]'); if(c) exportar(c.getAttribute('data-export'));
   });
-  $('#btnExportTudo').addEventListener('click',exportarTudo);
   $('#btnExportCSV').addEventListener('click',exportarCSV);
   $('#btnExportAuditoria').addEventListener('click',function(){ exportar('auditoria'); });
 
@@ -5034,7 +5011,7 @@ const GUIA = [
     conferir:['Candidatos à migração de investimento para custeio finalístico.'],
     cautela:['São indícios da segunda fase, sem qualquer efeito automático.'] },
   { t:'Exportar relações e a auditoria', cor:'var(--grafite)', ir:['auditoria'], onde:'Auditoria e exportações',
-    fazer:['Exportar relações específicas ou acionar **Gerar pasta de trabalho completa**.','Acionar **Exportar auditoria** para o registro integral.'],
+    fazer:['Exportar as relações específicas necessárias, uma a uma.','Acionar **Exportar auditoria** para o registro integral.'],
     conferir:['MAPP, regra, campo, valor anterior, valor novo, responsável, data e justificativa em cada lançamento.'],
     cautela:['A base original exportada é reconstruída a partir dos dicionários, sem alteração.'] },
   { t:'Guardar e retomar a sessão', cor:'var(--musgo)', ir:null, onde:'Botões Guardar sessão e Retomar sessão, no alto',
