@@ -1718,6 +1718,11 @@ const ALVOS = {
   semExec:[/^SEM EXEC/]
 };
 
+/* Aliases de métrica usados na extração direta do banco (colunas VLR_<METRICA>_<ANO>),
+   que chegam com nomes diferentes dos usados na planilha de referência. */
+const ALIAS_METRICA_VLR = {PLANEJADO:'PROGRAMADO', EMPENHO:'EMPENHADO', PAGO:'PAGO', LIMITE:'LIMITE'};
+function nomeMetrica(bruta){ return bruta==='TOTAL EMP'?'Total Emp':(bruta[0]+bruta.slice(1).toLowerCase()); }
+
 function reconhecerColunas(cabecalho){
   const mapa={}; const usadas=new Set();
   cabecalho.forEach(function(h,i){
@@ -1727,15 +1732,32 @@ function reconhecerColunas(cabecalho){
       if(ALVOS[k].some(function(rx){ return rx.test(t); })){ mapa[k]=i; usadas.add(i); }
     });
   });
-  const serie=[]; const anos=new Set(); const metricas=[];
+  const serie=[]; const anos=new Set(); const metricas=[]; const limitesSemAno=[];
   cabecalho.forEach(function(h,i){
     const t=norm(h);
-    const m=t.match(/^(PROGRAMADO|EMPENHADO|PAGO|LIMITE|TOTAL EMP)\s*(\d{2,4})$/);
+    let m=t.match(/^(PROGRAMADO|EMPENHADO|PAGO|LIMITE|TOTAL EMP)\s*(\d{2,4})$/);
+    let metBruta=m&&m[1];
+    if(!m){
+      m=t.match(/^VLR_(PLANEJADO|EMPENHO|PAGO|LIMITE|TOTAL[ _]?EMP)_(\d{2,4})$/);
+      if(m) metBruta=ALIAS_METRICA_VLR[m[1]]||m[1];
+    }
     if(m){
       let ano=parseInt(m[2],10); if(ano<100) ano=2000+ano;
-      const met=m[1]==='TOTAL EMP'?'Total Emp':(m[1][0]+m[1].slice(1).toLowerCase());
+      const met=nomeMetrica(metBruta);
       if(metricas.indexOf(met)<0) metricas.push(met);
       anos.add(ano); serie.push({col:i,met:met,ano:ano}); usadas.add(i);
+    } else if(/^VLR_LIMITE$/.test(t)){
+      limitesSemAno.push(i);
+    }
+  });
+  /* “VLR_LIMITE” sai sem ano na extração — herda o ano da coluna de série mais
+     próxima (o limite orçamentário só existe para o exercício vigente). */
+  limitesSemAno.forEach(function(i){
+    let melhor=null, melhorDist=Infinity;
+    serie.forEach(function(s){ const d=Math.abs(s.col-i); if(d<melhorDist){ melhorDist=d; melhor=s; } });
+    if(melhor){
+      if(metricas.indexOf('Limite')<0) metricas.push('Limite');
+      anos.add(melhor.ano); serie.push({col:i,met:'Limite',ano:melhor.ano}); usadas.add(i);
     }
   });
   const ordemMet=['Programado','Empenhado','Pago','Limite','Total Emp'];
