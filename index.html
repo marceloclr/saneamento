@@ -2257,7 +2257,6 @@ function diagnosticar(){
     m.pagoPres   = soma(m,'Pago',cfg.presenteIni,cfg.presenteFim,pos);
     m.empNeg     = soma(m,'Empenhado',null,null,true) - m.empenhado;
     m.progFuturo = soma(m,'Programado',cfg.presenteFim+1,null,false);
-    res.totais.programado+=m.programado; res.totais.empenhado+=m.empenhado; res.totais.pago+=m.pago;
 
     const dentro=noUniverso(m);
     m.dentroUniverso=dentro;
@@ -2268,6 +2267,7 @@ function diagnosticar(){
     if(!dentro){ res.forade.push(m); continue; }
     res.noUniverso.push(m);
     res.totais.mapps++;
+    res.totais.programado+=m.programado; res.totais.empenhado+=m.empenhado; res.totais.pago+=m.pago;
     d.regras.forEach(function(r){ res.regras[r].push(m); });
     res.classes[d.classificacao].push(m);
     if(m.estagio==='CANCELADO') res.cancelados.push(m);
