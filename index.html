@@ -104,32 +104,10 @@ main{padding:20px; max-width:1560px; margin:0 auto}
   color:var(--tinta-3); padding:6px 15px; border-radius:99px; cursor:pointer; white-space:nowrap;
 }
 .seg:hover{background:var(--papel-2); color:var(--tinta)}
-.seg .ponto{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:7px;vertical-align:1px;background:var(--cor,var(--acento));opacity:.6}
-.seg[aria-current="true"]{background:var(--cor,var(--acento)); color:var(--carta); font-weight:600}
-.seg[aria-current="true"] .ponto{background:var(--carta);opacity:.85}
-html[data-tema="escuro"] .seg[aria-current="true"]{color:#14171b}
-html[data-tema="escuro"] .seg[aria-current="true"] .ponto{background:#14171b}
+.seg[aria-selected="true"]{background:var(--acento); color:var(--carta); font-weight:600}
+html[data-tema="escuro"] .seg[aria-selected="true"]{color:#14171b}
 .seg:focus-visible{outline:2px solid var(--ardosia); outline-offset:1px}
-.segmento{scroll-margin-top:calc(var(--alto-topo,96px) + 64px)}
-/* Índice fixo do Panorama: acompanha a rolagem logo abaixo do cabeçalho. */
-.indice{position:sticky; top:calc(var(--alto-topo,96px) + 10px); z-index:30}
-.marco-segmento{display:flex;align-items:center;gap:12px;margin:30px 0 12px;
-  font-family:"IBM Plex Serif",Georgia,serif;font-size:13.5px;font-weight:600;color:var(--acento)}
-.marco-segmento::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--acento)}
-.marco-segmento::after{content:"";flex:1;height:1px;background:var(--acento-medio)}
-#seg-importacao .marco-segmento{margin-top:6px}
-/* Faixa-resumo: números-chave do Panorama, cada um com sua cor. */
-.resumo-panorama{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;
-  background:var(--linha);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
-  overflow:hidden;margin-bottom:12px}
-.resumo-item{background:var(--carta);padding:10px 15px 11px;border-top:2px solid var(--cor,var(--neutro))}
-.resumo-item[data-ir]{cursor:pointer}
-.resumo-item[data-ir]:hover{background:var(--carta-2)}
-.resumo-item[data-ir]:focus-visible{outline:2px solid var(--ardosia);outline-offset:-2px}
-.resumo-item .r-rot{font-size:11.5px;color:var(--tinta-3)}
-.resumo-item .r-val{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:500;letter-spacing:-.02em;color:var(--cor,var(--tinta));margin-top:1px}
-.resumo-item .r-nota{font-size:11px;color:var(--tinta-3)}
-.resumo-item.vazio{grid-column:1/-1;border-top-color:var(--linha-forte);color:var(--tinta-3);font-size:12.5px;padding:12px 15px}
+.segmento{animation:surgir .16s ease-out}
 tfoot td{position:sticky;bottom:0;background:var(--papel-2);font-weight:600;border-top:1px solid var(--linha-forte)}
 .campo select:disabled,.campo input:disabled{opacity:.62;cursor:not-allowed}
 .gaveta.estreita{width:min(660px,96vw)}
@@ -262,10 +240,10 @@ html[data-tema="escuro"] .etq.solida{color:#14171b}
 .etq.sobre{--cor:var(--ameixa)} .etq.cancel{--cor:var(--neutro)}
 .etq.paral{--cor:var(--ocre)} .etq.insuf{--cor:var(--latao)}
 .etq.sem{--cor:var(--tinta-3)}
-.etq.removido{--cor:var(--sepia)}
-tr.removida{opacity:.52}
-tr.removida td{text-decoration:line-through;text-decoration-color:var(--linha-forte)}
-tr.removida td:last-child{text-decoration:none}
+.etq.excluido{--cor:var(--sepia)}
+tr.ocultada{opacity:.52}
+tr.ocultada td{text-decoration:line-through;text-decoration-color:var(--linha-forte)}
+tr.ocultada td:last-child{text-decoration:none}
 .etq.alta{--cor:var(--ok)} .etq.media{--cor:var(--alerta)} .etq.baixa{--cor:var(--risco)}
 
 /* ---------- Tabelas ---------- */
@@ -386,6 +364,116 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
 .carregando-veu.visivel{display:grid}
 .roda{width:26px;height:26px;border:2px solid var(--linha-forte);border-top-color:var(--acento);border-radius:50%;animation:girar .8s linear infinite;margin:0 auto 12px}
 @keyframes girar{to{transform:rotate(360deg)}}
+/* ---------- Apresentação de abertura ---------- */
+#veuApres{z-index:71}
+.modal.apresentacao{z-index:72;width:min(1160px,96vw);max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+.modal.apresentacao > header{padding:18px 22px 12px;display:flex;gap:14px;align-items:center;border-bottom:1px solid var(--linha);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ferrugem) 6%,var(--carta)),var(--carta))}
+.modal.apresentacao > .corpo{overflow:auto;padding:2px 22px 18px;flex:1}
+.modal.apresentacao > footer{align-items:center;margin-top:0;background:var(--carta-2)}
+.modal.apresentacao > footer .rodape-nota{margin-right:auto;font-size:11.5px;color:var(--tinta-3)}
+.apr-marca{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;
+  background:color-mix(in srgb,var(--ferrugem) 14%,var(--carta));color:var(--ferrugem);border:1px solid color-mix(in srgb,var(--ferrugem) 30%,var(--linha))}
+.apr-titulo h2{font-size:21px}
+.apr-titulo p{font-size:12.5px;color:var(--tinta-3);margin:3px 0 0}
+.apr-sec{margin-top:18px}
+.apr-sec > h3{font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;font-weight:600;color:var(--tinta-2);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.apr-sec > h3::after{content:"";flex:1;height:1px;background:var(--linha)}
+.apr-resumo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.apr-nota{border:1px solid var(--linha);border-top:3px solid var(--cor);border-radius:var(--raio-p);padding:10px 12px;
+  background:color-mix(in srgb,var(--cor) 5%,var(--carta))}
+.apr-nota h4{font-size:13px;color:var(--cor);margin-bottom:5px;display:flex;gap:7px;align-items:center}
+.apr-nota p{font-size:12px;color:var(--tinta-2);line-height:1.55;margin:0}
+.apr-fluxo{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;align-items:stretch}
+.apr-conector{display:grid;place-items:center;color:var(--tinta-3)}
+.apr-fase{border:1px solid color-mix(in srgb,var(--cor) 38%,var(--linha));border-radius:var(--raio);background:var(--carta);
+  overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sombra)}
+.apr-fase > header{padding:11px 12px;background:color-mix(in srgb,var(--cor) 13%,var(--carta));display:flex;gap:10px;align-items:center;
+  border-bottom:1px solid color-mix(in srgb,var(--cor) 26%,var(--linha))}
+.apr-fase .icone-fase{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--cor);color:var(--carta);flex:0 0 auto}
+html[data-tema="escuro"] .apr-fase .icone-fase{color:#14171b}
+.apr-fase .ordem-fase{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--cor)}
+.apr-fase .nome-fase{display:block;font-family:"IBM Plex Serif",Georgia,serif;font-size:15.5px;font-weight:600;color:var(--tinta)}
+.apr-fase .resumo-fase{font-size:11.5px;color:var(--tinta-2);padding:9px 12px 2px;line-height:1.5;margin:0}
+.apr-etapas{list-style:none;margin:0;padding:6px 10px 10px;display:flex;flex-direction:column;gap:5px;flex:1}
+.apr-etapa{width:100%;appearance:none;display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--linha);
+  border-left:3px solid var(--cor);border-radius:var(--raio-p);background:var(--carta-2);padding:6px 8px;cursor:pointer;font-size:12px;
+  transition:border-color .15s,background .15s,transform .15s}
+.apr-etapa:hover{border-color:var(--cor);background:color-mix(in srgb,var(--cor) 8%,var(--carta));transform:translateX(2px)}
+.apr-etapa:focus-visible{outline:2px solid var(--cor);outline-offset:1px}
+.apr-etapa .n{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--tinta-3);min-width:17px}
+.apr-etapa .ir{margin-left:auto;color:var(--tinta-3);font-size:11px}
+.apr-etapa svg{color:var(--cor);flex:0 0 auto}
+.apr-fase > footer{padding:8px 12px 10px;font-size:11.5px;color:var(--tinta-3);border-top:1px dashed var(--linha);background:var(--carta-2)}
+.apr-fase > footer b{color:var(--cor);font-weight:600}
+.apr-cadeia{display:flex;align-items:center;flex-wrap:wrap;row-gap:8px}
+.apr-elo{padding:6px 13px;border-radius:99px;font-size:11.5px;font-weight:600;letter-spacing:.03em;border:1px solid var(--cor);
+  color:var(--cor);background:color-mix(in srgb,var(--cor) 8%,var(--carta))}
+.apr-elo.final{background:var(--cor);color:var(--carta)}
+html[data-tema="escuro"] .apr-elo.final{color:#14171b}
+.apr-elo.mono{font-family:"IBM Plex Mono",monospace;font-weight:500;letter-spacing:0}
+.apr-seta{color:var(--tinta-3);padding:0 4px;display:grid;place-items:center}
+.apr-regras{display:flex;gap:8px;flex-wrap:wrap}
+.apr-regra{display:flex;align-items:center;gap:7px;border:1px solid var(--linha);border-radius:99px;padding:5px 12px 5px 8px;font-size:12px;background:var(--carta)}
+.apr-regra i{width:9px;height:9px;border-radius:50%;background:var(--cor)}
+.apr-regra b{color:var(--cor);font-weight:600}
+@media(max-width:980px){
+  .apr-resumo{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .apr-fluxo{grid-template-columns:1fr}
+  .apr-conector{height:26px}
+  .apr-conector svg{transform:rotate(90deg)}
+}
+@media(max-width:560px){.apr-resumo{grid-template-columns:1fr}}
+
+/* ---------- Manual ---------- */
+.manual{display:grid;grid-template-columns:266px minmax(0,1fr);gap:18px;align-items:start}
+.manual-indice{position:sticky;top:var(--topo-alt,110px);max-height:calc(100vh - var(--topo-alt,110px) - 16px);overflow:auto;
+  background:var(--carta);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);padding:12px}
+.manual-indice .busca{width:100%;padding:6px 9px;border:1px solid var(--linha);border-radius:var(--raio-p);background:var(--carta-2);margin-bottom:8px}
+.manual-indice .grupo{margin-top:10px}
+.manual-indice .grupo > h4{font-size:12px;color:var(--cor);display:flex;gap:6px;align-items:center;margin-bottom:5px}
+.ind-item{display:block;width:100%;appearance:none;border:0;border-left:2px solid transparent;background:transparent;text-align:left;
+  font-size:12px;color:var(--tinta-2);padding:4px 8px;border-radius:0 var(--raio-p) var(--raio-p) 0;cursor:pointer}
+.ind-item:hover{background:var(--papel-2);color:var(--tinta)}
+.ind-item.ativo{border-left-color:var(--cor);color:var(--cor);background:color-mix(in srgb,var(--cor) 8%,var(--carta));font-weight:600}
+.ind-item .n{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--tinta-3);margin-right:5px}
+.man-parte{border-radius:var(--raio);padding:16px 18px;margin-bottom:14px;border:1px solid color-mix(in srgb,var(--cor) 32%,var(--linha));
+  background:linear-gradient(120deg,color-mix(in srgb,var(--cor) 11%,var(--carta)),var(--carta) 70%);display:flex;gap:14px;align-items:center}
+.man-parte .icone-fase{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--cor);color:var(--carta);flex:0 0 auto}
+html[data-tema="escuro"] .man-parte .icone-fase{color:#14171b}
+.man-parte h2{font-size:19px;color:var(--cor)}
+.man-parte p{margin:3px 0 0;font-size:12.5px;color:var(--tinta-2);max-width:78ch}
+.man-secao{scroll-margin-top:calc(var(--topo-alt,110px) + 10px)}
+.man-secao p,.man-secao li{font-size:13px;line-height:1.6;color:var(--tinta-2);max-width:92ch}
+.man-secao p{margin:0 0 8px}
+.man-secao ol,.man-secao ul{margin:0 0 8px;padding-left:20px}
+.man-secao code,.man-quad code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--papel-2);border:1px solid var(--linha);border-radius:4px;padding:0 4px;color:var(--tinta)}
+.man-passo-cab{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.man-num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;
+  background:color-mix(in srgb,var(--acento) 14%,var(--carta));color:var(--acento);border:1px solid color-mix(in srgb,var(--acento) 40%,var(--linha));flex:0 0 auto}
+.man-onde{font-size:11.5px;color:var(--tinta-3)}
+.man-quads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.man-quad{border:1px solid var(--linha);border-left:3px solid var(--cor);border-radius:var(--raio-p);padding:9px 12px;background:color-mix(in srgb,var(--cor) 4%,var(--carta))}
+.man-quad h5{margin:0 0 5px;font-size:12px;color:var(--cor);font-family:"IBM Plex Sans",sans-serif;font-weight:600}
+.man-quad ul{margin:0;padding-left:17px}
+.man-quad li{font-size:12.5px;line-height:1.55;color:var(--tinta-2)}
+pre.codigo{position:relative;margin:6px 0 10px;background:var(--papel-2);border:1px solid var(--linha);border-radius:var(--raio-p);
+  padding:11px 13px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.55;overflow:auto;white-space:pre;color:var(--tinta)}
+pre.codigo .copiar{position:absolute;top:6px;right:6px}
+.man-vivo{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.man-tab{max-height:none}
+.man-tab td{vertical-align:top}
+@media(max-width:1060px){.manual{grid-template-columns:1fr}.manual-indice{position:static;max-height:none}.man-quads{grid-template-columns:1fr}}
+@media print{
+  body.imprimindo-manual .topo, body.imprimindo-manual .manual-indice,
+  body.imprimindo-manual section[role="tabpanel"]:not(#p-manual), body.imprimindo-manual .gaveta,
+  body.imprimindo-manual .modal, body.imprimindo-manual .veu, body.imprimindo-manual .dica,
+  body.imprimindo-manual .recado, body.imprimindo-manual .copiar, body.imprimindo-manual .man-acoes{display:none!important}
+  body.imprimindo-manual #p-manual{display:block!important}
+  body.imprimindo-manual .manual{display:block}
+  body.imprimindo-manual .bloco, body.imprimindo-manual .man-quad{box-shadow:none;break-inside:avoid-page}
+  body.imprimindo-manual pre.codigo{white-space:pre-wrap}
+}
 .oculto{display:none!important}
 </style>
 </head>
@@ -408,18 +496,20 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
       <button class="btn discreto" id="btnSessaoSalvar" data-tip="Grava um arquivo .json com as decisões, as exclusões, as configurações e o registro de auditoria desta sessão. A base de dados não é incluída.">Guardar sessão</button>
       <button class="btn discreto" id="btnSessaoAbrir" data-tip="Restaura decisões, exclusões e configurações a partir de um arquivo de sessão previamente guardado.">Retomar sessão</button>
+      <button class="btn discreto" id="btnApresentacao" data-tip="Reabre a apresentação de abertura: resumo técnico do sistema e fluxo de trabalho do saneamento, com acesso direto a cada etapa." data-tip-t="Apresentação">Apresentação</button>
       <button class="btn discreto" id="btnConfig" data-tip="Abre o painel de parâmetros: âncora temporal, critério de execução, universo de análise, prazos e limiares. Toda alteração é confirmada, auditada e obriga o recálculo." data-tip-t="Configurações">Configurações</button>
       <button class="btn discreto" id="btnTema" data-tip="Alterna entre o tema claro e o escuro.">Tema</button>
     </div>
   </div>
   <nav class="abas" role="tablist" id="abas">
-    <button class="aba" role="tab" id="aba-panorama" aria-controls="p-panorama" aria-selected="true" style="--cor:var(--grafite)" data-tip="Importação da base, indicadores gerais, composição do universo, regras aplicadas com seus parâmetros, saldo do programado por exercício e indícios de programação, reunidos numa só página com índice fixo." data-tip-t="Panorama"><i class="ponto"></i>Panorama</button>
+    <button class="aba" role="tab" id="aba-panorama" aria-controls="p-panorama" aria-selected="true" style="--cor:var(--grafite)" data-tip="Importação da base, indicadores gerais, composição do universo, regras aplicadas com seus parâmetros, saldo do programado por exercício e apontamentos de programação." data-tip-t="Panorama"><i class="ponto"></i>Panorama</button>
     <button class="aba" role="tab" id="aba-diagnostico" aria-controls="p-diagnostico" aria-selected="false" style="--cor:var(--ardosia)" data-tip="Quadro de todos os MAPPs do universo, com filtros, enquadramento, confiança, ação recomendada e registro da decisão humana." data-tip-t="Diagnóstico"><i class="ponto"></i>Diagnóstico</button>
     <button class="aba" role="tab" id="aba-qualidade" aria-controls="p-qualidade" aria-selected="false" style="--cor:var(--carmim)" data-tip="Revisão da consistência da base e do cadastro: duplicidades, conflitos, divergências, possíveis fusões e apontamentos sobre títulos." data-tip-t="Revisão"><i class="ponto"></i>Revisão</button>
-    <button class="aba" role="tab" id="aba-saneamento" aria-controls="p-saneamento" aria-selected="false" style="--cor:var(--sepia)" data-tip="Grid do conjunto já filtrado pelas regras, remoção individual de MAPPs e exportação do resultado." data-tip-t="Saneamento final"><i class="ponto"></i>Saneamento final</button>
+    <button class="aba" role="tab" id="aba-saneamento" aria-controls="p-saneamento" aria-selected="false" style="--cor:var(--sepia)" data-tip="Grid do conjunto já filtrado pelas regras, exclusão individual de MAPPs e exportação do resultado." data-tip-t="Saneamento final"><i class="ponto"></i>Saneamento final</button>
     <button class="aba" role="tab" id="aba-antesdepois" aria-controls="p-antesdepois" aria-selected="false" style="--cor:var(--ardosia)" data-tip="Comparação do universo antes e depois do saneamento, agregada e estratificada, por quantidade de MAPPs e por valor." data-tip-t="Antes e Depois"><i class="ponto"></i>Antes e Depois</button>
     <button class="aba" role="tab" id="aba-fase2" aria-controls="p-fase2" aria-selected="false" style="--cor:var(--petroleo)" data-tip="Indícios de despesa de natureza continuada: empenho em exercícios consecutivos, candidatos à migração de investimento para custeio finalístico." data-tip-t="Despesas de continuidade"><i class="ponto"></i>Despesas de continuidade</button>
     <button class="aba" role="tab" id="aba-auditoria" aria-controls="p-auditoria" aria-selected="false" style="--cor:var(--grafite)" data-tip="Relações exportáveis em .xlsx e o registro integral das alterações." data-tip-t="Auditoria e exportações"><i class="ponto"></i>Auditoria e exportações</button>
+    <button class="aba" role="tab" id="aba-manual" aria-controls="p-manual" aria-selected="false" style="--cor:var(--ferrugem)" data-tip="Guia de operação passo a passo e manual técnico para evolução e manutenção do sistema, com os parâmetros e as populações em vigor." data-tip-t="Manual"><i class="ponto"></i>Manual</button>
   </nav>
 </header>
 
@@ -427,17 +517,15 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
 
 <!-- ============================ PANORAMA ============================ -->
 <section role="tabpanel" id="p-panorama" aria-labelledby="aba-panorama" style="--acento:var(--grafite);--acento-tenue:rgba(63,71,80,.09);--acento-medio:rgba(63,71,80,.3)">
-  <div class="resumo-panorama" id="resumoPanorama" aria-live="polite"></div>
-  <nav class="segmentos indice" id="segPanorama" aria-label="Índice do panorama">
-    <button class="seg" data-seg="importacao" aria-current="true" style="--cor:var(--grafite)" data-tip="Rito do saneamento, leitura da planilha, reconhecimento de colunas, normalização dos estágios e retrato das três bases. Um clique rola a página até o bloco." data-tip-t="Importação"><i class="ponto"></i>Importação</button>
-    <button class="seg oculto" data-seg="indicadores" aria-current="false" style="--cor:var(--latao)" data-tip="Indicadores gerais do universo e da base integral, populações e saldo por regra, e gráficos de execução. Um clique rola a página até o bloco." data-tip-t="Indicadores"><i class="ponto"></i>Indicadores</button>
-    <button class="seg oculto" data-seg="contratos" aria-current="false" style="--cor:var(--ameixa)" data-tip="Instrumentos de receita e de despesa vinculados aos MAPPs, conforme as colunas QTD_INSTRUMENTOS_RECEITA e QTD_INSTRUMENTOS_DESPESA da planilha. Um clique rola a página até o bloco." data-tip-t="Contratos"><i class="ponto"></i>Contratos</button>
-    <button class="seg oculto" data-seg="universo" aria-current="false" style="--cor:var(--musgo)" data-tip="Demonstração aritmética de como cada população se formou, interseções entre regras e situações à margem. Um clique rola a página até o bloco." data-tip-t="Universo"><i class="ponto"></i>Universo</button>
-    <button class="seg oculto" data-seg="regras" aria-current="false" style="--cor:var(--ferrugem)" data-tip="As quatro regras de saneamento tal como o sistema as aplica, com os parâmetros em vigor e a âncora temporal resolvida. Um clique rola a página até o bloco." data-tip-t="Regras aplicadas"><i class="ponto"></i>Regras aplicadas</button>
-    <button class="seg oculto" data-seg="saldo" aria-current="false" style="--cor:var(--petroleo)" data-tip="Saldo do programado por exercício — anos anteriores, três exercícios retroativos, corrente e futuros — seguido dos indícios de programação. Um clique rola a página até o bloco." data-tip-t="Saldo"><i class="ponto"></i>Saldo</button>
+  <nav class="segmentos" id="segPanorama" role="tablist">
+    <button class="seg" data-seg="importacao" aria-selected="true" data-tip="Leitura da planilha, reconhecimento de colunas, normalização dos estágios e retrato das três bases." data-tip-t="Importação">Importação</button>
+    <button class="seg" data-seg="indicadores" aria-selected="false" data-tip="Indicadores gerais do universo e da base integral, populações por regra e gráficos de execução." data-tip-t="Indicadores">Indicadores</button>
+    <button class="seg" data-seg="universo" aria-selected="false" data-tip="Demonstração aritmética de como cada população se formou, interseções entre regras e situações à margem." data-tip-t="Universo">Universo</button>
+    <button class="seg" data-seg="regras" aria-selected="false" data-tip="As quatro regras de saneamento tal como o sistema as aplica, com os parâmetros em vigor e a âncora temporal resolvida." data-tip-t="Regras aplicadas">Regras aplicadas</button>
+    <button class="seg" data-seg="saldo" aria-selected="false" data-tip="Saldo do programado por exercício: corrente, três anteriores, anos anteriores agregados e exercícios futuros." data-tip-t="Saldo por exercício">Saldo por exercício</button>
+    <button class="seg" data-seg="programacao" aria-selected="false" data-tip="Concentração no exercício corrente, programação sem execução e ausência de programação futura." data-tip-t="Programação">Programação</button>
   </nav>
   <div class="segmento" id="seg-importacao" style="--acento:var(--grafite)">
-  <div class="marco-segmento"><span>Importação</span></div>
   <div class="bloco">
     <header><h2>Rito do saneamento</h2><span class="legenda">A alteração de situação só é admitida ao fim da sequência. Nenhuma etapa se transpõe.</span></header>
     <div class="fluxo" id="fluxoPassos"></div>
@@ -451,18 +539,18 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
       <div class="barra-acoes" style="justify-content:center;margin-top:10px">
         <button class="btn principal" id="btnEscolher" data-tip="Abre o seletor de arquivos do sistema para escolher a planilha de execução dos MAPPs.">Selecionar arquivo</button>
         <input type="file" id="arquivo" accept=".xlsx,.xlsm,.xls,.csv" class="oculto">
-        <button class="btn" id="btnCarregarRepo" data-tip="Baixa a planilha mais recente diretamente do repositório do GitHub, sem precisar selecioná-la manualmente.">Carregar do repositório</button>
       </div>
       <div class="progresso oculto" id="progresso"><i></i></div>
       <div class="pequeno tenue" id="progressoTexto" style="margin-top:6px"></div>
     </div>
 
     <div id="painelPlanilha" class="oculto" style="margin-top:14px">
-      <div class="grade g2">
-        <label class="campo"><span>Aba de dados <i class="sigla" tabindex="0" data-tip="Escolha a aba que contém o detalhamento por MAPP e fonte. A aba CONSULTA é a referência; DADOS PAINEL traz também ANO_APROVACAO e Total Empenhado. Trocar a aba reprocessa a importação automaticamente.">?</i></span>
+      <div class="grade g3">
+        <label class="campo"><span>Aba de dados <i class="sigla" tabindex="0" data-tip="Escolha a aba que contém o detalhamento por MAPP e fonte. A aba CONSULTA é a referência; DADOS PAINEL traz também ANO_APROVACAO e Total Empenhado.">?</i></span>
           <select id="selAba"></select></label>
-        <label class="campo"><span>Linhas de subtotal <i class="sigla" tabindex="0" data-tip="Linhas cujo conteúdo indica totalização (por exemplo, “0. SUBTOTAL”) não representam projetos e são descartadas da base de trabalho. Trocar a opção reprocessa a importação automaticamente.">?</i></span>
+        <label class="campo"><span>Linhas de subtotal <i class="sigla" tabindex="0" data-tip="Linhas cujo conteúdo indica totalização (por exemplo, “0. SUBTOTAL”) não representam projetos e são descartadas da base de trabalho.">?</i></span>
           <select id="selSubtotal"><option value="descartar">Descartar da análise</option><option value="manter">Manter (não recomendado)</option></select></label>
+        <div style="display:flex;align-items:flex-end"><button class="btn principal" id="btnProcessar" data-tip="Lê a aba escolhida, normaliza os campos, consolida os registros por MAPP e executa o motor de regras. Não altera o arquivo de origem.">Importar e diagnosticar</button></div>
       </div>
     </div>
   </div>
@@ -483,7 +571,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     </div>
   </div>
 
-  <div class="bloco oculto" id="blocoTresBases">
+  <div class="bloco">
     <header><h3>As três bases</h3></header>
     <div class="grade g3">
       <div class="prova" style="--cor:var(--grafite)"><h5>Base original</h5><div class="pequeno tenue">Todas as linhas importadas, tal como vieram da planilha. Nunca é alterada pelo sistema.</div><div class="pequeno mono" id="qtdBaseOriginal">—</div></div>
@@ -493,7 +581,6 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   </div>
   </div>
   <div class="segmento oculto" id="seg-indicadores" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
-  <div class="marco-segmento"><span>Indicadores</span></div>
   <div class="bloco">
     <header><h2>Indicadores gerais</h2><span class="legenda" id="painelCriterio"></span></header>
     <div class="cartoes" id="cartoesGerais"></div>
@@ -516,23 +603,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     <div class="grafico-caixa" style="--cor:var(--grafite)"><header><h4>MAPPs por órgão</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores órgãos por quantidade de MAPPs. Alterne para ver por valor programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="valor" data-tip="Ordena pelo valor programado.">Valor</button></div></header><div class="tela"><canvas id="gOrgaos"></canvas></div></div>
   </div>
   </div>
-  <div class="segmento oculto" id="seg-contratos" style="--acento:var(--ameixa);--acento-tenue:rgba(115,92,130,.10);--acento-medio:rgba(115,92,130,.3)">
-  <div class="marco-segmento"><span>Contratos</span></div>
-  <div class="bloco">
-    <header><h2>Instrumentos contratuais</h2><span class="legenda">Contagem de instrumentos de receita e de despesa por MAPP, tal como consta da planilha — sem número, valor ou vigência individual do contrato.</span></header>
-    <div class="aviso nota"><span class="marca">Origem</span><span>Vem das colunas <span class="mono">QTD_INSTRUMENTOS_RECEITA</span> e <span class="mono">QTD_INSTRUMENTOS_DESPESA</span>, apuradas no universo submetido às regras. Não há, na planilha atual, número de contrato, valor contratado ou vigência — só a quantidade de instrumentos vinculados a cada MAPP.</span></div>
-    <div class="cartoes" id="cartoesContratos" style="margin-top:12px"></div>
-  </div>
-  <div class="bloco">
-    <header><h2>Instrumentos por órgão</h2><span class="legenda">Quinze maiores órgãos por quantidade de instrumentos vinculados aos seus MAPPs.</span></header>
-    <div class="grade g2">
-      <div class="grafico-caixa" style="--cor:var(--ameixa)"><header><h4>Instrumentos de receita por órgão</h4><i class="sigla" tabindex="0" data-tip="Soma de QTD_INSTRUMENTOS_RECEITA dos MAPPs de cada órgão, quinze maiores.">?</i></header><div class="tela"><canvas id="gInstrumentosReceita"></canvas></div></div>
-      <div class="grafico-caixa" style="--cor:var(--ferrugem)"><header><h4>Instrumentos de despesa por órgão</h4><i class="sigla" tabindex="0" data-tip="Soma de QTD_INSTRUMENTOS_DESPESA dos MAPPs de cada órgão, quinze maiores.">?</i></header><div class="tela"><canvas id="gInstrumentosDespesa"></canvas></div></div>
-    </div>
-  </div>
-  </div>
   <div class="segmento oculto" id="seg-universo" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
-  <div class="marco-segmento"><span>Universo</span></div>
   <div class="bloco">
     <header><h2>Composição do universo</h2><span class="legenda">Demonstração aritmética de como cada população se formou.</span></header>
     <div class="aviso nota"><span class="marca">Advertência</span><span>As populações das quatro regras <strong>não são partições</strong> do total: um mesmo MAPP pode satisfazer mais de uma regra. A soma simples das quatro populações não corresponde ao conjunto de MAPPs a sanear.</span></div>
@@ -551,7 +622,6 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   </div>
   </div>
   <div class="segmento oculto" id="seg-regras" style="--acento:var(--ferrugem);--acento-tenue:rgba(138,82,64,.10);--acento-medio:rgba(138,82,64,.3)">
-  <div class="marco-segmento"><span>Regras aplicadas</span></div>
   <div class="bloco">
     <header><h2>Regras aplicadas</h2><span class="legenda" id="regrasLegenda"></span></header>
     <div class="aviso nota"><span class="marca">Alcance</span><span>Reprodução das quatro regras da primeira fase tal como o sistema as aplica, já compostas com os parâmetros em vigor. As quantidades são apuradas sobre a base importada; nenhum número provém de fonte externa.</span></div>
@@ -563,7 +633,6 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   </div>
   </div>
   <div class="segmento oculto" id="seg-saldo" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
-  <div class="marco-segmento"><span>Saldo</span></div>
   <div class="bloco">
     <header><h2>Saldo do programado por exercício</h2><span class="legenda" id="saldoLegenda"></span></header>
     <div class="aviso nota"><span class="marca">Cálculo</span><span>Saldo de cada exercício = <span class="mono">Programado − Empenhado</span>. Saldo positivo indica programação ainda não empenhada; saldo negativo indica empenho acima do programado no exercício.</span></div>
@@ -596,8 +665,10 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
       <button class="btn" id="btnExportarSaldo" style="margin-left:auto" data-tip="Exporta a grade de saldos por exercício, no agrupamento e no conjunto em vigor.">Exportar saldos</button>
     </div>
   </div>
-  <div class="bloco" id="blocoIndiciosProgramacao" style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">
-    <header><h2>Indícios de programação</h2><span class="legenda">Concentração, programação sem execução e ausência de programação futura.</span></header>
+  </div>
+  <div class="segmento oculto" id="seg-programacao" style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">
+  <div class="bloco">
+    <header><h2>Programação</h2><span class="legenda">Concentração, programação sem execução e ausência de programação futura.</span></header>
     <div class="cartoes" id="cartoesProgramacao"></div>
     <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
     <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody></table></div>
@@ -658,7 +729,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
           <th class="ordenavel" data-ord="regra" data-tip="Regras da primeira fase que o MAPP satisfaz. Passe o ponteiro sobre cada etiqueta para ler o critério completo." data-tip-t="Regra">Regra</th>
           <th class="ordenavel" data-ord="confianca" data-tip="Grau de suficiência probatória do enquadramento: alta, média ou baixa." data-tip-t="Confiança">Confiança</th>
           <th class="ordenavel" data-ord="acao" data-tip="Providência sugerida pelo sistema. Só produz efeito depois de decisão humana registrada." data-tip-t="Ação recomendada">Ação recomendada</th>
-          <th class="ordenavel" data-ord="revisao" data-tip="Situação da revisão humana: pendente, acatada, rejeitada ou removida do saneamento." data-tip-t="Revisão">Revisão</th>
+          <th class="ordenavel" data-ord="revisao" data-tip="Situação da revisão humana: pendente, acatada, rejeitada ou ocultada do saneamento." data-tip-t="Revisão">Revisão</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -697,7 +768,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
 
 <!-- ============================ SANEAMENTO FINAL ============================ -->
 <section role="tabpanel" id="p-saneamento" class="oculto" aria-labelledby="aba-saneamento" style="--acento:var(--sepia);--acento-tenue:rgba(111,90,67,.10);--acento-medio:rgba(111,90,67,.3)">
-  <div class="aviso nota"><span class="marca">Alcance desta aba</span><span>Aqui trabalha-se sobre o conjunto <strong>já filtrado pelas regras</strong>. Remover um MAPP significa retirá-lo do resultado do saneamento — a base original permanece intocada, o enquadramento continua registrado e a providência é lançada na auditoria.</span></div>
+  <div class="aviso nota"><span class="marca">Alcance desta aba</span><span>Aqui trabalha-se sobre o conjunto <strong>já filtrado pelas regras</strong>. Ocultar um MAPP significa retirá-lo do resultado do saneamento — a base original permanece intocada, o enquadramento continua registrado e a providência é lançada na auditoria.</span></div>
   <div class="aviso nota"><span class="marca">Providência</span><span>A remoção é <strong>individual, reversível e auditada</strong>: use a coluna <strong>Providência</strong>, a segunda de cada grade, ou o botão correspondente na ficha do MAPP.</span></div>
 
   <div class="bloco">
@@ -719,11 +790,11 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
         </select></label>
       <label class="campo"><span>Secretaria</span><select id="sSecretaria"></select></label>
       <label class="campo"><span>Órgão</span><select id="sOrgao"></select></label>
-      <label class="campo"><span>Situação no saneamento <i class="sigla" tabindex="0" data-tip="Mantidos são os que permanecem no resultado; removidos foram retirados individualmente por decisão do revisor.">?</i></span>
+      <label class="campo"><span>Situação no saneamento <i class="sigla" tabindex="0" data-tip="Mantidos são os que permanecem no resultado; ocultados foram retirados individualmente por decisão do revisor.">?</i></span>
         <select id="sSituacao">
           <option value="">Todos</option>
           <option value="mantido">Somente mantidos</option>
-          <option value="oculto">Somente removidos</option>
+          <option value="oculto">Somente ocultados</option>
         </select></label>
       <label class="campo"><span>Ano de aprovação</span><select id="sAno"></select></label>
       <label class="campo"><span>Estágio</span><select id="sEstagio"></select></label>
@@ -737,13 +808,13 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   </div>
 
   <div class="bloco">
-    <header><h2>Grid do saneamento</h2><span class="legenda">Clique no código para abrir a ficha; a coluna <strong>Providência</strong>, logo após a caixa de seleção, remove ou restabelece o MAPP.</span></header>
+    <header><h2>Grid do saneamento</h2><span class="legenda">Clique no código para abrir a ficha; a coluna <strong>Providência</strong>, logo após a caixa de seleção, oculta ou restabelece o MAPP.</span></header>
     <div class="barra-acoes" style="margin-bottom:10px">
       <label class="chk" data-tip="Marca ou desmarca todos os MAPPs exibidos na página corrente."><input type="checkbox" id="chkTodosSan"> Selecionar página</label>
       <span class="etq" id="selContagemSan">0 selecionados</span>
-      <button class="btn" id="btnOcultarLote" data-tip="Retira do resultado do saneamento todos os MAPPs selecionados, com um único motivo comum.">Remover selecionados</button>
-      <button class="btn" id="btnRestabelecerLote" data-tip="Devolve ao resultado do saneamento os MAPPs selecionados que estavam removidos.">Restabelecer selecionados</button>
-      <button class="btn discreto" id="btnRestabelecerTudo" data-tip="Desfaz todas as remoções registradas nesta sessão, com registro em auditoria.">Restabelecer tudo</button>
+      <button class="btn" id="btnOcultarLote" data-tip="Retira do resultado do saneamento todos os MAPPs selecionados, com um único motivo comum.">Ocultar selecionados</button>
+      <button class="btn" id="btnRestabelecerLote" data-tip="Devolve ao resultado do saneamento os MAPPs selecionados que estavam ocultados.">Restabelecer selecionados</button>
+      <button class="btn discreto" id="btnRestabelecerTudo" data-tip="Desfaz todas as ocultações registradas nesta sessão, com registro em auditoria.">Restabelecer tudo</button>
     </div>
     <div class="tabela-caixa">
       <table id="tabSaneamento">
@@ -759,7 +830,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
           <th class="ordenavel" data-ords="regra" data-tip="Regras da primeira fase que o MAPP satisfaz. Passe o ponteiro sobre cada etiqueta para ler o critério completo." data-tip-t="Regra">Regra</th>
           <th class="ordenavel" data-ords="acao" data-tip="Providência sugerida pelo sistema. Só produz efeito depois de decisão humana registrada." data-tip-t="Ação recomendada">Ação recomendada</th>
           <th class="ordenavel num" data-ords="programado" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028." data-tip-t="Programado">Programado</th>
-          <th class="ordenavel" data-ords="situacao" data-tip="Situação do MAPP no saneamento: mantido, com decisão humana registrada ou removido do resultado." data-tip-t="Situação">Situação</th>
+          <th class="ordenavel" data-ords="situacao" data-tip="Situação do MAPP no saneamento: mantido, com decisão humana registrada ou ocultado do resultado." data-tip-t="Situação">Situação</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -783,9 +854,9 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
         </div>
       </div>
       <div class="prova" style="--cor:var(--musgo)"><h5>Exportação do resultado</h5>
-        <div class="pequeno tenue">Arquivo único em .xlsx com duas abas: <span class="mono">RESULTADO DO SANEAMENTO</span>, com os MAPPs mantidos após a aplicação das regras, e <span class="mono">REMOVIDOS</span>, com os MAPPs removidos individualmente, seus motivos, responsáveis e datas.</div>
+        <div class="pequeno tenue">Arquivo único em .xlsx com duas abas: <span class="mono">RESULTADO DO SANEAMENTO</span>, com os MAPPs mantidos após a aplicação das regras, e <span class="mono">EXCLUIDOS</span>, com os MAPPs ocultados individualmente, seus motivos, responsáveis e datas.</div>
         <div class="barra-acoes" style="margin-top:10px">
-          <button class="btn principal" id="btnExportarFinal" data-tip="Gera um único arquivo .xlsx com duas abas: o resultado da aplicação das regras e a relação dos MAPPs removidos individualmente.">Exportar resultado do saneamento</button>
+          <button class="btn principal" id="btnExportarFinal" data-tip="Gera um único arquivo .xlsx com duas abas: o resultado da aplicação das regras e a relação dos MAPPs excluídos individualmente.">Exportar resultado do saneamento</button>
         </div>
       </div>
     </div>
@@ -794,7 +865,7 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
 
 <!-- ============================ ANTES E DEPOIS ============================ -->
 <section role="tabpanel" id="p-antesdepois" class="oculto" aria-labelledby="aba-antesdepois" style="--acento:var(--ardosia);--acento-tenue:rgba(63,92,120,.10);--acento-medio:rgba(63,92,120,.3)">
-  <div class="aviso nota"><span class="marca">Leitura</span><span>“Antes” é a situação registrada na base importada. “Depois” projeta o efeito das ações recomendadas sobre os MAPPs que permanecem no resultado do saneamento — os removidos individualmente seguem inalterados. É <strong>projeção</strong>, não alteração: nada é gravado na base.</span></div>
+  <div class="aviso nota"><span class="marca">Leitura</span><span>“Antes” é a situação registrada na base importada. “Depois” projeta o efeito das ações recomendadas sobre os MAPPs que permanecem no resultado do saneamento — os ocultados individualmente seguem inalterados. É <strong>projeção</strong>, não alteração: nada é gravado na base.</span></div>
 
   <div class="bloco">
     <header><h2>Cenário projetado</h2><span class="legenda" id="cenarioLegenda"></span></header>
@@ -809,8 +880,14 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
           <option value="qtd">Quantidade de MAPPs</option>
           <option value="valor">Valor programado (R$)</option>
         </select></label>
-      <label class="campo"><span>Filtro por órgão <i class="sigla" tabindex="0" data-tip="Restringe toda a apuração desta aba — cartões, gráficos e quadro — aos órgãos marcados. Sem marcação alguma, o filtro não restringe nada." data-tip-t="Filtro por órgão">?</i></span>
-        <select id="adOrgao"></select></label>
+      <label class="campo"><span>Estratificação <i class="sigla" tabindex="0" data-tip="Dimensão pela qual a tabela e o gráfico comparativo são desdobrados." data-tip-t="Estratificação">?</i></span>
+        <select id="adEstrato">
+          <option value="secretaria">Secretaria</option>
+          <option value="orgao">Órgão</option>
+          <option value="programa">Programa</option>
+          <option value="ano">Ano de aprovação</option>
+          <option value="estagio">Estágio de execução</option>
+        </select></label>
     </div>
   </div>
 
@@ -822,12 +899,12 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   <div class="grade g2">
     <div class="grafico-caixa" style="--cor:var(--ardosia)"><header><h4>Situação da base — antes e depois</h4><i class="sigla" tabindex="0" id="dicaGrafSituacao" data-tip="Distribuição dos MAPPs por situação administrativa nos dois momentos." data-tip-t="Situação da base">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="adSituacao" data-tipo="bar" data-tip="Exibe em barras agrupadas.">Barras</button><button class="btn pequeno discreto" data-graf="adSituacao" data-tipo="line" data-tip="Exibe em linhas.">Linhas</button></div></header><div class="tela"><canvas id="gAdSituacao"></canvas></div></div>
     <div class="grafico-caixa" style="--cor:var(--carmim)"><header><h4>Contribuição de cada regra para a mudança</h4><i class="sigla" tabindex="0" id="dicaGrafRegras" data-tip="Quanto cada regra retira do conjunto ativo." data-tip-t="Contribuição por regra">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="adRegras" data-tipo="bar" data-tip="Exibe em barras verticais.">Barras</button><button class="btn pequeno discreto" data-graf="adRegras" data-tipo="doughnut" data-tip="Exibe em rosca.">Rosca</button></div></header><div class="tela"><canvas id="gAdRegras"></canvas></div></div>
-    <div class="grafico-caixa" style="--cor:var(--musgo)"><header><h4>Conjunto ativo por órgão</h4><i class="sigla" tabindex="0" data-tip="Comparação do que permanece ativo antes e depois, nos quinze órgãos de maior posição entre os marcados no filtro." data-tip-t="Ativo por órgão">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="adEstrato" data-tipo="bar" data-tip="Exibe em barras horizontais.">Barras</button></div></header><div class="tela" style="height:330px"><canvas id="gAdEstrato"></canvas></div></div>
+    <div class="grafico-caixa" style="--cor:var(--musgo)"><header><h4>Conjunto ativo por estratificação</h4><i class="sigla" tabindex="0" data-tip="Comparação do que permanece ativo antes e depois, nas quinze maiores posições da dimensão escolhida." data-tip-t="Ativo por estratificação">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="adEstrato" data-tipo="bar" data-tip="Exibe em barras horizontais.">Barras</button></div></header><div class="tela" style="height:330px"><canvas id="gAdEstrato"></canvas></div></div>
     <div class="grafico-caixa" style="--cor:var(--latao)"><header><h4>Conjunto ativo por exercício de aprovação</h4><i class="sigla" tabindex="0" data-tip="Distribuição do conjunto que permanece ativo pelo ano de aprovação, antes e depois do saneamento." data-tip-t="Ativo por exercício">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="adAnos" data-tipo="line" data-tip="Exibe em linhas.">Linhas</button><button class="btn pequeno discreto" data-graf="adAnos" data-tipo="bar" data-tip="Exibe em barras agrupadas.">Barras</button></div></header><div class="tela"><canvas id="gAdAnos"></canvas></div></div>
   </div>
 
   <div class="bloco">
-    <header><h2>Quadro por órgão</h2><span class="legenda" id="adLegendaTabela"></span></header>
+    <header><h2>Quadro estratificado</h2><span class="legenda" id="adLegendaTabela"></span></header>
     <div class="tabela-caixa"><table id="tabAntesDepois"><thead><tr></tr></thead><tbody></tbody></table></div>
     <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportarAntesDepois" data-tip="Exporta o quadro estratificado com os valores de antes, depois e variação.">Exportar quadro</button></div>
   </div>
@@ -861,6 +938,14 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
     <header><h2>Registro de auditoria</h2><span class="legenda" id="contagemAuditoria"></span></header>
     <div class="tabela-caixa"><table id="tabAuditoria"><thead><tr><th class="num" data-tip="Momento do lançamento na auditoria." data-tip-t="Data e hora">Data e hora</th><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Regras da primeira fase que o MAPP satisfaz. Passe o ponteiro sobre cada etiqueta para ler o critério completo." data-tip-t="Regra">Regra</th><th data-tip="Campo alterado pelo ato." data-tip-t="Campo">Campo</th><th data-tip="Conteúdo do campo antes da alteração." data-tip-t="Valor anterior">Valor anterior</th><th data-tip="Conteúdo do campo depois da alteração." data-tip-t="Valor novo">Valor novo</th><th data-tip="Quem registrou o ato. Consta do registro de auditoria." data-tip-t="Responsável">Responsável</th><th data-tip="Fundamento do ato, exigido pelo princípio da motivação." data-tip-t="Justificativa">Justificativa</th></tr></thead><tbody></tbody></table></div>
     <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportAuditoria" data-tip="Exporta o registro integral de auditoria.">Exportar auditoria</button></div>
+  </div>
+</section>
+
+<!-- ============================ MANUAL ============================ -->
+<section role="tabpanel" id="p-manual" class="oculto" aria-labelledby="aba-manual" style="--acento:var(--ferrugem);--acento-tenue:rgba(138,82,64,.10);--acento-medio:rgba(138,82,64,.3)">
+  <div class="manual">
+    <aside class="manual-indice" id="manualIndice" aria-label="Índice do manual"></aside>
+    <div class="manual-conteudo" id="manualConteudo"></div>
   </div>
 </section>
 
@@ -969,6 +1054,23 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
   </footer>
 </div>
 <div class="recado" id="recado"></div>
+
+<!-- ============================ APRESENTAÇÃO ============================ -->
+<div class="veu" id="veuApres"></div>
+<div class="modal apresentacao" id="modalApres" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="aprTitulo" aria-hidden="true">
+  <header>
+    <span class="apr-marca" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></span>
+    <div class="apr-titulo"><h2 id="aprTitulo">Webmapp · Diagnóstico e Saneamento de MAPPs</h2>
+      <p>Apresentação do sistema · finalidade, fundamentos e fluxo de trabalho do saneamento</p></div>
+  </header>
+  <div class="corpo" id="aprCorpo"></div>
+  <footer>
+    <span class="rodape-nota">Esta apresentação reaparece a cada abertura e pode ser reaberta pelo botão Apresentação, no alto.</span>
+    <button class="btn discreto" id="aprFechar" data-tip="Fecha a apresentação e retorna à tela em que se estava. Atalho: tecla Esc.">Fechar</button>
+    <button class="btn" id="aprManual" data-tip="Fecha a apresentação e abre a aba Manual, com o guia de operação e o manual técnico.">Consultar o manual</button>
+    <button class="btn principal" id="aprIniciar" style="--acento:var(--ferrugem)" data-tip="Fecha a apresentação e conduz à importação da base, primeira etapa do rito.">Iniciar o trabalho</button>
+  </footer>
+</div>
 <script>
 "use strict";
 /* ==========================================================================
@@ -1449,29 +1551,22 @@ function casaMulti(valores,valor){ return !valores.length || valores.indexOf(val
 
 const TABELAS_PROPRIAS=['tabDiag','tabSaneamento'];
 
-/* Números que este próprio sistema formatou em pt-BR (via n()): sem vírgula,
-   o ponto é sempre separador de milhar, nunca decimal — ao contrário de
-   paraNumero(), que interpreta valores digitados ou vindos da planilha. */
-function paraNumeroExibido(txt){
-  if(txt.indexOf(',')<0 && /^[+-]?\d{1,3}(\.\d{3})+$/.test(txt)) return parseFloat(txt.replace(/\./g,''));
-  return paraNumero(txt);
-}
 function valorOrdenavel(td){
   const txt=limpo(td.textContent);
   if(!txt||txt==='—') return {n:null,s:''};
   const data=txt.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
   if(data) return {n:Date.UTC(+data[3],+data[2]-1,+data[1]),s:txt};
   const num=txt.replace(/\s|R\$|%|\u00a0/g,'');
-  if(/^[+-]?[\d.]*\d(,\d+)?$/.test(num) || /^[+-]?\d+(\.\d+)?$/.test(num)){
-    const x=paraNumeroExibido(txt.replace(/R\$|%/g,''));
+  if(/^-?[\d.]*\d(,\d+)?$/.test(num) || /^-?\d+(\.\d+)?$/.test(num)){
+    const x=paraNumero(txt.replace(/R\$|%/g,''));
     let m=1;
     if(/\bbi\b/.test(txt)) m=1e9; else if(/\bmi\b/.test(txt)) m=1e6;
     if(isFinite(x)) return {n:x*m,s:txt};
   }
-  const mult=txt.match(/^\+?R\$\s*(-?[\d.,]+)\s*(bi|mi)?$/);
+  const mult=txt.match(/^R\$\s*([\d.,]+)\s*(bi|mi)?$/);
   if(mult){
     const x=paraNumero(mult[1]);
-    if(isFinite(x)) return {n:x*(mult[2]==='bi'?1e9:(mult[2]==='mi'?1e6:1)),s:txt};
+    return {n:x*(mult[2]==='bi'?1e9:(mult[2]==='mi'?1e6:1)),s:txt};
   }
   return {n:null,s:norm(txt)};
 }
@@ -1537,48 +1632,16 @@ function irParaAba(id){
   $$('section[role="tabpanel"]').forEach(function(s){
     s.classList.toggle('oculto', s.id !== 'p-'+id);
   });
-  if(id==='panorama' && E.diag) desenharGraficos();
-  if(id==='panorama') acompanharRolagem();
+  if(id==='panorama' && E.diag && E.segmento==='indicadores') desenharGraficos();
   window.scrollTo({top:0,behavior:'instant'});
 }
 
-/* O Panorama é uma página única: “ir ao segmento” significa rolar até ele.
-   modo: 'suave' (padrão), 'instantaneo' ou 'sem-rolar' (apenas marca o índice). */
-function irParaSegmento(id,modo){
-  const alvo=$('#seg-'+id); if(!alvo) return;
-  marcarSegmento(id);
-  if(modo==='sem-rolar') return;
-  const reduzir=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  E.rolagemTravada=Date.now()+900;
-  alvo.scrollIntoView({behavior:(modo==='instantaneo'||reduzir)?'instant':'smooth',block:'start'});
-}
-
-function marcarSegmento(id){
-  $$('#segPanorama .seg').forEach(function(b){
-    b.setAttribute('aria-current', b.getAttribute('data-seg')===id?'true':'false');
-  });
+function irParaSegmento(id){
+  $$('#segPanorama .seg').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-seg')===id?'true':'false'); });
+  $$('#p-panorama .segmento').forEach(function(d){ d.classList.toggle('oculto', d.id!=='seg-'+id); });
   E.segmento=id;
-}
-
-/* Realça no índice o bloco em leitura: o último cujo topo já passou sob o índice. */
-function acompanharRolagem(){
-  const painel=$('#p-panorama');
-  if(!painel || painel.classList.contains('oculto')) return;
-  if(E.rolagemTravada && Date.now()<E.rolagemTravada) return;
-  const indice=$('#segPanorama');
-  const limite=(indice?indice.getBoundingClientRect().bottom:0)+48;
-  const segs=$$('#p-panorama .segmento').filter(function(d){ return !d.classList.contains('oculto'); });
-  let atual=segs.length?segs[0].id.slice(4):'importacao';
-  segs.forEach(function(d){ if(d.getBoundingClientRect().top<=limite) atual=d.id.slice(4); });
-  const doc=document.documentElement;
-  if(segs.length && window.innerHeight+window.scrollY>=doc.scrollHeight-4) atual=segs[segs.length-1].id.slice(4);
-  if(atual!==E.segmento) marcarSegmento(atual);
-}
-
-/* Altura do cabeçalho fixo, para o índice e o recuo da rolagem se acomodarem abaixo dele. */
-function medirTopo(){
-  const t=$('.topo'); if(!t) return;
-  document.documentElement.style.setProperty('--alto-topo', t.offsetHeight+'px');
+  if(id==='indicadores' && E.diag) desenharGraficos();
+  if(id==='saldo' && E.diag) renderSaldo();
 }
 
 /* ---------------------------- 5. Passos do rito -------------------------- */
@@ -1609,56 +1672,24 @@ function lerArquivo(file){
     $('#progresso').firstElementChild.style.width='80%';
     if(/\.csv$/i.test(file.name)){
       E.buffer=null; E.abas=['(arquivo CSV)']; E.textoCSV=leitor.result;
-      preencherAbas(); $('#progressoTexto').textContent='Arquivo CSV pronto. Importando…';
-      $('#progresso').firstElementChild.style.width='100%';
-      await importar();
+      preencherAbas(); $('#progressoTexto').textContent='Arquivo CSV pronto para importação.';
     } else {
-      await processarPastaDeTrabalho(leitor.result);
+      E.buffer=leitor.result;
+      await veuCarga('Inspecionando as abas da pasta de trabalho…');
+      try{
+        const wb=XLSX.read(E.buffer,{type:'array',bookSheets:true});
+        E.abas=wb.SheetNames.slice();
+        preencherAbas();
+        $('#progressoTexto').textContent='Pasta de trabalho com '+E.abas.length+' abas. Escolha a aba de dados.';
+      }catch(err){
+        $('#progressoTexto').textContent='Não foi possível ler o arquivo: '+err.message;
+      }
+      veuCarga(false);
     }
+    $('#progresso').firstElementChild.style.width='100%';
   };
   if(/\.csv$/i.test(file.name)) leitor.readAsText(file,'utf-8');
   else leitor.readAsArrayBuffer(file);
-}
-
-/* Inspeciona as abas de uma pasta de trabalho já carregada em memória (ArrayBuffer) e importa. */
-async function processarPastaDeTrabalho(buffer){
-  E.buffer=buffer;
-  await veuCarga('Inspecionando as abas da pasta de trabalho…');
-  let abaOk=false;
-  try{
-    const wb=XLSX.read(E.buffer,{type:'array',bookSheets:true});
-    E.abas=wb.SheetNames.slice();
-    preencherAbas();
-    abaOk=true;
-    $('#progressoTexto').textContent='Pasta de trabalho com '+E.abas.length+' aba(s). Importando a aba “'+$('#selAba').value+'”…';
-  }catch(err){
-    $('#progressoTexto').textContent='Não foi possível ler o arquivo: '+err.message;
-  }
-  veuCarga(false);
-  $('#progresso').firstElementChild.style.width='100%';
-  if(abaOk) await importar();
-  return abaOk;
-}
-
-/* Baixa a planilha diretamente do repositório GitHub e a processa pelo mesmo fluxo do upload manual. */
-const URL_PLANILHA_REPO='https://raw.githubusercontent.com/marceloclr/saneamento/main/mapps-regis18-09.xlsx';
-async function carregarPlanilhaDoRepositorio(){
-  const nomeArquivo=URL_PLANILHA_REPO.split('/').pop();
-  E.arquivo={name:nomeArquivo};
-  $('#progresso').classList.remove('oculto');
-  $('#progresso').firstElementChild.style.width='0%';
-  $('#progressoTexto').textContent='Baixando '+nomeArquivo+' do repositório…';
-  try{
-    const resp=await fetch(URL_PLANILHA_REPO,{cache:'no-store'});
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    $('#progresso').firstElementChild.style.width='60%';
-    const buffer=await resp.arrayBuffer();
-    await processarPastaDeTrabalho(buffer);
-  }catch(err){
-    veuCarga(false);
-    $('#progresso').classList.add('oculto');
-    $('#progressoTexto').textContent='Falha ao baixar a planilha do repositório: '+err.message;
-  }
 }
 
 function preencherAbas(){
@@ -1687,11 +1718,6 @@ const ALVOS = {
   semExec:[/^SEM EXEC/]
 };
 
-/* Aliases de métrica usados na extração direta do banco (colunas VLR_<METRICA>_<ANO>),
-   que chegam com nomes diferentes dos usados na planilha de referência. */
-const ALIAS_METRICA_VLR = {PLANEJADO:'PROGRAMADO', EMPENHO:'EMPENHADO', PAGO:'PAGO', LIMITE:'LIMITE'};
-function nomeMetrica(bruta){ return bruta==='TOTAL EMP'?'Total Emp':(bruta[0]+bruta.slice(1).toLowerCase()); }
-
 function reconhecerColunas(cabecalho){
   const mapa={}; const usadas=new Set();
   cabecalho.forEach(function(h,i){
@@ -1701,32 +1727,15 @@ function reconhecerColunas(cabecalho){
       if(ALVOS[k].some(function(rx){ return rx.test(t); })){ mapa[k]=i; usadas.add(i); }
     });
   });
-  const serie=[]; const anos=new Set(); const metricas=[]; const limitesSemAno=[];
+  const serie=[]; const anos=new Set(); const metricas=[];
   cabecalho.forEach(function(h,i){
     const t=norm(h);
-    let m=t.match(/^(PROGRAMADO|EMPENHADO|PAGO|LIMITE|TOTAL EMP)\s*(\d{2,4})$/);
-    let metBruta=m&&m[1];
-    if(!m){
-      m=t.match(/^VLR_(PLANEJADO|EMPENHO|PAGO|LIMITE|TOTAL[ _]?EMP)_(\d{2,4})$/);
-      if(m) metBruta=ALIAS_METRICA_VLR[m[1]]||m[1];
-    }
+    const m=t.match(/^(PROGRAMADO|EMPENHADO|PAGO|LIMITE|TOTAL EMP)\s*(\d{2,4})$/);
     if(m){
       let ano=parseInt(m[2],10); if(ano<100) ano=2000+ano;
-      const met=nomeMetrica(metBruta);
+      const met=m[1]==='TOTAL EMP'?'Total Emp':(m[1][0]+m[1].slice(1).toLowerCase());
       if(metricas.indexOf(met)<0) metricas.push(met);
       anos.add(ano); serie.push({col:i,met:met,ano:ano}); usadas.add(i);
-    } else if(/^VLR_LIMITE$/.test(t)){
-      limitesSemAno.push(i);
-    }
-  });
-  /* “VLR_LIMITE” sai sem ano na extração — herda o ano da coluna de série mais
-     próxima (o limite orçamentário só existe para o exercício vigente). */
-  limitesSemAno.forEach(function(i){
-    let melhor=null, melhorDist=Infinity;
-    serie.forEach(function(s){ const d=Math.abs(s.col-i); if(d<melhorDist){ melhorDist=d; melhor=s; } });
-    if(melhor){
-      if(metricas.indexOf('Limite')<0) metricas.push('Limite');
-      anos.add(melhor.ano); serie.push({col:i,met:'Limite',ano:melhor.ano}); usadas.add(i);
     }
   });
   const ordemMet=['Programado','Empenhado','Pago','Limite','Total Emp'];
@@ -1795,21 +1804,10 @@ async function importar(){
   diagnosticar();
   await veuCarga('Compondo painéis…');
   E.passo=4; pintarFluxo();
-  mostrarBlocosPosImportacao();
   renderTudo();
   veuCarga(false);
   irParaAba('panorama'); irParaSegmento('indicadores');
   recado('Base importada: '+n(E.linhas.length)+' linhas e '+n(E.mapps.length)+' MAPPs.');
-}
-
-/* Blocos e pílulas do índice que só fazem sentido depois de uma importação
-   bem-sucedida ficam ocultos até aqui. Revelados antes de renderTudo() para
-   que os gráficos (Chart.js) meçam contêineres com tamanho real. */
-function mostrarBlocosPosImportacao(){
-  ['blocoTresBases','seg-indicadores','seg-contratos','seg-universo','seg-regras','seg-saldo'].forEach(function(id){
-    const el=document.getElementById(id); if(el) el.classList.remove('oculto');
-  });
-  $$('#segPanorama .seg').forEach(function(b){ b.classList.remove('oculto'); });
 }
 
 function montarBase(linhas,aba){
@@ -2479,7 +2477,6 @@ function cartao(rotulo,valor,nota,cor,dica,reduzido,titulo){
 function renderTudo(){
   renderResumoImport();
   renderPainel();
-  renderResumoPanorama();
   prepararFiltros();
   renderDiagnostico();
   renderUniverso();
@@ -2488,7 +2485,6 @@ function renderTudo(){
   renderSaldo();
   prepararFiltrosSaneamento();
   renderSaneamento();
-  prepararFiltroAntesDepois();
   renderAntesDepois();
   renderFase2();
   renderAuditoria();
@@ -2496,6 +2492,7 @@ function renderTudo(){
   atualizarSelo();
   desenharGraficos();
   prepararCabecalhos();
+  if(typeof renderManualVivo==='function') renderManualVivo();
 }
 
 function atualizarSelo(){
@@ -2608,30 +2605,6 @@ function renderPainel(){
     'MAPPs que não se enquadram em nenhuma das quatro regras da primeira fase.'));
   $('#cartoesRegras').innerHTML=c.join('');
   renderSaldoPorRegra();
-  renderContratos();
-}
-
-/* Instrumentos de receita e de despesa por MAPP (QTD_INSTRUMENTOS_RECEITA/
-   DESPESA). É a única informação de contrato presente na planilha atual —
-   não há número, valor ou vigência individual de contrato. */
-function renderContratos(){
-  const d=E.diag; if(!d) return;
-  const base=d.noUniverso;
-  let comReceita=0, comDespesa=0, semNenhum=0, totalReceita=0, totalDespesa=0;
-  base.forEach(function(m){
-    const qr=m.qr||0, qd=m.qd||0;
-    if(qr>0) comReceita++;
-    if(qd>0) comDespesa++;
-    if(!qr && !qd) semNenhum++;
-    totalReceita+=qr; totalDespesa+=qd;
-  });
-  $('#cartoesContratos').innerHTML=
-    cartao('Instrumentos de receita', n(totalReceita), n(comReceita)+' MAPP(s) com ao menos um', 'var(--ameixa)',
-      'Soma de QTD_INSTRUMENTOS_RECEITA no universo submetido às regras ('+n(base.length)+' MAPPs).')+
-    cartao('Instrumentos de despesa', n(totalDespesa), n(comDespesa)+' MAPP(s) com ao menos um', 'var(--ferrugem)',
-      'Soma de QTD_INSTRUMENTOS_DESPESA no universo submetido às regras ('+n(base.length)+' MAPPs).')+
-    cartao('MAPPs sem nenhum instrumento', n(semNenhum), pct(semNenhum,base.length||1)+' do universo', 'var(--neutro)',
-      'MAPPs cujas colunas de instrumentos de receita e de despesa vêm ambas zeradas ou ausentes.');
 }
 
 /* Saldo do programado (programado − empenhado) por conjunto de regra, com o
@@ -2673,49 +2646,6 @@ function renderSaldoPorRegra(){
       '\nExercícios futuros não comportam empenho: neles o saldo iguala o programado.';
     return cartao(x.rot, rsCurto(prog-emp), x.nota+' · '+n(lista.length)+plural, x.cor, dica, true);
   }).join('');
-}
-
-/* Faixa-resumo do Panorama: números-chave, cada um conduzindo ao bloco que o detalha. */
-function renderResumoPanorama(){
-  const alvo=$('#resumoPanorama'); if(!alvo) return;
-  if(!E.diag || !E.mapps.length){
-    alvo.innerHTML='<div class="resumo-item vazio">A síntese do Panorama será composta assim que a planilha de execução for importada.</div>';
-    return;
-  }
-  const d=E.diag;
-  const per=periodosSaldo();
-  const pc=per.find(function(p){ return p.id==='c'; });
-  const c=pc?pc.anos[0]:anoCorrenteEfetivo();
-  const uniao=d.noUniverso.filter(function(m){ return m.d.regras.length>0; });
-  let prog=0, emp=0, progC=0, empC=0;
-  d.noUniverso.forEach(function(m){
-    prog+=m.programado; emp+=m.empenhado;
-    progC+=somaAno(m,'Programado',c); empC+=somaAno(m,'Empenhado',c);
-  });
-  const item=function(rot,val,nota,cor,ir,rotBloco,dica){
-    return '<div class="resumo-item" role="button" tabindex="0" data-ir="'+ir+'" style="--cor:'+cor+'"'+
-      tip(dica+'\nUm clique conduz ao bloco “'+rotBloco+'”.',rot)+'>'+
-      '<div class="r-rot">'+esc(rot)+'</div><div class="r-val">'+esc(val)+'</div>'+
-      '<div class="r-nota">'+esc(nota)+'</div></div>';
-  };
-  alvo.innerHTML=
-    item('Linhas importadas',n(E.linhas.length),'registros da planilha','var(--grafite)','importacao','Importação',
-      'Linhas úteis da aba importada'+(E.subtotais?', descartadas '+n(E.subtotais)+' de subtotal':'')+
-      '.\nCada linha corresponde a uma combinação de MAPP e fonte de recurso; uma linha não é um MAPP.')+
-    item('MAPPs consolidados',n(E.mapps.length),'chave ÓRGÃO MAPP','var(--ardosia)','importacao','Importação',
-      'Cálculo: quantidade de chaves distintas ÓRGÃO MAPP entre as linhas importadas.\nTodos os enquadramentos e somatórios operam sobre esta visão.')+
-    item('Universo de saneamento',n(d.noUniverso.length),pct(d.noUniverso.length,E.mapps.length)+' dos consolidados','var(--musgo)','universo','Universo',
-      'Cálculo: MAPPs consolidados menos os excluídos pelo recorte em vigor ('+rotuloUniverso()+').\n'+
-      'Participação = universo ÷ consolidados = '+n(d.noUniverso.length)+' ÷ '+n(E.mapps.length)+'.')+
-    item('União das regras',n(uniao.length),pct(uniao.length,d.noUniverso.length)+' do universo','var(--ferrugem)','universo','Universo',
-      'Cálculo: MAPPs do universo que atendem a ao menos uma das regras 1.a, 1.b, 1.2 e 1.3, cada um contado uma única vez.\n'+
-      'Não equivale à soma das quatro populações, pois há sobreposição ('+n(d.classes['MÚLTIPLAS REGRAS'].length)+' MAPPs em mais de uma regra).')+
-    item('Saldo do universo',rsCurto(prog-emp),'todos os exercícios','var(--latao)','indicadores','Indicadores',
-      'Cálculo: Σ Programado − Σ Empenhado, somados todos os exercícios dos MAPPs do universo.\n'+
-      'Programado: '+rs(prog)+'\nEmpenhado: '+rs(emp))+
-    item('Saldo em '+c,rsCurto(progC-empC),'exercício corrente, universo','var(--petroleo)','saldo','Saldo',
-      'Cálculo: Programado de '+c+' − Empenhado de '+c+', somados sobre os MAPPs do universo.\n'+
-      'Programado: '+rs(progC)+'\nEmpenhado: '+rs(empC)+'\nO exercício corrente segue a âncora temporal em vigor ('+textoAncora()+').');
 }
 
 function rotuloUniverso(){
@@ -2795,26 +2725,6 @@ function desenharGraficos(){
 
   desenharAgregado('gSecretarias','secretaria',tiposGrafico.secretarias);
   desenharAgregado('gOrgaos','orgao',tiposGrafico.orgaos);
-  desenharInstrumentos('gInstrumentosReceita','qr',PALETA[4]);
-  desenharInstrumentos('gInstrumentosDespesa','qd',PALETA[3]);
-}
-
-/* Soma de instrumentos (receita ou despesa) por órgão, quinze maiores. */
-function desenharInstrumentos(id,campo,cor){
-  const mapa=new Map();
-  E.diag.noUniverso.forEach(function(m){
-    const v=m[campo]||0; if(!v) return;
-    const k=m.orgao||'(não informado)';
-    mapa.set(k,(mapa.get(k)||0)+v);
-  });
-  const arr=Array.from(mapa.entries()).sort(function(a,b){ return b[1]-a[1]; }).slice(0,15);
-  grafico(id,{ type:'bar',
-    data:{labels:arr.map(function(p){ return p[0]; }),
-      datasets:[{label:'Instrumentos',data:arr.map(function(p){ return p[1]; }),backgroundColor:cor,borderWidth:0}]},
-    options:{indexAxis:'y',plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:function(c){ return n(c.raw)+' instrumento(s)'; }}}},
-      scales:{x:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:function(v){return n(v);}}},
-              y:{grid:{display:false},ticks:{font:{size:10}}}}}});
 }
 
 function desenharAgregado(id,campo,modo){
@@ -3056,7 +2966,7 @@ function prepararFiltros(){
     ['CANCELADO','Cancelados'],['PARALISADO','Paralisados']],'Todas as situações de regra');
   opcoes('#fEstagio',Object.keys(GRUPOS_ESTAGIO).map(function(g){ return [g,GRUPOS_ESTAGIO[g].rotulo]; }),'Todos os estágios');
   opcoes('#fRevisao',[['pendente','Pendente de revisão'],['acatada','Recomendação acatada'],
-    ['rejeitada','Recomendação rejeitada'],['excluido','Removido do saneamento']],'Todas');
+    ['rejeitada','Recomendação rejeitada'],['excluido','Ocultado do saneamento']],'Todas');
   opcoes('#fExec',[['com','Com execução no período'],['sem','Sem execução no período']],'Indiferente');
   opcoes('#fConfianca',[['Alta','Alta'],['Média','Média'],['Baixa','Baixa']],'Todas');
   ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca'].forEach(montarMulti);
@@ -3172,12 +3082,12 @@ function renderDiagnostico(){
     const conf = d.confianca==='Alta'?'alta':(d.confianca==='Média'?'media':'baixa');
     const ex=E.exclusoes[m.chave];
     const revisao = estaOculto(m.chave)
-      ? '<span class="etq removido"'+tip('Retirado do resultado do saneamento na aba “Saneamento final”.\nMotivo: '+
-          (ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—'),'Removido do saneamento')+'>Removido</span>'
+      ? '<span class="etq excluido"'+tip('Retirado do resultado do saneamento na aba “Saneamento final”.\nMotivo: '+
+          (ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—'),'Ocultado do saneamento')+'>Ocultado</span>'
       : (dec
         ? '<span class="etq '+(dec.situacao==='acatada'?'alta':'baixa')+'">'+(dec.situacao==='acatada'?'Acatada':'Rejeitada')+'</span>'
         : '<span class="etq sem">Pendente</span>');
-    return '<tr class="linha-clicavel'+(E.selecionados.has(m.chave)?' selecionada':'')+(estaOculto(m.chave)?' removida':'')+'" data-chave="'+esc(m.chave)+'">'+
+    return '<tr class="linha-clicavel'+(E.selecionados.has(m.chave)?' selecionada':'')+(estaOculto(m.chave)?' ocultada':'')+'" data-chave="'+esc(m.chave)+'">'+
       '<td><input type="checkbox" class="sel" data-chave="'+esc(m.chave)+'"'+(E.selecionados.has(m.chave)?' checked':'')+'></td>'+
       celulaProvidencia(m,estaOculto(m.chave))+
       '<td class="mono">'+esc(m.codigo)+'</td>'+
@@ -3343,7 +3253,7 @@ function abrirFicha(chave){
       '<button class="btn" data-ficha="ocultar" data-tip="'+(estaOculto(m.chave)
         ? 'Devolve este MAPP ao resultado do saneamento, com registro na auditoria.'
         : 'Retira este MAPP do resultado do saneamento, mediante motivo e responsável. A remoção é individual, reversível e auditada.')+'">'+
-        (estaOculto(m.chave)?'Restabelecer no saneamento':'Remover do saneamento')+'</button>'+
+        (estaOculto(m.chave)?'Restabelecer no saneamento':'Ocultar do saneamento')+'</button>'+
     '</div></div>';
 
   $('#fichaCorpo').innerHTML=html;
@@ -3724,7 +3634,7 @@ function celulaProvidencia(m,oculto){
     tip(oculto
       ? 'Devolve este MAPP ao resultado do saneamento. A providência é registrada na auditoria.'
       : 'Retira este MAPP do resultado do saneamento, mediante motivo e responsável. A remoção é individual, reversível e auditada; a base original não é alterada.',
-      'Providência')+'>'+(oculto?'Restabelecer':'Remover')+'</button></td>';
+      'Providência')+'>'+(oculto?'Restabelecer':'Ocultar')+'</button></td>';
 }
 
 function renderSaneamento(){
@@ -3737,7 +3647,7 @@ function renderSaneamento(){
       'MAPPs alcançados por ao menos uma regra da primeira fase, contados uma única vez ainda que haja sobreposição.')+
     cartao('Mantidos no saneamento',n(fica.length),rsCurto(somaProgramado(fica))+' programados','var(--musgo)',
       'Conjunto que comporá o resultado exportado.')+
-    cartao('Removidos individualmente',n(sai.length),rsCurto(somaProgramado(sai))+' programados','var(--sepia)',
+    cartao('Ocultados individualmente',n(sai.length),rsCurto(somaProgramado(sai))+' devolvidos','var(--sepia)',
       'MAPPs retirados do resultado por decisão do revisor, com motivo e responsável registrados.')+
     cartao('Com decisão registrada',n(fica.filter(function(m){ return E.decisoes[m.chave]; }).length),
       'de '+n(fica.length)+' mantidos','var(--ameixa)',
@@ -3754,7 +3664,7 @@ function renderSaneamento(){
   const pagina=lista.slice(ini,fim);
 
   $('#contagemSaneamento').textContent=n(total)+' de '+n(base.length)+' MAPPs enquadrados';
-  $('#resumoSaneamento').textContent='Programado filtrado: '+rs(somaProgramado(lista))+' · removidos no filtro: '+
+  $('#resumoSaneamento').textContent='Programado filtrado: '+rs(somaProgramado(lista))+' · ocultados no filtro: '+
     n(lista.filter(function(m){ return estaOculto(m.chave); }).length);
   $('#infoPaginaSan').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
 
@@ -3774,15 +3684,15 @@ function renderSaneamento(){
     }).join(' ');
     const dec=E.decisoes[m.chave];
     const situacao = oculto
-      ? '<span class="etq removido"'+tip('Motivo: '+(ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—')+
+      ? '<span class="etq excluido"'+tip('Motivo: '+(ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—')+
           '\nData: '+new Date(ex.data).toLocaleString('pt-BR')+
-          '\nEfeito: o MAPP não integra o resultado exportado; o enquadramento e a base original permanecem intactos.','Removido do saneamento')+'>Removido</span>'
+          '\nEfeito: o MAPP não integra o resultado exportado; o enquadramento e a base original permanecem intactos.','Ocultado do saneamento')+'>Ocultado</span>'
       : (dec ? '<span class="etq '+(dec.situacao==='acatada'?'alta':'baixa')+'"'+
           tip('Decisão humana registrada em '+new Date(dec.data).toLocaleString('pt-BR')+
               '\nResponsável: '+dec.responsavel+'\nJustificativa: '+dec.justificativa,'Revisão')+'>'+
           (dec.situacao==='acatada'?'Acatada':'Rejeitada')+'</span>'
              : '<span class="etq sem"'+tip('Permanece no resultado do saneamento e ainda não recebeu decisão humana.','Mantido')+'>Mantido</span>');
-    return '<tr class="'+(oculto?'removida ':'')+(E.selecionadosSan.has(m.chave)?'selecionada':'')+'" data-chave-san="'+esc(m.chave)+'">'+
+    return '<tr class="'+(oculto?'ocultada ':'')+(E.selecionadosSan.has(m.chave)?'selecionada':'')+'" data-chave-san="'+esc(m.chave)+'">'+
       '<td><input type="checkbox" class="selsan" data-chave="'+esc(m.chave)+'"'+(E.selecionadosSan.has(m.chave)?' checked':'')+'></td>'+
       celulaProvidencia(m,oculto)+
       '<td class="mono"><a href="#" data-ficha-san="'+esc(m.chave)+'" data-tip="Abre a ficha completa do MAPP, com todas as regras testadas e suas evidências.">'+esc(m.codigo)+'</a></td>'+
@@ -3814,9 +3724,9 @@ function pintarEncerramento(){
   if(E.encerramento){
     el.innerHTML='<span class="etq alta">Saneamento concluído</span> '+
       esc(E.encerramento.responsavel)+' · '+new Date(E.encerramento.data).toLocaleString('pt-BR')+
-      ' · '+n(mantidos().length)+' MAPPs mantidos e '+n(ocultados().length)+' removidos';
+      ' · '+n(mantidos().length)+' MAPPs mantidos e '+n(ocultados().length)+' ocultados';
   } else {
-    el.innerHTML='<span class="etq sem">Saneamento em curso</span> '+n(ocultados().length)+' MAPP(s) removido(s) até o momento';
+    el.innerHTML='<span class="etq sem">Saneamento em curso</span> '+n(ocultados().length)+' MAPP(s) ocultado(s) até o momento';
   }
 }
 
@@ -3835,12 +3745,12 @@ async function ocultarMapps(chaves,rotulo){
   if(perguntar){
     const corpo='<div class="aviso nota"><span class="marca">'+(chaves.length>1?n(chaves.length)+' MAPP(s)':esc(rotulo||''))+
       '</span><span>O MAPP sai do resultado do saneamento e deixa de constar da exportação final. O enquadramento apurado, a base original e o histórico permanecem inalterados.</span></div>'+
-      campoTexto('responsavel','Responsável pela remoção',responsavel,'Nome ou matrícula de quem determina a retirada. Consta da auditoria.')+
-      campoArea('motivo','Motivo da remoção',motivo,'Fundamento da retirada — por exemplo, execução em curso não refletida na base, reativação já solicitada pelo órgão ou erro de cadastro.')+
-      (chaves.length===1?'<label class="chk"><input type="checkbox" data-campo="repetir" value="sim"> Repetir este motivo nas próximas remoções desta sessão, sem perguntar</label>':'');
-    const r=await dialogo({ titulo: chaves.length>1?'Remover MAPPs selecionados':'Remover MAPP do saneamento',
-      texto:'A remoção é individual, reversível e integralmente auditada.',
-      corpo:corpo, confirmar:'Remover do saneamento', tom:'risco', exigir:['responsavel','motivo'] });
+      campoTexto('responsavel','Responsável pela exclusão',responsavel,'Nome ou matrícula de quem determina a retirada. Consta da auditoria.')+
+      campoArea('motivo','Motivo da exclusão',motivo,'Fundamento da retirada — por exemplo, execução em curso não refletida na base, reativação já solicitada pelo órgão ou erro de cadastro.')+
+      (chaves.length===1?'<label class="chk"><input type="checkbox" data-campo="repetir" value="sim"> Repetir este motivo nas próximas exclusões desta sessão, sem perguntar</label>':'');
+    const r=await dialogo({ titulo: chaves.length>1?'Ocultar MAPPs selecionados':'Ocultar MAPP do saneamento',
+      texto:'A exclusão é individual, reversível e integralmente auditada.',
+      corpo:corpo, confirmar:'Ocultar do saneamento', tom:'risco', exigir:['responsavel','motivo'] });
     if(!r) return;
     motivo=limpo(r.motivo); responsavel=limpo(r.responsavel);
     E.responsavel=responsavel; E.motivoExclusao=motivo;
@@ -3851,12 +3761,12 @@ async function ocultarMapps(chaves,rotulo){
     if(estaOculto(k)) return;
     const m=E.mapps[E.indice.get(k)];
     E.exclusoes[k]={ motivo:motivo, responsavel:responsavel, data:agora };
-    auditar(m,'Saneamento','Mantido','Removido do resultado',motivo);
+    auditar(m,'Saneamento','Mantido','Ocultado do resultado',motivo);
   });
   E.selecionadosSan.clear();
   marcarPasso(8);
-  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); renderAntesDepois(); atualizarSelo();
-  recado(n(chaves.length)+' MAPP(s) removido(s) do saneamento.');
+  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); atualizarSelo();
+  recado(n(chaves.length)+' MAPP(s) ocultado(s) do saneamento.');
 }
 
 function restabelecerMapps(chaves){
@@ -3866,20 +3776,20 @@ function restabelecerMapps(chaves){
     const m=E.mapps[E.indice.get(k)];
     const ex=E.exclusoes[k];
     delete E.exclusoes[k];
-    auditar(m,'Saneamento','Removido do resultado','Restabelecido','Revogação da remoção anterior ('+(ex.motivo||'sem motivo registrado')+').');
+    auditar(m,'Saneamento','Ocultado do resultado','Restabelecido','Revogação da exclusão anterior ('+(ex.motivo||'sem motivo registrado')+').');
     q++;
   });
-  if(!q){ recado('Nenhum dos MAPPs selecionados estava removido.'); return; }
+  if(!q){ recado('Nenhum dos MAPPs selecionados estava ocultado.'); return; }
   E.selecionadosSan.clear();
-  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); renderAntesDepois(); atualizarSelo();
+  renderSaneamento(); renderDiagnostico(); renderAuditoria(); renderExportacoes(); atualizarSelo();
   recado(n(q)+' MAPP(s) restabelecido(s).');
 }
 
 async function restabelecerTudo(){
   const chaves=Object.keys(E.exclusoes);
-  if(!chaves.length){ recado('Não há remoções registradas.'); return; }
-  const r=await dialogo({ titulo:'Restabelecer todos os MAPPs removidos',
-    texto:'Todas as remoções individuais desta sessão serão revogadas.',
+  if(!chaves.length){ recado('Não há exclusões registradas.'); return; }
+  const r=await dialogo({ titulo:'Restabelecer todos os MAPPs ocultados',
+    texto:'Todas as exclusões individuais desta sessão serão revogadas.',
     corpo:'<div class="aviso alerta"><span class="marca">'+n(chaves.length)+' MAPP(s)</span><span>Cada revogação gera um lançamento próprio na auditoria.</span></div>',
     confirmar:'Restabelecer todos', tom:'risco' });
   if(!r) return;
@@ -3893,7 +3803,7 @@ async function finalizarSaneamento(){
   const fica=mantidos(), sai=ocultados();
   const corpo='<div class="aviso nota"><span class="marca">Resultado</span><span>'+
     n(fica.length)+' MAPP(s) mantidos ('+rs(somaProgramado(fica))+' programados) e '+
-    n(sai.length)+' removidos. '+n(Object.keys(E.decisoes).length)+' decisão(ões) humana(s) registrada(s).</span></div>'+
+    n(sai.length)+' ocultados. '+n(Object.keys(E.decisoes).length)+' decisão(ões) humana(s) registrada(s).</span></div>'+
     campoTexto('responsavel','Responsável pelo encerramento',E.responsavel,'Autoridade que declara concluído o saneamento.')+
     campoArea('observacao','Observação final','','Registro do contexto do encerramento, remissão a processo ou expediente.');
   const r=await dialogo({ titulo:'Declarar saneamento concluído',
@@ -3945,11 +3855,11 @@ function linhasResumoFinal(){
     ['Regra 1.3', d.regras['1.3'].length],
     ['Sobreposições', d.classes['MÚLTIPLAS REGRAS'].length],
     ['Enquadrados (união das regras)', conjuntoEnquadrado().length],
-    ['Removidos individualmente', sai.length],
+    ['Excluídos individualmente', sai.length],
     ['Resultado final — MAPPs mantidos', fica.length],
     ['Resultado final — programado mantido (R$)', somaProgramado(fica)],
     ['Resultado final — empenhado mantido (R$)', somaEmpenhado(fica)],
-    ['Programado devolvido pelas remoções (R$)', somaProgramado(sai)],
+    ['Programado devolvido pelas exclusões (R$)', somaProgramado(sai)],
     ['Decisões humanas registradas', Object.keys(E.decisoes).length],
     ['Lançamentos de auditoria', E.auditoria.length],
     ['Situação do saneamento', E.encerramento?'Concluído':'Em curso'],
@@ -3970,8 +3880,8 @@ function linhasExcluidos(){
       'REGRAS ATENDIDAS':m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + '),
       'AÇÃO QUE SERIA RECOMENDADA':m.d.acao,
       'PROGRAMADO TOTAL':m.programado,'EMPENHADO TOTAL':m.empenhado,
-      'MOTIVO DA REMOÇÃO':ex.motivo,'RESPONSÁVEL':ex.responsavel,
-      'DATA DA REMOÇÃO':new Date(ex.data).toLocaleString('pt-BR')
+      'MOTIVO DA EXCLUSÃO':ex.motivo,'RESPONSÁVEL':ex.responsavel,
+      'DATA DA EXCLUSÃO':new Date(ex.data).toLocaleString('pt-BR')
     };
   });
 }
@@ -3987,11 +3897,11 @@ async function exportarResultadoFinal(){
       XLSX.utils.json_to_sheet(fica.length?linhasMapp(fica):[{'MAPP':'(nenhum MAPP mantido)'}]),
       'RESULTADO DO SANEAMENTO');
     XLSX.utils.book_append_sheet(wb,
-      XLSX.utils.json_to_sheet(exc.length?exc:[{'MAPP':'(nenhuma remoção individual)'}]),
-      'REMOVIDOS');
+      XLSX.utils.json_to_sheet(exc.length?exc:[{'MAPP':'(nenhuma exclusão individual)'}]),
+      'EXCLUIDOS');
     XLSX.writeFile(wb,'resultado_saneamento_mapps_'+hojeISO()+'.xlsx');
     marcarPasso(9);
-    recado('Resultado exportado: '+n(fica.length)+' mantidos e '+n(exc.length)+' removidos.');
+    recado('Resultado exportado: '+n(fica.length)+' mantidos e '+n(exc.length)+' excluídos.');
   }catch(err){ recado('Falha ao exportar: '+err.message); }
   veuCarga(false);
 }
@@ -4115,7 +4025,12 @@ function pesoAD(m){ return medidaAD()==='valor' ? m.programado : 1; }
 function fmtAD(v){ return medidaAD()==='valor' ? rsCurto(v) : n(v); }
 function rotuloMedida(){ return medidaAD()==='valor' ? 'valor programado' : 'quantidade de MAPPs'; }
 
-function rotuloEstrato(){ return 'Órgão'; }
+const ROTULO_ESTRATO = { secretaria:'Secretaria', orgao:'Órgão', programa:'Programa',
+                         ano:'Ano de aprovação', estagio:'Estágio de execução' };
+const PLURAL_ESTRATO = { secretaria:'secretarias', orgao:'órgãos', programa:'programas',
+                         ano:'exercícios de aprovação', estagio:'estágios' };
+function campoEstrato(){ return $('#adEstrato') ? $('#adEstrato').value : 'secretaria'; }
+function rotuloEstrato(){ return ROTULO_ESTRATO[campoEstrato()] || 'Estrato'; }
 
 /* Resumo curto da regra, para as dicas das células. */
 function resumoRegra(id){
@@ -4127,12 +4042,16 @@ function resumoRegra(id){
            '1.3':'estágio de execução física concluída' }[id];
 }
 
-function estratoDe(m){ return m.orgao||'(não informado)'; }
+function estratoDe(m){
+  const campo=campoEstrato();
+  if(campo==='ano') return m.ano?String(m.ano):'(sem ano)';
+  if(campo==='estagio') return GRUPOS_ESTAGIO[m.estagio].rotulo;
+  return m[campo]||'(não informado)';
+}
 
 /* Apuração completa do comparativo. */
 function apurarAntesDepois(){
-  const orgaosFiltro=valoresMulti('#adOrgao');
-  const universo=E.diag.noUniverso.filter(function(m){ return casaMulti(orgaosFiltro,m.orgao); });
+  const universo=E.diag.noUniverso;
   const antes={}, depois={};
   SITUACOES.forEach(function(s){ antes[s]={q:0,v:0}; depois[s]={q:0,v:0}; });
   const porRegra={'1a':{q:0,v:0},'1b':{q:0,v:0},'1.2':{q:0,v:0},'1.3':{q:0,v:0}};
@@ -4215,9 +4134,9 @@ function renderAntesDepois(){
       REGRAS['1.3'].nome+': '+resumoRegra('1.3')+' — '+REGRAS['1.3'].acao+'. '+fmtAD(medida==='valor'?a.porRegra['1.3'].v:a.porRegra['1.3'].q)+'.\n'+
       'Desdobramento: saem da listagem principal, seguem consultáveis por filtro e podem ser reativados pelo órgão.',
       true,'Passam a concluídos')+
-    cartao('Removidos individualmente',fmtAD(medida==='valor'?a.excluidos.v:a.excluidos.q),
+    cartao('Devolvidos pela exclusão individual',fmtAD(medida==='valor'?a.excluidos.v:a.excluidos.q),
       'permanecem como antes','var(--sepia)',
-      'MAPPs enquadrados que foram removidos na aba de saneamento final: a projeção não lhes aplica efeito algum.',true);
+      'MAPPs enquadrados que foram ocultados na aba de saneamento final: a projeção não lhes aplica efeito algum.',true);
 
   const linhas=Array.from(a.estratos.values()).sort(function(x,y){
     return (medida==='valor'?y.antesV-x.antesV:y.antes-x.antes);
@@ -4226,11 +4145,11 @@ function renderAntesDepois(){
   const vD=function(o){ return medida==='valor'?o.depoisV:o.depois; };
   const vR=function(o,r){ return medida==='valor'?o.regrasV[r]:o.regras[r]; };
   $('#adLegendaTabela').textContent='Desdobrado por '+rotuloEstrato().toLowerCase()+
-    ' · medida: '+rotuloMedida()+' · '+n(linhas.length)+' órgãos';
+    ' · medida: '+rotuloMedida()+' · '+n(linhas.length)+' '+PLURAL_ESTRATO[campoEstrato()];
 
   const colunas=[
     { rot:rotuloEstrato(), num:false,
-      tip:'Cada linha reúne todos os MAPPs do universo (após o filtro por órgão) executados por este mesmo órgão.' },
+      tip:'Dimensão de desdobramento escolhida no cenário. Cada linha reúne todos os MAPPs do universo com este mesmo valor de '+rotuloEstrato().toLowerCase()+'.' },
     { rot:'Ativos antes', num:true,
       tip:'Situação registrada na base: MAPPs cujo estágio não indica conclusão, cancelamento nem paralisação.\nMedida: '+rotuloMedida()+'.' },
     { rot:'Ativos depois', num:true,
@@ -4241,8 +4160,8 @@ function renderAntesDepois(){
     { rot:REGRAS['1b'].nome, num:true, regra:'1b' },
     { rot:REGRAS['1.2'].nome, num:true, regra:'1.2' },
     { rot:REGRAS['1.3'].nome, num:true, regra:'1.3' },
-    { rot:'Removidos', num:true,
-      tip:'MAPPs enquadrados que foram removidos individualmente na aba de saneamento final. A projeção não lhes aplica efeito algum: permanecem como estavam.' }
+    { rot:'Excluídos', num:true,
+      tip:'MAPPs enquadrados que foram ocultados individualmente na aba de saneamento final. A projeção não lhes aplica efeito algum: permanecem como estavam.' }
   ];
   $('#tabAntesDepois').querySelector('thead tr').innerHTML = colunas.map(function(c){
     const dica = c.regra
@@ -4265,11 +4184,11 @@ function renderAntesDepois(){
           '\nEfeito na projeção: '+((r==='1.2'||r==='1.3')?'passa a concluído físico e financeiro':'passa a pendente')+'.';
         return '<td class="num"'+(v?tip(dica,REGRAS[r].nome):'')+'>'+fmtAD(v)+'</td>';
       }).join('')+
-      '<td class="num"'+tip('Removidos individualmente em '+o.nome+': '+
+      '<td class="num"'+tip('Ocultados individualmente em '+o.nome+': '+
         (medida==='valor'?rs(o.excV):n(o.exc)+' MAPP(s)')+
-        '\nEsses MAPPs foram enquadrados pelas regras, mas retirados do resultado do saneamento — a projeção os mantém como estavam.','Removidos')+
+        '\nEsses MAPPs foram enquadrados pelas regras, mas retirados do resultado do saneamento — a projeção os mantém como estavam.','Excluídos')+
       '>'+fmtAD(medida==='valor'?o.excV:o.exc)+'</td></tr>';
-  }).join('') : '<tr><td colspan="10" class="vazio">Nenhum órgão a exibir.</td></tr>';
+  }).join('') : '<tr><td colspan="10" class="vazio">Nenhum estrato a exibir.</td></tr>';
 
   const gs=$('#dicaGrafRegras');
   if(gs) gs.setAttribute('data-tip',
@@ -4278,7 +4197,7 @@ function renderAntesDepois(){
       return REGRAS[r].nome+': '+resumoRegra(r)+' → '+REGRAS[r].acao+'.';
     }).join('\n')+
     '\nSobreposição: o MAPP que satisfaz mais de uma regra é atribuído à de efeito mais forte — conclusão prevalece sobre pendência — para não ser contado duas vezes.\n'+
-    'Removidos: removidos individualmente no saneamento, sem efeito algum na projeção.');
+    'Excluídos: ocultados individualmente no saneamento, sem efeito algum na projeção.');
   const gt=$('#dicaGrafSituacao');
   if(gt) gt.setAttribute('data-tip',
     'Distribuição dos MAPPs por situação administrativa nos dois momentos, em '+rotuloMedida()+'.\n'+
@@ -4306,7 +4225,7 @@ function desenharAntesDepois(){
     options:{plugins:{tooltip:{callbacks:{label:rotuloTip}}},
       scales:{y:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:fmtEixo}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
 
-  const rotRegras=['1a','1b','1.2','1.3'].map(function(r){ return REGRAS[r].nome; }).concat(['Removidos (sem efeito)']);
+  const rotRegras=['1a','1b','1.2','1.3'].map(function(r){ return REGRAS[r].nome; }).concat(['Excluídos (sem efeito)']);
   const datRegras=['1a','1b','1.2','1.3'].map(function(r){ return val(a.porRegra[r]); }).concat([val(a.excluidos)]);
   grafico('gAdRegras',{ type:tiposGrafico.adRegras==='doughnut'?'doughnut':'bar',
     data:{labels:rotRegras,datasets:[{label:medida==='valor'?'Programado':'MAPPs',data:datRegras,
@@ -4318,7 +4237,7 @@ function desenharAntesDepois(){
           const ids=['1a','1b','1.2','1.3'];
           const r=ids[c.dataIndex];
           return r ? [resumoRegra(r),'Ação: '+REGRAS[r].acao]
-                   : ['Removidos individualmente no saneamento','Permanecem como estavam'];
+                   : ['Ocultados individualmente no saneamento','Permanecem como estavam'];
         }}}},
       scales:tiposGrafico.adRegras==='doughnut'?{}:{y:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:fmtEixo}},x:{grid:{display:false}}}}});
 
@@ -4327,8 +4246,8 @@ function desenharAntesDepois(){
   }).slice(0,15);
   grafico('gAdEstrato',{ type:'bar',
     data:{labels:estr.map(function(o){ return o.nome; }),datasets:[
-      {label:'Ativos antes',data:estr.map(function(o){ return medida==='valor'?o.antesV:o.antes; }),backgroundColor:PALETA[0],borderWidth:0},
-      {label:'Ativos depois',data:estr.map(function(o){ return medida==='valor'?o.depoisV:o.depois; }),backgroundColor:PALETA[1],borderWidth:0}
+      {label:'Ativos antes',data:estr.map(function(o){ return medida==='valor'?o.antesV:o.antes; }),backgroundColor:PALETA[8],borderWidth:0},
+      {label:'Ativos depois',data:estr.map(function(o){ return medida==='valor'?o.depoisV:o.depois; }),backgroundColor:PALETA[2],borderWidth:0}
     ]},
     options:{indexAxis:'y',plugins:{tooltip:{callbacks:{label:rotuloTip}}},
       scales:{x:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:fmtEixo}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
@@ -4337,9 +4256,9 @@ function desenharAntesDepois(){
   grafico('gAdAnos',{ type:tiposGrafico.adAnos==='bar'?'bar':'line',
     data:{labels:anos,datasets:[
       {label:'Ativos antes',data:anos.map(function(y){ const o=a.anos.get(y); return medida==='valor'?o.antesV:o.antes; }),
-        borderColor:PALETA[0],backgroundColor:PALETA[0],borderWidth:2,tension:.25,pointRadius:2},
+        borderColor:PALETA[8],backgroundColor:PALETA[8],borderWidth:2,tension:.25,pointRadius:2},
       {label:'Ativos depois',data:anos.map(function(y){ const o=a.anos.get(y); return medida==='valor'?o.depoisV:o.depois; }),
-        borderColor:PALETA[1],backgroundColor:PALETA[1],borderWidth:2,tension:.25,pointRadius:2}
+        borderColor:PALETA[2],backgroundColor:PALETA[2],borderWidth:2,tension:.25,pointRadius:2}
     ]},
     options:{plugins:{tooltip:{callbacks:{label:rotuloTip}}},
       scales:{y:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:fmtEixo}},x:{grid:{display:false}}}}});
@@ -4360,7 +4279,7 @@ function linhasAntesDepois(){
     linha['VARIAÇÃO (%)']=va?(100*(vd-va)/va):0;
     linha['REGRA 1.A']=r('1a'); linha['REGRA 1.B']=r('1b');
     linha['REGRA 1.2']=r('1.2'); linha['REGRA 1.3']=r('1.3');
-    linha['REMOVIDOS INDIVIDUALMENTE']=medida==='valor'?o.excV:o.exc;
+    linha['EXCLUÍDOS INDIVIDUALMENTE']=medida==='valor'?o.excV:o.exc;
     return linha;
   });
 }
@@ -4373,21 +4292,10 @@ function exportarAntesDepois(){
 }
 
 function ligarEventosAntesDepois(){
-  ['#adBase','#adMedida','#adOrgao'].forEach(function(s){
+  ['#adBase','#adMedida','#adEstrato'].forEach(function(s){
     $(s).addEventListener('change',renderAntesDepois);
   });
   $('#btnExportarAntesDepois').addEventListener('click',exportarAntesDepois);
-}
-
-/* Popula o filtro por órgão com os órgãos do universo e marca todos por padrão. */
-function prepararFiltroAntesDepois(){
-  const unicos=Array.from(new Set(E.diag.noUniverso.map(function(m){ return m.orgao; }))).filter(Boolean).sort()
-    .map(function(v){ return [v,v]; });
-  opcoes('#adOrgao',unicos,'Todos os órgãos');
-  montarMulti('#adOrgao');
-  const st=MULTIS.adOrgao;
-  st.escolha=new Set(unicos.map(function(p){ return p[0]; }));
-  rotularMulti('adOrgao');
 }
 </script>
 <script>
@@ -4417,7 +4325,7 @@ function linhasMapp(lista){
       'AÇÃO RECOMENDADA':m.d.acao, 'CRITÉRIO DE EXECUÇÃO':E.diag.criterio
     };
     const dec=E.decisoes[m.chave];
-    o['SITUAÇÃO DA REVISÃO']=estaOculto(m.chave)?'REMOVIDO':(dec?(dec.situacao==='acatada'?'ACATADA':'REJEITADA'):'PENDENTE');
+    o['SITUAÇÃO DA REVISÃO']=dec?(dec.situacao==='acatada'?'ACATADA':'REJEITADA'):'PENDENTE';
     o['RESPONSÁVEL']=dec?dec.responsavel:'';
     o['JUSTIFICATIVA']=dec?dec.justificativa:'';
     o['DATA DA DECISÃO']=dec?new Date(dec.data).toLocaleString('pt-BR'):'';
@@ -4493,9 +4401,9 @@ function conjuntos(){
         'MAPP':t.m.codigo,'ÓRGÃO':t.m.orgao,'TÍTULO':t.m.titulo,'PALAVRAS':t.palavras,
         'APONTAMENTO':t.apontamentos.join(' · '),'SUGESTÃO':t.sugestao }; }); } },
     { id:'final', nome:'Resultado final do saneamento', aba:'RESULTADO FINAL',
-      dica:'MAPPs enquadrados pelas regras que permaneceram após as remoções individuais.',
+      dica:'MAPPs enquadrados pelas regras que permaneceram após as exclusões individuais.',
       dados:function(){ return linhasMapp(mantidos()); } },
-    { id:'excluidos', nome:'Removidos individualmente', aba:'REMOVIDOS',
+    { id:'excluidos', nome:'Excluídos individualmente', aba:'EXCLUIDOS',
       dica:'MAPPs retirados do resultado do saneamento, com motivo, responsável e data.',
       dados:linhasExcluidos },
     { id:'saldo', nome:'Saldo por exercício', aba:'SALDO',
@@ -4701,13 +4609,11 @@ function ligarEventos(){
 
   const area=$('#areaSolta');
   $('#btnEscolher').addEventListener('click',function(){ $('#arquivo').click(); });
-  $('#btnCarregarRepo').addEventListener('click',carregarPlanilhaDoRepositorio);
   $('#arquivo').addEventListener('change',function(ev){ if(ev.target.files[0]) lerArquivo(ev.target.files[0]); });
   ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
   ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
   area.addEventListener('drop',function(ev){ if(ev.dataTransfer.files[0]) lerArquivo(ev.dataTransfer.files[0]); });
-  $('#selAba').addEventListener('change',function(){ if(E.buffer||E.textoCSV) importar(); });
-  $('#selSubtotal').addEventListener('change',function(){ if(E.buffer||E.textoCSV) importar(); });
+  $('#btnProcessar').addEventListener('click',importar);
 
   ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca'].forEach(function(s){
     $(s).addEventListener('change',function(){ E.pagina=1; renderDiagnostico(); });
@@ -4834,21 +4740,6 @@ function ligarEventos(){
   $$('#segPanorama .seg').forEach(function(b){
     b.addEventListener('click',function(){ irParaSegmento(b.getAttribute('data-seg')); });
   });
-  $('#resumoPanorama').addEventListener('click',function(ev){
-    const it=ev.target.closest('[data-ir]'); if(it) irParaSegmento(it.getAttribute('data-ir'));
-  });
-  $('#resumoPanorama').addEventListener('keydown',function(ev){
-    const it=ev.target.closest('[data-ir]');
-    if(it && (ev.key==='Enter'||ev.key===' ')){ ev.preventDefault(); irParaSegmento(it.getAttribute('data-ir')); }
-  });
-  let quadroRolagem=0;
-  window.addEventListener('scroll',function(){
-    if(quadroRolagem) return;
-    quadroRolagem=requestAnimationFrame(function(){ quadroRolagem=0; acompanharRolagem(); });
-  },{passive:true});
-  window.addEventListener('scrollend',function(){ E.rolagemTravada=0; acompanharRolagem(); });
-  window.addEventListener('resize',medirTopo);
-  if(window.ResizeObserver) new ResizeObserver(medirTopo).observe($('.topo'));
   $('#btnConfig').addEventListener('click',abrirConfig);
   $('#btnFecharConfig').addEventListener('click',fecharConfig);
   ligarEventosSaldo();
@@ -4880,9 +4771,7 @@ function iniciar(){
   pintarFluxo();
   aplicarAncora();
   cfgParaTela();
-  medirTopo();
-  irParaSegmento('importacao','sem-rolar');
-  renderResumoPanorama();
+  irParaSegmento('importacao');
   ligarEventos();
   renderAuditoria();
   pintarEncerramento();
@@ -4892,6 +4781,569 @@ function iniciar(){
   }
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciar); else iniciar();
+</script>
+<script>
+/* ==========================================================================
+   10. Apresentação de abertura e manual
+   Pop-up exibido a cada carregamento, com o resumo técnico e o fluxo de
+   trabalho do saneamento; aba “Manual”, com o guia de operação passo a passo
+   e o manual técnico de evolução e manutenção. Nada aqui altera dados: o
+   bloco apenas lê o estado E para exibir parâmetros e populações em vigor.
+   ========================================================================== */
+
+/* ------------------------------ Ícones (SVG) ----------------------------- */
+
+const ICONES = {
+  planilha:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14h17M9 4v16M15 4v16"/>',
+  lupa:'<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>',
+  carimbo:'<path d="M9 3.5h6v4.5l-1.5 3h-3L9 8z"/><path d="M5 14.5h14v3H5z"/><path d="M6.5 20.5h11"/>',
+  selo:'<circle cx="12" cy="9.5" r="5.5"/><path d="M9.6 9.5l1.7 1.7 3.2-3.3"/><path d="M8.7 14l-1.5 6.5 4.8-2.4 4.8 2.4-1.5-6.5"/>',
+  entrada:'<path d="M6 3.5h8l4 4V20.5H6z"/><path d="M14 3.5V8h4"/><path d="M12 17.5v-6M9.5 14L12 11.5 14.5 14"/>',
+  verifica:'<path d="M12 3.5l7 3v5c0 4.2-3 7.6-7 9-4-1.4-7-4.8-7-9v-5z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.4"/>',
+  camadas:'<path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5"/><path d="M3.5 16.5L12 21l8.5-4.5"/>',
+  balanca:'<path d="M12 4v16M8 20h8M4.5 7.5h15"/><path d="M4.5 7.5L2.5 13h4zM19.5 7.5L17.5 13h4z"/>',
+  olho:'<path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>',
+  engrenagem:'<circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.6M12 18.4V21M3 12h2.6M18.4 12H21M5.6 5.6l1.9 1.9M16.5 16.5l1.9 1.9M5.6 18.4l1.9-1.9M16.5 7.5l1.9-1.9"/>',
+  saida:'<path d="M6 3.5h8l4 4V20.5H6z"/><path d="M14 3.5V8h4"/><path d="M12 11.5v6M9.5 15L12 17.5 14.5 15"/>',
+  livro:'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/>',
+  codigo:'<path d="M8.5 7L3.5 12l5 5M15.5 7l5 5-5 5M13.5 5l-3 14"/>',
+  bussola:'<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  fonte:'<ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"/><path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>',
+  alvo:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+  predio:'<path d="M4 20.5h16M6 20.5V9l6-4.5L18 9v11.5"/><path d="M9.5 20.5v-5h5v5M9 11h.01M15 11h.01"/>'
+};
+function icone(nome,tam){
+  const t=tam||18;
+  return '<svg width="'+t+'" height="'+t+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '+
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONES[nome]||'')+'</svg>';
+}
+function setaFluxo(tam){
+  const t=tam||22;
+  return '<svg width="'+t+'" height="'+t+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '+
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h16"/><path d="M14 7l5 5-5 5"/></svg>';
+}
+/* Texto com marcação mínima: `código` e **negrito**. */
+function fmtTexto(s){
+  return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+}
+
+/* ------------------------- Macrofases do rito ----------------------------
+   Agrupam os nove passos de PASSOS. O destino de cada passo é a tela em que
+   ele se realiza: [aba] ou [aba, segmento]. */
+
+const APR_FASES = [
+  { id:'aquisicao', nome:'Aquisição', cor:'var(--ardosia)', icone:'planilha', etapas:[0,1,2],
+    resumo:'A planilha de execução é lida, conferida e agrupada por MAPP, sem que a base original sofra qualquer alteração.',
+    produto:'base consolidada por MAPP' },
+  { id:'analise', nome:'Análise', cor:'var(--latao)', icone:'lupa', etapas:[3,4],
+    resumo:'A execução é aferida segundo o critério em vigor e as quatro regras são aplicadas, com evidência e grau de confiança.',
+    produto:'enquadramento fundamentado' },
+  { id:'deliberacao', nome:'Deliberação', cor:'var(--ameixa)', icone:'carimbo', etapas:[5,6],
+    resumo:'O servidor examina as evidências e acata ou rejeita cada recomendação, sempre com responsável e justificativa.',
+    produto:'decisões registradas e auditadas' },
+  { id:'consumacao', nome:'Consumação', cor:'var(--musgo)', icone:'selo', etapas:[7,8],
+    resumo:'O resultado é consolidado, com as exclusões individuais, e as relações e o registro de auditoria são exportados.',
+    produto:'resultado final exportado' }
+];
+const APR_ICONE_PASSO = ['entrada','verifica','camadas','lupa','balanca','olho','carimbo','engrenagem','saida'];
+const APR_DESTINO = [
+  ['panorama','importacao'],['panorama','importacao'],['panorama','importacao'],
+  ['diagnostico'],['panorama','regras'],['diagnostico'],['diagnostico'],['saneamento'],['auditoria']
+];
+const ROTULO_DESTINO = {
+  panorama:'Panorama', diagnostico:'Diagnóstico', qualidade:'Revisão', saneamento:'Saneamento final',
+  antesdepois:'Antes e Depois', fase2:'Despesas de continuidade', auditoria:'Auditoria e exportações', manual:'Manual',
+  importacao:'Importação', indicadores:'Indicadores', universo:'Universo', regras:'Regras aplicadas', saldo:'Saldo por exercício', programacao:'Programação'
+};
+function rotuloDestino(d){ return d.map(function(x){ return ROTULO_DESTINO[x]||x; }).join(' › '); }
+function irParaDestino(d){
+  irParaAba(d[0]);
+  if(d[1] && d[0]==='panorama') irParaSegmento(d[1]);
+}
+
+const PRINCIPIO = [
+  ['DADO','A planilha de execução, tal como importada. Nunca é alterada.','var(--grafite)'],
+  ['CÁLCULO','Somatórios por exercício e aferição da execução segundo o critério em vigor.','var(--ardosia)'],
+  ['REGRA','Enquadramento nas regras 1.a, 1.b, 1.2 e 1.3, com a âncora temporal resolvida.','var(--latao)'],
+  ['RECOMENDAÇÃO','Ação sugerida para o MAPP, acompanhada de evidência e grau de confiança.','var(--ameixa)'],
+  ['DECISÃO HUMANA','Único ato que produz efeito: exige responsável e justificativa e é auditado.','var(--musgo)']
+];
+function cadeiaPrincipio(){
+  return '<div class="apr-cadeia">'+PRINCIPIO.map(function(p,i){
+    return (i?'<span class="apr-seta">'+setaFluxo(18)+'</span>':'')+
+      '<span class="apr-elo'+(i===PRINCIPIO.length-1?' final':'')+'" style="--cor:'+p[2]+'"'+tip(p[1],p[0])+' tabindex="0">'+esc(p[0])+'</span>';
+  }).join('')+'</div>';
+}
+
+/* ------------------------------ Apresentação ----------------------------- */
+
+function htmlApresentacao(){
+  const resumo=[
+    ['Finalidade','alvo','var(--grafite)','Diagnosticar, enquadrar e sanear a carteira de MAPPs do Governo do Estado do Ceará, identificando projetos sem execução, com execução encerrada ou com execução física concluída.'],
+    ['Princípio reitor','balanca','var(--petroleo)','Nenhum indício converte-se, por si, em ato administrativo. Toda recomendação exibe sua evidência e toda decisão exige responsável e justificativa.'],
+    ['Fonte de dados','fonte','var(--ocre)','Única fonte quantitativa: a planilha “Saneamento Mapps - Exec.”, aba Consulta. Cada linha é uma combinação de MAPP e fonte; a chave de consolidação é ÓRGÃO MAPP.'],
+    ['Arquitetura','codigo','var(--sepia)','Aplicação de arquivo único, executada inteiramente no navegador, sem servidor, banco ou login. Bibliotecas SheetJS, Chart.js e PapaParse, carregadas por CDN.']
+  ].map(function(r){
+    return '<div class="apr-nota" style="--cor:'+r[2]+'"><h4>'+icone(r[1],16)+esc(r[0])+'</h4><p>'+esc(r[3])+'</p></div>';
+  }).join('');
+
+  const fluxo=APR_FASES.map(function(f,k){
+    const etapas=f.etapas.map(function(i){
+      const d=APR_DESTINO[i];
+      return '<li><button type="button" class="apr-etapa" data-apr-ir="'+d.join('|')+'"'+
+        tip(PASSOS_DICA[i]+'\nOnde se realiza: '+rotuloDestino(d)+'.\nAção do botão: fecha a apresentação e abre essa tela.',
+            String(i+1).padStart(2,'0')+' · '+PASSOS[i])+'>'+
+        '<span class="n">'+String(i+1).padStart(2,'0')+'</span>'+icone(APR_ICONE_PASSO[i],16)+
+        '<span>'+esc(PASSOS[i])+'</span><span class="ir" aria-hidden="true">›</span></button></li>';
+    }).join('');
+    return (k?'<div class="apr-conector" aria-hidden="true">'+setaFluxo(24)+'</div>':'')+
+      '<article class="apr-fase" style="--cor:'+f.cor+'">'+
+        '<header><span class="icone-fase">'+icone(f.icone,20)+'</span>'+
+        '<span><span class="ordem-fase">Fase '+['I','II','III','IV'][k]+'</span><span class="nome-fase">'+esc(f.nome)+'</span></span></header>'+
+        '<p class="resumo-fase">'+esc(f.resumo)+'</p>'+
+        '<ol class="apr-etapas">'+etapas+'</ol>'+
+        '<footer>Produto da fase: <b>'+esc(f.produto)+'</b></footer>'+
+      '</article>';
+  }).join('');
+
+  const regras=['1a','1b','1.2','1.3'].map(function(id){
+    const r=REGRAS[id];
+    return '<span class="apr-regra" style="--cor:'+r.cor+'"'+tip(dicaRegra(id),r.nome)+' tabindex="0"><i></i><b>'+esc(r.nome)+'</b>'+esc(r.acao.split(' — ')[0].toLowerCase())+'</span>';
+  }).join('');
+
+  return ''+
+    '<section class="apr-sec"><h3>Resumo técnico</h3><div class="apr-resumo">'+resumo+'</div></section>'+
+    '<section class="apr-sec"><h3>Fluxo de trabalho do saneamento · passe o cursor sobre cada etapa para sua descrição; clique para abri-la</h3>'+
+      '<div class="apr-fluxo">'+fluxo+'</div></section>'+
+    '<section class="apr-sec"><h3>Cadeia de fundamentação</h3>'+cadeiaPrincipio()+'</section>'+
+    '<section class="apr-sec"><h3>Regras da primeira fase · parâmetros em vigor na dica</h3><div class="apr-regras">'+regras+'</div></section>';
+}
+
+let _focoAntesApres=null;
+function abrirApresentacao(){
+  $('#aprCorpo').innerHTML=htmlApresentacao();
+  _focoAntesApres=document.activeElement;
+  $('#veuApres').classList.add('aberto');
+  const m=$('#modalApres');
+  m.classList.add('aberto'); m.setAttribute('aria-hidden','false');
+  setTimeout(function(){ try{ m.focus({preventScroll:true}); }catch(e){} },40);
+}
+function fecharApresentacao(){
+  const m=$('#modalApres');
+  if(!m.classList.contains('aberto')) return;
+  m.classList.remove('aberto'); m.setAttribute('aria-hidden','true');
+  $('#veuApres').classList.remove('aberto');
+  esconderDica();
+  if(_focoAntesApres && _focoAntesApres.focus) try{ _focoAntesApres.focus(); }catch(e){}
+}
+function apresentacaoAberta(){ return $('#modalApres').classList.contains('aberto'); }
+
+/* ------------------------------ Guia de operação ------------------------- */
+
+const GUIA = [
+  { t:'Preparar a planilha de execução', cor:'var(--grafite)', ir:null, onde:'Fora do sistema',
+    fazer:['Obter o arquivo `Saneamento Mapps - Exec. MM-AA [dd_mm_aa].xlsx` na versão mais recente.','Manter a aba **Consulta** e os cabeçalhos originais, sem renomeá-los.'],
+    conferir:['Presença das colunas `SECRETARIA`, `ORGAO`, `MAPP`, `ÓRGÃO MAPP`, `DATA_APROVACAO`, `ESTAGIO_EXECUCAO`, `FONTE`.','Presença das séries anuais de Programado, Empenhado, Pago e Limite.'],
+    cautela:['A linha de subtotal no topo é descartada automaticamente; não é preciso removê-la.','Cada linha é uma combinação de MAPP e fonte: uma linha nunca é um MAPP.'] },
+  { t:'Importar a base', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Panorama › Importação',
+    fazer:['Acionar **Selecionar arquivo** ou arrastar a planilha para a área indicada.','Escolher a aba de trabalho, quando houver mais de uma.','Acionar **Importar e diagnosticar**.'],
+    conferir:['O selo no alto passa a indicar a base carregada.','O rito do saneamento avança as etapas de importação a enquadramento.'],
+    cautela:['O processamento ocorre na memória do navegador; nada é transmitido a servidor.','Arquivos extensos levam alguns segundos: aguardar o término da barra de progresso.'] },
+  { t:'Conferir o retrato da importação', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Panorama › Importação › Retrato da importação',
+    fazer:['Examinar linhas úteis, subtotais descartados, colunas reconhecidas e exercícios encontrados.','Consultar a tabela de normalização dos estágios de execução.'],
+    conferir:['Quantidade de MAPPs consolidados coerente com a base de origem.','Colunas não reconhecidas, se houver, e seu eventual impacto.'],
+    cautela:['Conflitos entre linhas da mesma chave são sinalizados, nunca resolvidos pelo sistema.'] },
+  { t:'Verificar e, se preciso, ajustar os parâmetros', cor:'var(--ocre)', ir:null, onde:'Botão Configurações, no alto',
+    fazer:['Conferir critério de execução, tratamento de valores, âncora temporal, universo e limiares.','Alterar apenas o necessário e acionar **Aplicar e recalcular**.'],
+    conferir:['Os anos resolvidos pela âncora (ano corrente e anterior).','O quadro “Parâmetros em vigor”, em Panorama › Regras aplicadas.'],
+    cautela:['Toda alteração é confirmada, lançada na auditoria e recalcula o diagnóstico inteiro.','**Restaurar valores oficiais** devolve os parâmetros ao padrão das regras.'] },
+  { t:'Ler os indicadores e as regras aplicadas', cor:'var(--latao)', ir:['panorama','indicadores'], onde:'Panorama › Indicadores, Universo, Regras aplicadas, Saldo',
+    fazer:['Percorrer os cartões de indicadores e as populações por regra.','Alternar a forma dos gráficos pelos botões de cada quadro.','Consultar a composição do universo e o saldo do programado por exercício.'],
+    conferir:['A união das regras e as sobreposições.','O saldo do programado por regra e por exercício.'],
+    cautela:['As contagens são por MAPP consolidado, não por linha da planilha.'] },
+  { t:'Examinar o diagnóstico', cor:'var(--ardosia)', ir:['diagnostico'], onde:'Diagnóstico',
+    fazer:['Filtrar por secretaria, órgão, programa, ano, regra, estágio, revisão, execução e confiança.','Ordenar por qualquer coluna, clicando no cabeçalho.','Abrir a ficha do MAPP para ver todas as regras testadas e suas evidências.'],
+    conferir:['A ação recomendada e o grau de confiança de cada MAPP.','A coluna Providência, logo após a caixa de seleção.'],
+    cautela:['Filtro vazio significa ausência de restrição.','Casos de múltiplas regras, paralisados e dados insuficientes exigem exame manual.'] },
+  { t:'Registrar a decisão humana', cor:'var(--ameixa)', ir:['diagnostico'], onde:'Diagnóstico ou ficha do MAPP',
+    fazer:['Selecionar um ou mais MAPPs.','Acionar **Acatar recomendação** ou **Rejeitar recomendação**.','Informar responsável e justificativa.'],
+    conferir:['A situação da revisão atualizada na grade.','O lançamento correspondente no registro de auditoria.'],
+    cautela:['Somente a decisão produz efeito; a recomendação isolada nada altera.'] },
+  { t:'Revisar a consistência da base', cor:'var(--carmim)', ir:['qualidade'], onde:'Revisão',
+    fazer:['Clicar em cada cartão de achado para listar os MAPPs envolvidos.','Exportar o achado, quando necessário.'],
+    conferir:['Duplicidades, conflitos, divergências de indicador, possíveis fusões e títulos pouco informativos.'],
+    cautela:['O sistema aponta; jamais corrige a base por conta própria.'] },
+  { t:'Concluir o saneamento', cor:'var(--sepia)', ir:['saneamento'], onde:'Saneamento final',
+    fazer:['Examinar a grade do conjunto enquadrado.','Excluir individualmente o que não deva constar, com motivo (**Ocultar selecionados**).','Acionar **Declarar saneamento concluído** e **Exportar resultado do saneamento**.'],
+    conferir:['Mantidos e ocultados, conforme o filtro.','O arquivo exportado em duas abas: resultado e excluídos.'],
+    cautela:['A exclusão é reversível (**Restabelecer selecionados** ou **Restabelecer tudo**) e auditada.','**Reabrir** desfaz a declaração de conclusão.'] },
+  { t:'Comparar antes e depois', cor:'var(--ardosia)', ir:['antesdepois'], onde:'Antes e Depois',
+    fazer:['Escolher a medida (quantidade ou valor) e o estrato (secretaria, órgão, programa).','Acionar **Exportar quadro**, se necessário.'],
+    conferir:['A redução do universo ativo por situação.'],
+    cautela:['O quadro projeta o efeito das decisões; não altera a base.'] },
+  { t:'Examinar as despesas de continuidade', cor:'var(--petroleo)', ir:['fase2'], onde:'Despesas de continuidade',
+    fazer:['Consultar os MAPPs com empenho em exercícios consecutivos.','Acionar **Recalcular indícios** após mudança de parâmetros e **Exportar**.'],
+    conferir:['Candidatos à migração de investimento para custeio finalístico.'],
+    cautela:['São indícios da segunda fase, sem qualquer efeito automático.'] },
+  { t:'Exportar relações e a auditoria', cor:'var(--grafite)', ir:['auditoria'], onde:'Auditoria e exportações',
+    fazer:['Exportar relações específicas ou acionar **Gerar pasta de trabalho completa**.','Acionar **Exportar auditoria** para o registro integral.'],
+    conferir:['MAPP, regra, campo, valor anterior, valor novo, responsável, data e justificativa em cada lançamento.'],
+    cautela:['A base original exportada é reconstruída a partir dos dicionários, sem alteração.'] },
+  { t:'Guardar e retomar a sessão', cor:'var(--musgo)', ir:null, onde:'Botões Guardar sessão e Retomar sessão, no alto',
+    fazer:['Acionar **Guardar sessão** ao fim de cada jornada de trabalho.','Em nova jornada, importar a mesma base e acionar **Retomar sessão**.'],
+    conferir:['A mensagem de retomada com a quantidade de decisões restauradas.'],
+    cautela:['O arquivo .json guarda decisões, exclusões, configurações e auditoria, mas não a base de dados.','Nada fica gravado no navegador: sem a sessão guardada, o trabalho se perde ao fechar a página.'] }
+];
+
+function htmlPasso(p,i){
+  const quad=function(titulo,cor,itens){
+    return '<div class="man-quad" style="--cor:'+cor+'"><h5>'+esc(titulo)+'</h5><ul>'+
+      itens.map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul></div>';
+  };
+  return '<div class="bloco man-secao" id="man-g'+(i+1)+'" data-man-grupo="guia" style="--acento:'+p.cor+'">'+
+    '<div class="man-passo-cab"><span class="man-num">'+String(i+1).padStart(2,'0')+'</span>'+
+      '<div style="flex:1"><h3 style="color:var(--acento)">'+esc(p.t)+'</h3><div class="man-onde">Onde: '+esc(p.onde)+'</div></div>'+
+      (p.ir?'<button type="button" class="btn pequeno man-acoes" data-man-ir="'+p.ir.join('|')+'"'+
+        tip('Abre a tela em que este passo se realiza: '+rotuloDestino(p.ir)+'.','Ir para a tela')+'>Ir para a tela ›</button>':'')+
+    '</div>'+
+    '<div class="man-quads">'+quad('O que fazer','var(--musgo)',p.fazer)+quad('O que conferir','var(--ardosia)',p.conferir)+
+      quad('Cautelas','var(--carmim)',p.cautela)+
+    '</div></div>';
+}
+
+/* ------------------------------ Manual técnico --------------------------- */
+
+function codigo(txt){
+  return '<pre class="codigo"><button type="button" class="btn pequeno copiar"'+
+    tip('Copia o trecho para a área de transferência.','Copiar')+'>Copiar</button><code>'+esc(txt)+'</code></pre>';
+}
+function tabela(cab,linhas,id){
+  return '<div class="tabela-caixa man-tab"><table'+(id?' id="'+id+'"':'')+'><thead><tr>'+
+    cab.map(function(c){ return '<th>'+esc(c)+'</th>'; }).join('')+'</tr></thead><tbody>'+
+    linhas.map(function(l){ return '<tr>'+l.map(function(c,j){ return '<td'+(j===0?' class="mono"':'')+'>'+fmtTexto(String(c))+'</td>'; }).join('')+'</tr>'; }).join('')+
+    '</tbody></table></div>';
+}
+function cadeiaFuncoes(lista,cor){
+  return '<div class="apr-cadeia" style="margin:6px 0 12px">'+lista.map(function(f,i){
+    return (i?'<span class="apr-seta">'+setaFluxo(16)+'</span>':'')+
+      '<span class="apr-elo mono" style="--cor:'+(f[2]||cor)+'"'+tip(f[1],f[0])+' tabindex="0">'+esc(f[0])+'</span>';
+  }).join('')+'</div>';
+}
+
+const BLOCOS_SCRIPT = [
+  ['1','Núcleo','Constantes, estado global, utilitários pt-BR, dicas, seleção múltipla, ordenação de grades, abas, âncora temporal, leitura, reconhecimento de colunas e consolidação.','`REGRAS` `GRUPOS_ESTAGIO` `CFG_OFICIAL` `E` `iniciarDicas` `tip` `sinal` `montarMulti` `irParaAba` `aplicarAncora` `lerArquivo` `reconhecerColunas` `montarBase` `consolidar` `soma`'],
+  ['2','Regras','Aferição da execução, universo, avaliação de cada MAPP, diagnóstico, revisão de consistência, segunda fase e textos explicativos.','`executou` `noUniverso` `avaliar` `diagnosticar` `calcularQualidade` `calcularFase2` `composicaoUniverso` `dicaRegra`'],
+  ['3','Painel','Cartões, orquestração da renderização e gráficos.','`cartao` `renderTudo` `renderPainel` `renderSaldoPorRegra` `desenharGraficos`'],
+  ['4','Saldo','Saldo do programado por exercício, filtro por órgão e exportação.','`periodosSaldo` `apurarSaldo` `renderSaldo` `exportarSaldo`'],
+  ['5','Diagnóstico','Filtros, grade, decisão humana e ficha do MAPP.','`prepararFiltros` `filtrar` `renderDiagnostico` `registrarDecisao` `auditar` `abrirFicha`'],
+  ['6','Universo, revisão e auditoria','Demonstração do universo, regras aplicadas, achados de consistência, segunda fase e registro de auditoria.','`renderUniverso` `renderRegrasAplicadas` `renderQualidade` `mostrarAchado` `renderFase2` `renderAuditoria`'],
+  ['7','Saneamento final','Conjunto enquadrado, exclusão individual, encerramento e exportação do resultado.','`conjuntoEnquadrado` `celulaProvidencia` `ocultarMapps` `restabelecerMapps` `finalizarSaneamento` `exportarResultadoFinal`'],
+  ['8','Antes e Depois','Situação antes e depois das decisões, por medida e estrato.','`situacaoAntes` `situacaoDepois` `apurarAntesDepois` `renderAntesDepois`'],
+  ['9','Exportações e ligações','Relações exportáveis, configurações, sessão em .json, ligação de eventos e inicialização.','`linhasMapp` `conjuntos` `exportar` `cfgParaTela` `aplicarConfig` `guardarSessao` `retomarSessao` `ligarEventos` `iniciar`'],
+  ['10','Apresentação e manual','Pop-up de abertura, guia de operação e manual técnico. Somente leitura do estado.','`abrirApresentacao` `fecharApresentacao` `renderManual` `renderManualVivo` `iniciarManual`']
+];
+
+const CHAVES_E = [
+  ['arquivo · buffer','Arquivo escolhido e seu conteúdo binário.'],
+  ['colunas · mapaColunas · anos · metricas','Cabeçalho original, posição de cada campo reconhecido, exercícios e métricas (Programado, Empenhado, Pago, Limite).'],
+  ['dic','Dicionários de strings (secretaria, órgão, MAPP, programa, estágio, fonte, chave). As linhas guardam índices, não textos.'],
+  ['linhas','Registros dicionarizados; valores anuais em `Float64Array`.'],
+  ['mapps · indice','MAPPs consolidados pela chave ÓRGÃO MAPP e o mapa chave → MAPP.'],
+  ['cfg','Parâmetros em vigor, partindo de `CFG_OFICIAL` e resolvidos por `aplicarAncora`.'],
+  ['diag','Resultado de `diagnosticar`: `regras`, `classes`, `noUniverso`, `forade`, `cancelados`, `paralisados`, `divergentes`, `totais`.'],
+  ['decisoes · exclusoes · encerramento','Decisões humanas por chave, exclusões individuais do saneamento final e declaração de conclusão.'],
+  ['auditoria · seq · responsavel','Registro integral das alterações, sequencial e último responsável informado.'],
+  ['qualidade · fase2 · saldo · ad','Achados de consistência, indícios da segunda fase, saldo por exercício e quadro Antes e Depois.'],
+  ['filtro · ordem · pagina · porPagina','Estado da grade do diagnóstico; os equivalentes com sufixo `San` servem ao saneamento final.'],
+  ['passo','Etapa corrente do rito, pintada por `pintarFluxo`.']
+];
+
+const MAPAS_ROTULO = [
+  ['REGRAS[id].nome','Nome exibido de cada regra; o identificador (`1a`, `1b`, `1.2`, `1.3`) permanece.'],
+  ['GRUPOS_ESTAGIO[g].rotulo','Rótulo de cada grupo normalizado de estágio.'],
+  ['CRITERIO_ROTULO','Descrição de cada critério de execução.'],
+  ['ROTULO_ESTRATO · PLURAL_ESTRATO','Rótulos dos estratos do quadro Antes e Depois.'],
+  ['PASSOS · PASSOS_DICA','Nomes e explicações das nove etapas do rito.'],
+  ['ROTULO_DESTINO','Nomes das abas e segmentos usados no manual e na apresentação.']
+];
+
+const TECNICO = [
+  { id:'t-arq', t:'Arquitetura do arquivo único', cor:'var(--grafite)', html:function(){
+    return '<p>O artefato é um único arquivo HTML: o `<head>` concentra todo o CSS, o `<body>` traz a marcação estática e dez blocos `<script>` sequenciais, em JavaScript simples, sem módulos nem framework, compartilham o escopo global. Não há uso de `localStorage` nem de qualquer armazenamento do navegador.</p>'.replace(/`([^`]+)`/g,function(_,x){ return '<code>'+esc(x)+'</code>'; })+
+      tabela(['Bloco','Nome','Responsabilidade','Funções principais'],BLOCOS_SCRIPT.map(function(b){ return [b[0],b[1],b[2],b[3]]; }),'manTabBlocos');
+  }},
+  { id:'t-estado', t:'Estado global E', cor:'var(--ardosia)', html:function(){
+    return '<p>'+fmtTexto('Todo o estado vive no objeto `E`, declarado com `const` no bloco 1. Por não ser propriedade de `window`, é alcançado nos ensaios por `window.eval(\'E\')`.')+'</p>'+
+      tabela(['Chave','Conteúdo'],CHAVES_E,'manTabEstado');
+  }},
+  { id:'t-fluxo', t:'Fluxo de dados e de funções', cor:'var(--petroleo)', html:function(){
+    return '<p>Da leitura do arquivo à exportação, o processamento percorre a cadeia abaixo. Passe o cursor sobre cada função para sua atribuição.</p>'+
+      cadeiaFuncoes([
+        ['lerArquivo','Lê o arquivo escolhido em ArrayBuffer e lista as abas.','var(--ardosia)'],
+        ['importar','Converte a aba escolhida em matriz e comanda a sequência de processamento.','var(--ardosia)'],
+        ['montarBase','Reconhece colunas, descarta subtotais e dicionariza as linhas.','var(--ardosia)'],
+        ['consolidar','Agrupa as linhas por ÓRGÃO MAPP e aponta conflitos.','var(--ardosia)'],
+        ['diagnosticar','Soma séries, aplica o universo e avalia cada MAPP.','var(--latao)'],
+        ['avaliar','Testa as quatro regras, classifica e atribui confiança.','var(--latao)'],
+        ['renderTudo','Renderiza todas as abas a partir do estado.','var(--ameixa)'],
+        ['registrarDecisao','Grava a decisão humana e o lançamento de auditoria.','var(--ameixa)'],
+        ['exportar','Gera as pastas de trabalho a partir de conjuntos().','var(--musgo)']
+      ])+
+      '<p>'+fmtTexto('`diagnosticar` chama, ao final, `calcularQualidade` e `calcularFase2`. `renderTudo` chama, em ordem, as funções de renderização de cada aba, depois `prepararCabecalhos` e, por último, `renderManualVivo`.')+'</p>';
+  }},
+  { id:'t-regras', t:'Motor de regras e parâmetros em vigor', cor:'var(--latao)', html:function(){
+    const c=E.cfg;
+    const linhas=Object.keys(CFG_OFICIAL).map(function(k){
+      const of=CFG_OFICIAL[k];
+      return [k, String(c[k]), (of===0?'resolvido pela âncora':String(of))];
+    });
+    return '<p>'+fmtTexto('Cada MAPP é submetido a `avaliar(m)`, que usa `executou(m,ini,fim)` segundo o critério de `E.cfg.criterio` e o tratamento `E.cfg.baseValor`. O universo é decidido por `noUniverso(m)`. As regras citam posições relativas: `aplicarAncora` resolve ano corrente e ano anterior a partir do relógio, limitado ao último exercício com execução na base (`anoCorrenteEfetivo`).')+'</p>'+
+      '<p>'+fmtTexto('Os textos explicativos de cada regra são compostos por `dicaRegra(id)` com os parâmetros em vigor, de modo que as dicas acompanhem qualquer alteração de configuração.')+'</p>'+
+      tabela(['Parâmetro','Em vigor','Valor oficial'],linhas,'manTabCfg');
+  }},
+  { id:'t-rotulos', t:'Rótulos e identificadores', cor:'var(--ameixa)', html:function(){
+    return '<p>'+fmtTexto('Rótulo e identificador são coisas distintas. Quando só o texto exibido muda, altera-se o mapa de rótulo; **nunca** o identificador, que é referenciado em filtros, exportações, sessão e auditoria. Assim, `p-qualidade` exibe “Revisão” e `p-fase2` exibe “Despesas de continuidade”.')+'</p>'+
+      tabela(['Mapa','Uso'],MAPAS_ROTULO,'manTabRotulos');
+  }},
+  { id:'t-comp', t:'Componentes comuns', cor:'var(--musgo)', html:function(){
+    return '<p><b>Dicas.</b> '+fmtTexto('Balão único em `position:fixed` no `body`, controlado por `iniciarDicas`. Basta marcar o elemento com `data-tip` (e, opcionalmente, `data-tip-t` para o título). Quebras de linha viram parágrafos, e o trecho antes de dois-pontos fica em negrito. Em HTML gerado, usar `tip(texto,titulo)` e `sinal(texto,titulo)`.')+'</p>'+
+      codigo("'<button class=\"btn\"'+tip('Recalcula os indícios.\\nFórmula: soma dos empenhos por exercício.','Recalcular')+'>Recalcular</button>'")+
+      '<p><b>Seleção múltipla.</b> '+fmtTexto('`montarMulti(idSel)` transforma um `<select>` em lista com caixas, busca e “todos/limpar”. Ler com `valoresMulti`, testar com `casaMulti`, zerar com `limparMulti`. Lista vazia equivale a ausência de restrição.')+'</p>'+
+      '<p><b>Ordenação.</b> '+fmtTexto('`ligarOrdenacaoGenerica` torna ordenadora toda coluna de toda grade; `prepararCabecalhos` marca os cabeçalhos. As grades com ordenação própria estão em `TABELAS_PROPRIAS`.')+'</p>'+
+      '<p><b>Diálogos e avisos.</b> '+fmtTexto('`dialogo` abre o modal de confirmação, com `campoTexto`, `campoArea` e `campoLista`; `recado` exibe mensagem breve; `veuCarga` cobre a tela durante processamentos longos.')+'</p>';
+  }},
+  { id:'t-receitas', t:'Receitas de extensão', cor:'var(--ferrugem)', html:function(){
+    return '<h4 style="margin:4px 0 6px">Criar uma aba</h4><ol>'+
+      ['Incluir o botão em `nav#abas`, com `id="aba-X"`, `aria-controls="p-X"`, cor em `--cor` e `data-tip`.','Incluir `<section role="tabpanel" id="p-X" class="oculto">` com `--acento` próprio.','Escrever a função de renderização e chamá-la em `renderTudo`.','Os cliques já são ligados por `ligarEventos`, que percorre todas as `.aba`.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      codigo('<button class="aba" role="tab" id="aba-exemplo" aria-controls="p-exemplo" aria-selected="false"\n  style="--cor:var(--ocre)" data-tip="Função da aba." data-tip-t="Exemplo"><i class="ponto"></i>Exemplo</button>\n\n<section role="tabpanel" id="p-exemplo" class="oculto" aria-labelledby="aba-exemplo"\n  style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">\n  <div class="bloco"><header><h2>Título</h2></header>…</div>\n</section>')+
+      '<h4 style="margin:10px 0 6px">Incluir ou alterar uma regra</h4><ol>'+
+      ['Declarar a regra em `REGRAS` (nome, cor, classe, descrição, ação, desdobramento).','Acrescentar a chave em `res.regras` dentro de `diagnosticar`.','Implementar o teste em `avaliar`, com evidência e cálculo exibíveis na ficha.','Redigir o texto em `dicaRegra`.','Acrescentar a regra às listas `[\'1a\',\'1b\',\'1.2\',\'1.3\']` (regras aplicadas, saldo por regra, apresentação) e a `conjuntos()`.','Localizar as ocorrências de uma regra existente, por exemplo `\'1.3\'`, e reproduzi-las.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      '<h4 style="margin:10px 0 6px">Criar um parâmetro de configuração</h4><ol>'+
+      ['Acrescentar o valor padrão em `CFG_OFICIAL`.','Incluir o campo na gaveta `gavetaConfig` como lista suspensa, com dica.','Mapeá-lo em `CAMPOS_CFG` e, se numérico, em `CFG_NUMERICOS`.','Exibi-lo no quadro de parâmetros de `renderRegrasAplicadas`.','A sessão em .json já guarda `E.cfg` integralmente.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      '<h4 style="margin:10px 0 6px">Criar uma exportação</h4><ol>'+
+      ['Acrescentar um item a `conjuntos()` com `id`, `nome`, `aba` (até 31 caracteres), `dica` e `dados`.','Para uma exportação avulsa, compor as linhas e usar `exportarLista(lista,nome)`.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      codigo("{ id:'exemplo', nome:'Relação de exemplo', aba:'EXEMPLO',\n  dica:'O que a relação contém.',\n  dados:function(){ return linhasMapp(E.diag.paralisados); } }");
+  }},
+  { id:'t-conv', t:'Convenções de trabalho e de interface', cor:'var(--sepia)', html:function(){
+    return '<ul>'+[
+      'Alterações cirúrgicas, por substituição de trechos; entrega sempre do arquivo completo.',
+      'Apresentar o entendimento antes de implementar alterações não triviais.',
+      'Nunca refatorar identificadores quando só o rótulo muda.',
+      'Vocabulário culto e sóbrio; nada de jargão.',
+      'Paleta discreta: grafite, latão, musgo, ardósia, ferrugem, ameixa, ocre, carmim, petróleo, sépia. Tipografia IBM Plex (Sans, Serif, Mono).',
+      'Abas, cartões e blocos diferenciados por cor; tema claro e escuro alternáveis.',
+      'Dicas obrigatórias em botões (o que fazem), em campos com cálculo (a fórmula) e em toda etiqueta com significado.',
+      'Gráficos dinâmicos (Chart.js) com botões de alternância.',
+      'Nada de campos numéricos com setas: usar listas suspensas. Filtros em seleção múltipla.',
+      'Todas as colunas de todas as grades são ordenadoras.',
+      'Nenhuma alteração automática: toda decisão exige responsável e justificativa e é auditada.'
+    ].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul>';
+  }},
+  { id:'t-valid', t:'Validação e ensaio', cor:'var(--carmim)', html:function(){
+    return '<p>Antes de cada entrega: sintaxe de todos os blocos de script e balanceamento de etiquetas.</p>'+
+      codigo("python3 - <<'PY'\nimport re, subprocess\nh = open('saneamento_mapps.html', encoding='utf-8').read()\nfor i, b in enumerate(re.findall(r'<script>(.*?)<\/script>', h, re.S), 1):\n    open(f'bloco{i}.js', 'w').write(b)\n    r = subprocess.run(['node', '--check', f'bloco{i}.js'], capture_output=True, text=True)\n    print(i, 'ok' if r.returncode == 0 else r.stderr)\ncorpo = re.sub(r'<script.*?<\/script>|<style.*?<\/style>', '', h, flags=re.S)\nfor t in ['div', 'section', 'table', 'aside', 'button']:\n    print(t, len(re.findall(f'<{t}[ >]', corpo)), len(re.findall(f'</{t}>', corpo)))\nPY")+
+      '<p>'+fmtTexto('Ensaio com a base real em Node, com `jsdom` e `xlsx`. As bibliotecas de CDN não sobem no `jsdom`; o código tolera a ausência do Chart.js. O parse leva cerca de 10 s: rodar uma vez por lote e imprimir só o resumo.')+'</p>'+
+      codigo("const fs = require('fs'), { JSDOM } = require('jsdom'), XLSX = require('xlsx');\nconst dom = new JSDOM(fs.readFileSync('saneamento_mapps.html', 'utf8'),\n  { runScripts: 'dangerously', pretendToBeVisual: true });\nconst w = dom.window;\nconst wb = XLSX.readFile('Saneamento Mapps - Exec. 07-26.xlsx');\nconst linhas = XLSX.utils.sheet_to_json(wb.Sheets['Consulta'], { header: 1, raw: true });\nw.montarBase(linhas, 'Consulta'); w.consolidar(); w.diagnosticar(); w.renderTudo();\nconst E = w.eval('E'), d = E.diag;\nconsole.log({ linhas: E.linhas.length, mapps: E.mapps.length, universo: d.noUniverso.length,\n  r1a: d.regras['1a'].length, r1b: d.regras['1b'].length,\n  r12: d.regras['1.2'].length, r13: d.regras['1.3'].length });");
+  }},
+  { id:'t-ref', t:'Números de referência e limitações', cor:'var(--ocre)', html:function(){
+    return '<p>Base de setembro de 2026, âncora automática em 2026 e critério de empenho. Servem de sanidade, não de meta.</p>'+
+      tabela(['Grandeza','Valor'],[
+        ['Linhas úteis','31.127'],['MAPPs consolidados','21.421'],['Universo de saneamento','6.444'],
+        ['Regra 1.a','810'],['Regra 1.b','668'],['Regra 1.2','2.497'],['Regra 1.3','543'],['União das regras','4.034'],
+        ['Saldo do programado no exercício corrente','R$ 12,70 bi']
+      ],'manTabRef')+
+      '<h4 style="margin:10px 0 6px">Limitações conhecidas</h4><ul>'+[
+      'A base não traz percentual de execução física; a regra 1.3 apoia-se exclusivamente no estágio registrado.',
+      'O indicador `Sem Exec 23-26` cobre faixa fixa; fora dela o cotejo é suspenso, sem acusar inconsistência.',
+      'Prazos e manifestações dos órgãos não são controlados pelo sistema; os prazos figuram apenas como texto e parâmetro.',
+      'Sem persistência no navegador: o trabalho só se conserva pela sessão em .json.',
+      'Sem conexão, as bibliotecas de CDN não carregam e a importação fica indisponível.'
+      ].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul>';
+  }},
+  { id:'t-glos', t:'Glossário', cor:'var(--petroleo)', html:function(){
+    return tabela(['Termo','Significado'],[
+      ['MAPP','Projeto do Monitoramento de Ações e Projetos Prioritários; na planilha, `código - título`.'],
+      ['Chave de consolidação','Campo `ÓRGÃO MAPP`, normalizado por colapso de espaços.'],
+      ['Universo de saneamento','MAPPs consolidados, exceto cancelados e concluídos físico e financeiramente.'],
+      ['Âncora temporal','Resolução de “ano corrente” e “ano anterior” a partir do relógio, limitada à base.'],
+      ['Critério de execução','O que o sistema considera execução: empenho, pago, ambos, indicador ou combinado.'],
+      ['Movimentação positiva','Houve empenho positivo em algum momento, ainda que estornado.'],
+      ['Saldo líquido','Positivos menos estornos.'],
+      ['Sobreposição','MAPP enquadrado em mais de uma regra; exige exame manual.'],
+      ['Confiança','Alta, média ou baixa, conforme a completude e a coerência dos dados.'],
+      ['Providência','Exclusão individual de um MAPP do resultado final, reversível e auditada.']
+    ],'manTabGlossario');
+  }}
+];
+
+/* ------------------------------ Renderização ----------------------------- */
+
+function htmlManualVivo(){
+  const d=E.diag;
+  const cart=function(rot,val,cor,dica){ return cartao(rot,val,'',cor,dica); };
+  if(!d){
+    return '<div class="aviso nota"><span class="marca">Situação</span><span>Nenhuma base carregada nesta sessão. Os quadros abaixo exibem os parâmetros em vigor; as populações surgem após a importação.</span></div>';
+  }
+  const uniao=new Set(); ['1a','1b','1.2','1.3'].forEach(function(id){ d.regras[id].forEach(function(m){ uniao.add(m.chave); }); });
+  return '<div class="man-vivo">'+
+    cart('Linhas úteis',n(E.linhas.length),'var(--grafite)','Linhas da aba importada, descontados os subtotais.')+
+    cart('MAPPs consolidados',n(E.mapps.length),'var(--ardosia)','Quantidade de chaves ÓRGÃO MAPP distintas.')+
+    cart('Universo de saneamento',n(d.noUniverso.length),'var(--petroleo)','MAPPs submetidos às regras, segundo o recorte em vigor: '+rotuloUniverso()+'.')+
+    ['1a','1b','1.2','1.3'].map(function(id){ return cart(REGRAS[id].nome,n(d.regras[id].length),REGRAS[id].cor,dicaRegra(id)); }).join('')+
+    cart('União das regras',n(uniao.size),'var(--musgo)','Fórmula: MAPPs distintos enquadrados em ao menos uma regra (1.a ∪ 1.b ∪ 1.2 ∪ 1.3).')+
+  '</div>';
+}
+
+function renderManualVivo(){
+  const alvo=$('#manualVivo'); if(!alvo) return;
+  alvo.innerHTML=htmlManualVivo();
+  const leg=$('#manualVivoLegenda');
+  if(leg) leg.textContent='Critério: '+CRITERIO_ROTULO[E.cfg.criterio]+' · '+textoAncora();
+  const cfg=$('#man-t-regras'); if(cfg){ const t=TECNICO.filter(function(s){ return s.id==='t-regras'; })[0]; $('.man-corpo',cfg).innerHTML=t.html(); }
+  prepararCabecalhos();
+}
+
+function renderManual(){
+  const guia=GUIA.map(htmlPasso).join('');
+  const tec=TECNICO.map(function(s){
+    return '<div class="bloco man-secao" id="man-'+s.id+'" data-man-grupo="tecnico" style="--acento:'+s.cor+'">'+
+      '<header><h2>'+esc(s.t)+'</h2></header><div class="man-corpo">'+s.html()+'</div></div>';
+  }).join('');
+  $('#manualConteudo').innerHTML=
+    '<div class="bloco man-secao" id="man-situacao" data-man-grupo="abertura" style="--acento:var(--ferrugem)">'+
+      '<header><h2>Situação desta sessão</h2><span class="legenda" id="manualVivoLegenda"></span></header>'+
+      '<div id="manualVivo"></div>'+
+      '<div style="margin-top:12px">'+cadeiaPrincipio()+'</div>'+
+    '</div>'+
+    '<div class="man-parte" style="--cor:var(--ardosia)"><span class="icone-fase">'+icone('bussola',24)+'</span><div>'+
+      '<h2>Parte I · Guia de operação</h2><p>Passo a passo do trabalho de saneamento, na ordem do rito, com o que fazer, o que conferir e as cautelas de cada etapa.</p></div></div>'+
+    guia+
+    '<div class="man-parte" style="--cor:var(--ferrugem)"><span class="icone-fase">'+icone('codigo',24)+'</span><div>'+
+      '<h2>Parte II · Manual técnico</h2><p>Referência para evolução e manutenção: arquitetura, estado, fluxo de funções, motor de regras, componentes, receitas de extensão, convenções e ensaios.</p></div></div>'+
+    tec;
+
+  const grupo=function(titulo,cor,ic,itens){
+    return '<div class="grupo" style="--cor:'+cor+'"><h4>'+icone(ic,14)+esc(titulo)+'</h4>'+itens.map(function(it){
+      return '<button type="button" class="ind-item" style="--cor:'+cor+'" data-man-alvo="'+it[0]+'"'+tip('Rola o manual até esta seção.',it[1])+'>'+
+        (it[2]?'<span class="n">'+it[2]+'</span>':'')+esc(it[1])+'</button>';
+    }).join('')+'</div>';
+  };
+  $('#manualIndice').innerHTML=
+    '<input type="search" class="busca" id="manualBusca" placeholder="Localizar no manual…" aria-label="Localizar no manual"'+
+      tip('Filtra as seções do manual que contêm o termo digitado. Apague o termo para exibir todas.','Localizar')+'>'+
+    '<div class="barra-acoes" style="margin-bottom:4px">'+
+      '<button type="button" class="btn pequeno" id="btnManualApres"'+tip('Reabre a apresentação de abertura, com o resumo técnico e o fluxo de trabalho.','Apresentação')+'>Apresentação</button>'+
+      '<button type="button" class="btn pequeno" id="btnManualImprimir"'+tip('Abre a impressão do navegador apenas com o manual; escolha “Salvar como PDF” para gerar o arquivo.','Imprimir o manual')+'>Imprimir</button>'+
+    '</div>'+
+    grupo('Abertura','var(--ferrugem)','livro',[['man-situacao','Situação desta sessão','']])+
+    grupo('Parte I · Guia de operação','var(--ardosia)','bussola',GUIA.map(function(p,i){ return ['man-g'+(i+1),p.t,String(i+1).padStart(2,'0')]; }))+
+    grupo('Parte II · Manual técnico','var(--ferrugem)','codigo',TECNICO.map(function(s,i){ return ['man-'+s.id,s.t,'T'+(i+1)]; }));
+  renderManualVivo();
+  vigiarSecoes();
+}
+
+/* Realce, no índice, da seção visível. */
+let _vigia=null;
+function vigiarSecoes(){
+  if(typeof IntersectionObserver==='undefined') return;
+  if(_vigia) _vigia.disconnect();
+  _vigia=new IntersectionObserver(function(ents){
+    ents.forEach(function(en){
+      if(!en.isIntersecting) return;
+      $$('#manualIndice .ind-item').forEach(function(b){ b.classList.toggle('ativo', b.getAttribute('data-man-alvo')===en.target.id); });
+    });
+  },{rootMargin:'-30% 0px -60% 0px'});
+  $$('#manualConteudo .man-secao').forEach(function(s){ _vigia.observe(s); });
+}
+
+function filtrarManual(termo){
+  const t=norm(termo);
+  $$('#manualConteudo .man-secao').forEach(function(s){
+    const ok=!t || norm(s.textContent).indexOf(t)>=0;
+    s.classList.toggle('oculto',!ok);
+    const b=$('#manualIndice [data-man-alvo="'+s.id+'"]'); if(b) b.classList.toggle('oculto',!ok);
+  });
+  $$('#manualConteudo .man-parte').forEach(function(p){ p.classList.toggle('oculto',!!t); });
+}
+
+function copiarTexto(txt){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(txt).then(function(){ recado('Trecho copiado.'); },function(){ copiaReserva(txt); });
+  }
+  copiaReserva(txt);
+}
+function copiaReserva(txt){
+  const a=document.createElement('textarea'); a.value=txt; a.style.position='fixed'; a.style.opacity='0';
+  document.body.appendChild(a); a.select();
+  try{ document.execCommand('copy'); recado('Trecho copiado.'); }catch(e){ recado('Não foi possível copiar.'); }
+  document.body.removeChild(a);
+}
+
+function imprimirManual(){
+  irParaAba('manual');
+  filtrarManual(''); const bx=$('#manualBusca'); if(bx) bx.value='';
+  document.body.classList.add('imprimindo-manual');
+  const fim=function(){ document.body.classList.remove('imprimindo-manual'); window.removeEventListener('afterprint',fim); };
+  window.addEventListener('afterprint',fim);
+  setTimeout(function(){ try{ window.print(); }catch(e){} setTimeout(fim,400); },60);
+}
+
+function ajustarTopoManual(){
+  const t=$('.topo'); if(t) document.documentElement.style.setProperty('--topo-alt',(t.offsetHeight+14)+'px');
+}
+
+/* ------------------------------ Ligações --------------------------------- */
+
+function ligarEventosManual(){
+  $('#btnApresentacao').addEventListener('click',abrirApresentacao);
+  $('#aprFechar').addEventListener('click',fecharApresentacao);
+  $('#veuApres').addEventListener('click',fecharApresentacao);
+  $('#aprManual').addEventListener('click',function(){ fecharApresentacao(); irParaAba('manual'); });
+  $('#aprIniciar').addEventListener('click',function(){
+    fecharApresentacao(); irParaDestino(['panorama','importacao']);
+    const b=$('#btnEscolher'); if(b) b.focus();
+  });
+  $('#aprCorpo').addEventListener('click',function(ev){
+    const b=ev.target.closest('[data-apr-ir]'); if(!b) return;
+    fecharApresentacao(); irParaDestino(b.getAttribute('data-apr-ir').split('|'));
+  });
+  document.addEventListener('keydown',function(ev){
+    if(!apresentacaoAberta()) return;
+    if(ev.key==='Escape'){ ev.preventDefault(); ev.stopPropagation(); fecharApresentacao(); return; }
+    if(ev.key==='Tab'){
+      const foc=$$('#modalApres button, #modalApres [tabindex="0"]').filter(function(x){ return x.offsetParent!==null; });
+      if(!foc.length) return;
+      const pri=foc[0], ult=foc[foc.length-1];
+      if(ev.shiftKey && document.activeElement===pri){ ev.preventDefault(); ult.focus(); }
+      else if(!ev.shiftKey && document.activeElement===ult){ ev.preventDefault(); pri.focus(); }
+      else if(!$('#modalApres').contains(document.activeElement)){ ev.preventDefault(); pri.focus(); }
+    }
+  },true);
+
+  $('#aba-manual').addEventListener('click',function(){ ajustarTopoManual(); renderManualVivo(); });
+  $('#p-manual').addEventListener('click',function(ev){
+    const alvo=ev.target.closest('[data-man-alvo]');
+    if(alvo){ const s=document.getElementById(alvo.getAttribute('data-man-alvo')); if(s) s.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+    const ir=ev.target.closest('[data-man-ir]');
+    if(ir){ irParaDestino(ir.getAttribute('data-man-ir').split('|')); return; }
+    const cp=ev.target.closest('.copiar');
+    if(cp){ const c=cp.parentElement.querySelector('code'); if(c) copiarTexto(c.textContent); return; }
+    if(ev.target.closest('#btnManualApres')){ abrirApresentacao(); return; }
+    if(ev.target.closest('#btnManualImprimir')){ imprimirManual(); return; }
+  });
+  $('#p-manual').addEventListener('input',function(ev){
+    if(ev.target.id==='manualBusca') filtrarManual(ev.target.value);
+  });
+  window.addEventListener('resize',ajustarTopoManual);
+}
+
+function iniciarManual(){
+  ajustarTopoManual();
+  renderManual();
+  ligarEventosManual();
+  abrirApresentacao();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciarManual); else iniciarManual();
 </script>
 </body>
 </html>
