@@ -2,7 +2,16 @@
 
 ## Pendências decididas — a implementar
 
-Nenhuma no momento.
+### 3. Fusão verdadeira das abas
+Substituir os segmentos que ocultam conteúdo por **página única rolável** no
+Panorama, com índice fixo que rola até o bloco (Importação · Indicadores · Universo
+· Regras aplicadas · Saldo) e faixa-resumo no topo com os números-chave. Nada de
+informação escondida atrás de pílula.
+
+### 7. Segmento “Programação”
+Extinguir como segmento próprio e absorver como bloco final da grade de saldos, sob
+o título **“Indícios de programação”**. Levar junto o botão *Exportar grade
+completa* já existente.
 
 ## Em aberto — perguntar antes
 
@@ -54,25 +63,13 @@ Pendente deste lote: **ensaio com a planilha real** (`Saneamento Mapps - Exec. 0
 Os ensaios feitos foram `node --check` nos nove blocos, conferência de tags e
 `jsdom` com base sintética.
 
-## Lote de setembro de 2026 (II) — concluído
+## Lote de 22/09/2026 — apresentação e manual
 
-- **Item 7** — segmento “Programação” extinto. Seu bloco passou a ser o último do
-  segmento de saldo (`#blocoIndiciosProgramacao`, acento ocre), sob o título
-  **“Indícios de programação”**, com o botão *Exportar grade completa*.
-  Identificadores `cartoesProgramacao`, `tabProgramacao`, `programacaoLegenda` e
-  `btnExportarProgramacao` preservados.
-- **Item 3** — Panorama convertido em **página única rolável**: nenhum segmento
-  oculto; cada um abre com um marco de seção (`.marco-segmento`) na cor do seu
-  acento. As pílulas viraram **índice fixo** (`.indice`, `position:sticky` sob o
-  cabeçalho, altura medida por `medirTopo` em `--alto-topo`), com `aria-current`
-  e ponto colorido por bloco. `irParaSegmento(id, modo)` mantém o nome e agora rola
-  (`suave`, `instantaneo`, `sem-rolar`); `marcarSegmento` e `acompanharRolagem`
-  realçam o bloco em leitura. Nova **faixa-resumo** (`#resumoPanorama`,
-  `renderResumoPanorama`, chamada em `renderTudo` e em `iniciar`): linhas
-  importadas, MAPPs consolidados, universo, união das regras, saldo do universo e
-  saldo do exercício corrente; cada número leva ao bloco que o detalha e traz a
-  fórmula na dica. `irParaAba('panorama')` passou a redesenhar os gráficos sempre.
-
-Ensaios deste lote: `node --check` nos nove blocos, balanceamento de tags e `jsdom`
-com base sintética (saldo corrente da faixa conferido contra a grade de saldos).
-Segue pendente o **ensaio com a planilha real**, agora cobrindo os dois lotes.
+- **Pop-up de abertura** (`modalApres`): resumo técnico em quatro blocos, fluxo de
+  trabalho em quatro macrofases (Aquisição · Análise · Deliberação · Consumação)
+  com as nove etapas clicáveis, cadeia de fundamentação e as quatro regras com
+  dica. Abre a cada carregamento; reabre pelo botão *Apresentação* do alto.
+- **Aba Manual** (`p-manual`, cor ferrugem): situação viva da sessão, Parte I
+  (guia de operação em 13 passos) e Parte II (manual técnico em 11 seções), índice
+  fixo com realce da seção visível, busca, botões *Copiar* e *Imprimir*.
+- Ao alterar funções, abas ou convenções, **atualizar `GUIA` e `TECNICO`** no bloco 10.

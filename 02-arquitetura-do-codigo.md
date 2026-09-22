@@ -1,7 +1,7 @@
-# Arquitetura do `index.html`
+# Arquitetura do `saneamento_mapps.html`
 
-Arquivo único, cerca de 300 KB e 3.700 linhas: `<head>` com todo o CSS, `<body>` com
-a marcação, e nove blocos `<script>` sequenciais. Tudo em JavaScript simples, sem
+Arquivo único, cerca de 350 KB: `<head>` com todo o CSS, `<body>` com
+a marcação, e dez blocos `<script>` sequenciais. Tudo em JavaScript simples, sem
 módulos nem framework. Nenhum uso de `localStorage`.
 
 ## Blocos de script, na ordem
@@ -10,15 +10,13 @@ módulos nem framework. Nenhum uso de `localStorage`.
    global `E`, utilitários de formatação pt-BR, **motor de dicas** (`iniciarDicas`,
    `tip`, `sinal`), **componente de seleção múltipla** (`montarMulti`,
    `valoresMulti`, `casaMulti`, `limparMulti`), **ordenação genérica de grades**,
-   navegação de abas e rolagem do Panorama (`irParaSegmento`, `marcarSegmento`,
-   `acompanharRolagem`, `medirTopo`), **âncora temporal** (`aplicarAncora`,
+   navegação de abas e segmentos, **âncora temporal** (`aplicarAncora`,
    `anoCorrenteEfetivo`), leitura do arquivo, reconhecimento de colunas,
    `montarBase`, `consolidar`, e os somatórios `soma` / `somaAno` / `valorLinha`.
 2. **Regras** — `executou`, `noUniverso`, `avaliar`, `diagnosticar`,
    `calcularQualidade`, `calcularFase2`, `composicaoUniverso`, e os textos
    explicativos `dicaRegra`, `dicaEstagio`, `dicaAcao`, `dicaConfianca`.
 3. **Painel** — `cartao`, `renderTudo`, `renderResumoImport`, `renderPainel`,
-   `renderSaldoPorRegra`, `renderResumoPanorama`,
    `desenharGraficos`, `tiposGrafico`, paleta dos gráficos.
 4. **Saldo** — `periodosSaldo`, `apurarSaldo`, `renderSaldo`, `linhasSaldo`,
    `exportarSaldo`.
@@ -33,6 +31,10 @@ módulos nem framework. Nenhum uso de `localStorage`.
 9. **Exportações e ligações** — `linhasMapp`, `conjuntos()`, `exportar`,
    configurações (`cfgParaTela`, `aplicarConfig`), sessão em `.json`,
    `ligarEventos`, `iniciar`.
+10. **Apresentação e manual** — `ICONES`/`icone`, `APR_FASES`, `APR_DESTINO`,
+   `abrirApresentacao`, `fecharApresentacao`, `GUIA`, `TECNICO`, `renderManual`,
+   `renderManualVivo` (chamada ao fim de `renderTudo`), `filtrarManual`,
+   `imprimirManual`, `iniciarManual`. Apenas lê o estado `E`; nada altera.
 
 ## Estado global `E`
 
@@ -44,11 +46,10 @@ gráficos. A base original é reconstruída para exportação a partir dos dicio
 
 ## Abas e identificadores
 
-`p-panorama` — página única rolável com faixa-resumo (`resumoPanorama`) e índice
-fixo (`segPanorama`) sobre os segmentos `seg-importacao`, `seg-indicadores`,
-`seg-universo`, `seg-regras` e `seg-saldo` (este encerrado pelo bloco
-`blocoIndiciosProgramacao`), `p-diagnostico`, `p-qualidade` (rótulo “Revisão”), `p-saneamento`,
-`p-antesdepois`, `p-fase2` (rótulo “Despesas de continuidade”), `p-auditoria`.
+`p-panorama` (segmentos `seg-importacao`, `seg-indicadores`, `seg-universo`,
+`seg-saldo`), `p-diagnostico`, `p-qualidade` (rótulo “Revisão”), `p-saneamento`,
+`p-antesdepois`, `p-fase2` (rótulo “Despesas de continuidade”), `p-auditoria`,
+`p-manual` (rótulo “Manual”). Pop-up de abertura `modalApres`, com véu próprio `veuApres`.
 Configurações em gaveta lateral `gavetaConfig`, aberta pelo botão do alto.
 
 Rótulo e identificador são coisas distintas: identificadores permanecem, rótulos
