@@ -4448,7 +4448,7 @@ function conjuntos(){
       dados:function(){ return f.titulos.map(function(t){ return {
         'MAPP':t.m.codigo,'ÓRGÃO':t.m.orgao,'TÍTULO':t.m.titulo,'PALAVRAS':t.palavras,
         'APONTAMENTO':t.apontamentos.join(' · '),'SUGESTÃO':t.sugestao }; }); } },
-    { id:'final', nome:'Resultado final do saneamento', aba:'RESULTADO FINAL',
+    { id:'final', nome:'Base saneada', aba:'BASE SANEADA',
       dica:'MAPPs enquadrados pelas regras que permaneceram após as exclusões individuais.',
       dados:function(){ return linhasMapp(mantidos()); } },
     { id:'excluidos', nome:'Excluídos individualmente', aba:'EXCLUIDOS',
