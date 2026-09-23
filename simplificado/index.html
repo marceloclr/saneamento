@@ -534,6 +534,10 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   th.novo-programado, td.novo-programado { font-weight:700; }
   th.novo-programado, td.novo-programado { background:rgba(141,113,48,.09); }
   th.novo-programado { color:var(--latao); }
+  /* Cabeçalho e totalizador fixos: fundo sólido sob o destaque translúcido, acima das linhas que rolam por trás */
+  tfoot td { z-index:3; }
+  thead th.novo-programado, tfoot td.novo-programado { background:linear-gradient(rgba(141,113,48,.09),rgba(141,113,48,.09)),var(--papel-2); }
+  #tabSaldo thead th.corrente, #tabSaldo tfoot td.corrente { background:linear-gradient(var(--acento-tenue),var(--acento-tenue)),var(--papel-2); }
 </style>
 </head>
 <body>
