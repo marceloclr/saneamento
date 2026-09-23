@@ -740,7 +740,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
           <option value="empenhado">Empenhado</option>
         </select></label>
       <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe a apuração aos órgãos marcados. Sem marcação alguma, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
-      <label class="campo"><span>Anos do saldo para o Novo Programado 2027 <i class="sigla" tabindex="0" data-tip="Seleciona um ou mais exercícios anteriores a 2027. O Novo Programado 2027 = Programado 2027 + soma dos saldos (Programado − Empenhado) dos anos selecionados. Sem seleção, considera apenas o Programado 2027." data-tip-t="Novo Programado 2027">?</i></span><select id="saldoNovoAnos"></select></label>
     </div>
     <div class="saldo-exec">
       <h4>Exercícios de execução considerados <i class="sigla" tabindex="0" data-tip="Escolha os anos calendário que o sistema considera em todo o processamento: regras, totais, saldo, gráficos e exportações. Arraste as bolinhas, use De/Até ou clique num ano para tirá-lo ou incluí-lo. A mudança recalcula tudo e vai à auditoria." data-tip-t="Exercícios de execução">?</i></h4>
@@ -1061,7 +1060,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
         </select></label>
       <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Mesmo filtro de órgão do Saldo do programado por exercício." data-tip-t="Órgão">?</i></span><select id="adOrgao"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Mesmo filtro de busca do Saldo do programado por exercício." data-tip-t="Busca">?</i></span><input type="text" id="adBusca" placeholder="órgão, código, título…"></label>
-      <label class="campo"><span>Anos do saldo para o Novo Programado 2027 <i class="sigla" tabindex="0" data-tip="Mesmo filtro de anos do Saldo. Define quais saldos anteriores entram no cálculo do Novo Programado 2027." data-tip-t="Novo Programado 2027">?</i></span><select id="adNovoAnos"></select></label>
     </div>
   </div>
 
@@ -3436,7 +3434,7 @@ function apurarSaldo(){
 
 /* ---------------------------- Novo Programado 2027 ----------------------
    Novo Programado 2027 = VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano),
-   somente para os exercícios marcados. Apurado MAPP a MAPP, na visão consolidada.
+   somente para os exercícios incorporados. Apurado MAPP a MAPP, na visão consolidada.
    Exercício marcado cujo saldo seja negativo (empenho acima do programado) não é
    somado: o MAPP é relacionado como inconsistente. A base não traz empenho de
    2027 nem de 2028; 2028 permanece apenas como programado original. */
@@ -3453,13 +3451,13 @@ function anosElegiveisNP(){
   return (E.anos||[]).filter(function(a){ return a<NP_ANO && p.has(a) && e.has(a) && anoExecConsiderado(a); })
     .sort(function(a,b){ return b-a; });
 }
-function anosNovoProgramado(sel){
-  const el=anosElegiveisNP();
-  return valoresMulti(sel).map(Number).filter(function(a){ return el.indexOf(a)>=0; })
-    .sort(function(a,b){ return a-b; });
+/* O Novo Programado 2027 incorpora o saldo de todos os exercícios anteriores a
+   2027 marcados na régua (o antigo filtro próprio de anos deixou de existir). */
+function anosNovoProgramado(){
+  return anosElegiveisNP().sort(function(a,b){ return a-b; });
 }
 function rotuloAnosNP(anos){
-  return anos && anos.length ? anos.join(', ') : 'nenhum exercício (apenas o programado de 2027)';
+  return anos && anos.length ? faixasTexto(anos.slice().sort(function(a,b){ return a-b; })) : 'nenhum exercício (apenas o programado de 2027)';
 }
 
 function novoProgramadoMapp(m,anos){
@@ -3489,6 +3487,7 @@ function novoProgramadoSerie(serie,anos,excluidos){
 
 /* Filtro de exercícios: um único estado (E.npAnos), exibido nos dois quadros. */
 function montarFiltroAnosNP(idSel){
+  if(!$(idSel)) return;   /* filtro retirado: os anos vêm da régua */
   const el=anosElegiveisNP();
   if(E.npAnos==null) E.npAnos=[NP_ANO-1,NP_ANO-2].filter(function(a){ return el.indexOf(a)>=0; });
   opcoes(idSel,el.map(function(a){ return [String(a),String(a)]; }),'Nenhum exercício');
@@ -3507,6 +3506,7 @@ function copiarMulti(origem,destino){
   rotularMulti(destino);
 }
 function ligarSincroniaAnosNP(){
+  if(!$('#saldoNovoAnos')) return;
   $('#saldoNovoAnos').addEventListener('change',function(){
     E.npAnos=anosNovoProgramado('#saldoNovoAnos');
     copiarMulti('saldoNovoAnos','adNovoAnos');
@@ -3566,14 +3566,14 @@ function renderSaldo(){
       'Exercícios posteriores ao corrente. Por definição não há empenho neles: o saldo equivale ao próprio programado.',true)+
     cartao('Novo Programado 2027',rsCurto(a.np.total),
       'base 2027 '+rsCurto(a.np.base)+' + saldos '+rsCurto(a.np.incorporado),'var(--latao)',
-      'Cálculo: VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano) dos exercícios marcados, MAPP a MAPP.\n'+
+      'Cálculo: VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano) dos exercícios anteriores a 2027 marcados na régua, MAPP a MAPP.\n'+
       'Exercícios incorporados: '+rotuloAnosNP(anosNovo)+'.\n'+
       'Programado de 2027 (base): '+rs(a.np.base)+'.\nSaldos incorporados: '+rs(a.np.incorporado)+'.\n'+
-      'Saldo negativo em exercício marcado não é somado. Independe da medida exibida: é sempre valor programado.',true)+
+      'Saldo negativo em exercício incorporado não é somado. Independe da medida exibida: é sempre valor programado.',true)+
     (a.np.inconsistentes.length ? cartao('Inconsistências no Novo Programado',
       n(new Set(a.np.inconsistentes.map(function(x){ return x.m.chave; })).size),
       n(a.np.inconsistentes.length)+' exercício(s) com empenho acima do programado','var(--carmim)',
-      'MAPPs em que, num exercício marcado, o empenhado supera o programado. O saldo negativo não é somado ao Novo Programado 2027; os casos estão relacionados no bloco de inconsistências, abaixo da grade.') : '')+
+      'MAPPs em que, num exercício incorporado, o empenhado supera o programado. O saldo negativo não é somado ao Novo Programado 2027; os casos estão relacionados no bloco de inconsistências, abaixo da grade.') : '')+
     cartao(a.campo==='mapp'?'MAPPs na apuração':'Agrupamentos',n(a.grupos.length),
       conjunto,'var(--grafite)','Quantidade de linhas da grade, já aplicados o conjunto e a busca.');
 
@@ -3587,7 +3587,7 @@ function renderSaldo(){
             (p.futuro?'\nExercício futuro: não há empenho, de modo que o saldo iguala o programado.':'') };
     }))
     .concat([{ rot:'Novo Programado 2027', num:true, novo:true,
-               tip:'Cálculo: VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano), apenas para os exercícios marcados no filtro.\n'+
+               tip:'Cálculo: VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano), para os exercícios anteriores a 2027 marcados na régua.\n'+
                    'Exercícios incorporados: '+rotuloAnosNP(anosNovo)+'.\n'+
                    'Apurado MAPP a MAPP e somado no agrupamento. Saldo negativo não é somado (MAPP listado como inconsistente).\n'+
                    'É sempre valor programado, qualquer que seja a medida exibida, e já contém o programado de 2027.' },
@@ -3617,7 +3617,7 @@ function renderSaldo(){
       }).join('')+
       '<td class="num novo-programado"'+tip(l.g.nome+'\nProgramado 2027 (base): '+rs(l.g.npBase)+
         '\nSaldos incorporados ('+rotuloAnosNP(anosNovo)+'): '+rs(l.g.npInc)+'\nNovo Programado 2027: '+rs(l.g.np)+
-        (l.g.npIncons?'\n'+n(l.g.npIncons)+' MAPP(s) com saldo negativo em exercício marcado — não somado.':''),'Novo Programado 2027')+
+        (l.g.npIncons?'\n'+n(l.g.npIncons)+' MAPP(s) com saldo negativo em exercício incorporado — não somado.':''),'Novo Programado 2027')+
         (l.g.npIncons?' style="color:var(--risco)"':'')+'><strong>'+rsCurto(l.g.np)+'</strong></td>'+
       '<td class="num">'+n(l.g.mapps)+'</td></tr>';
   }).join('') : '<tr><td colspan="'+colunas.length+'" class="vazio">Nenhum registro corresponde à busca.</td></tr>';
@@ -3701,7 +3701,7 @@ function exportarSaldo(){
 }
 
 function ligarEventosSaldo(){
-  ['#saldoAgrupamento','#saldoConjunto','#saldoMedida','#saldoOrgao','#saldoNovoAnos'].forEach(function(s){
+  ['#saldoAgrupamento','#saldoConjunto','#saldoMedida','#saldoOrgao'].forEach(function(s){
     $(s).addEventListener('change',renderSaldo);
   });
   $('#btnExportarSaldo').addEventListener('click',exportarSaldo);
@@ -5126,7 +5126,7 @@ function renderAntesDepois(){
     { rot:'Ativos depois', num:true,
       tip:'Situação projetada depois de aplicadas as ações recomendadas aos MAPPs mantidos no saneamento.\nMedida: '+rotuloMedida()+'.' },
     { rot:'Novo Programado 2027', num:true, novo:true,
-      tip:'Cálculo: VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano) dos exercícios marcados — mesma regra e mesma seleção do Saldo por exercício.\n'+
+      tip:'Cálculo: VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano) dos exercícios anteriores a 2027 marcados na régua — mesma regra do Saldo por exercício.\n'+
           'Somente MAPPs que permanecem ativos depois do saneamento. Saldo negativo não é somado (MAPP inconsistente).\n'+
           'Sempre em valor programado, qualquer que seja a medida escolhida.' },
     { rot:'Variação', num:true, tip:'Cálculo: ativos depois menos ativos antes. Valor negativo significa saída da listagem ativa.' },
@@ -5151,7 +5151,7 @@ function renderAntesDepois(){
       '<td class="num">'+fmtAD(vD(o))+'</td>'+
       '<td class="num novo-programado"'+tip(o.nome+' — '+n(o.npMapps)+' MAPP(s) ativos depois\nNovo Programado 2027: '+rs(o.novoProgramado)+
         '\nExercícios incorporados: '+rotuloAnosNP(a.novoProgramadoAnos)+
-        (o.npIncons?'\n'+n(o.npIncons)+' MAPP(s) com saldo negativo em exercício marcado — não somado.':''),'Novo Programado 2027')+
+        (o.npIncons?'\n'+n(o.npIncons)+' MAPP(s) com saldo negativo em exercício incorporado — não somado.':''),'Novo Programado 2027')+
         (o.npIncons?' style="color:var(--risco)"':'')+'>'+rsCurto(o.novoProgramado)+'</td>'+
       '<td class="num" style="color:'+(dif<0?'var(--risco)':'var(--tinta-2)')+'">'+(dif>0?'+':'')+fmtAD(dif)+'</td>'+
       '<td class="num">'+(vA(o)?((100*dif/vA(o)).toFixed(1).replace('.',',')+'%'):'—')+'</td>'+
@@ -5317,7 +5317,7 @@ function exportarAntesDepois(){
 }
 
 function ligarEventosAntesDepois(){
-  ['#adBase','#adMedida','#adEstrato','#adConjunto','#adOrgao','#adNovoAnos'].forEach(function(s){
+  ['#adBase','#adMedida','#adEstrato','#adConjunto','#adOrgao'].forEach(function(s){
     $(s).addEventListener('change',renderAntesDepois);
   });
   let t=null;

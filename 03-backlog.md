@@ -34,6 +34,9 @@ abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessã
   filtro e seção na ficha. Sessão em formato 2, versionada no nome
   (`DDMMAAAA-HHMM-Vnn.json`), gravada e retomada no computador, no GitHub ou nos
   dois, à escolha do usuário.
+- Novo Programado 2027 passa a incorporar o saldo de todos os anos anteriores a 2027
+  marcados na régua; saiu o campo próprio de anos (Saldo e Resultado). Grade do saldo
+  sem a coluna Total (o rodapé mantém os totais).
 - Régua sem De/Até, alças e pílulas alinhadas (uma coluna por ano, rolagem lateral em tela
   estreita), recálculo ao soltar; grade do saldo com um ano por coluna, coluna do
   agrupamento fixa e abertura encostada à direita (setas rolam); "Não mostrar novamente"
