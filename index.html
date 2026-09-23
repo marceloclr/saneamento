@@ -727,7 +727,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
           <option value="empenhado">Empenhado</option>
         </select></label>
       <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe a apuração aos órgãos marcados. Sem marcação alguma, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
-      <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no nome do agrupamento — órgão, secretaria, programa ou código e título do MAPP." data-tip-t="Busca">?</i></span><input type="text" id="saldoBusca" placeholder="órgão, código, título…"></label>
       <label class="campo"><span>Anos do saldo para o Novo Programado 2027 <i class="sigla" tabindex="0" data-tip="Seleciona um ou mais exercícios anteriores a 2027. O Novo Programado 2027 = Programado 2027 + soma dos saldos (Programado − Empenhado) dos anos selecionados. Sem seleção, considera apenas o Programado 2027." data-tip-t="Novo Programado 2027">?</i></span><select id="saldoNovoAnos"></select></label>
     </div>
     <div class="saldo-exec">
@@ -2528,8 +2527,11 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
     return norm;
   }
   function mudou(){ aparar(); aoMudar(pintar()); }
-  lo.addEventListener('input',function(){ st.lo=Math.min(+lo.value,st.hi); mudou(); });
-  hi.addEventListener('input',function(){ st.hi=Math.max(+hi.value,st.lo); mudou(); });
+  /* arrastar só redesenha; o recálculo vem ao soltar a alça */
+  lo.addEventListener('input',function(){ st.lo=Math.min(+lo.value,st.hi); aparar(); pintar(); });
+  hi.addEventListener('input',function(){ st.hi=Math.max(+hi.value,st.lo); aparar(); pintar(); });
+  lo.addEventListener('change',mudou);
+  hi.addEventListener('change',mudou);
   de.addEventListener('change',function(){ st.lo=+de.value; if(st.lo>st.hi) st.hi=st.lo; mudou(); });
   ate.addEventListener('change',function(){ st.hi=+ate.value; if(st.hi<st.lo) st.lo=st.hi; mudou(); });
   q('[data-r="todos"]').addEventListener('click',function(){ st.lo=0; st.hi=ult; st.fora.clear(); mudou(); });
@@ -3691,8 +3693,6 @@ function ligarEventosSaldo(){
   ['#saldoAgrupamento','#saldoConjunto','#saldoMedida','#saldoOrgao','#saldoNovoAnos'].forEach(function(s){
     $(s).addEventListener('change',renderSaldo);
   });
-  let t=null;
-  $('#saldoBusca').addEventListener('input',function(){ clearTimeout(t); t=setTimeout(renderSaldo,260); });
   $('#btnExportarSaldo').addEventListener('click',exportarSaldo);
   ['#tabSaldo','#tabInconsNP'].forEach(function(idT){
     $(idT).addEventListener('click',function(ev){
@@ -5507,8 +5507,7 @@ function cfgParaTela(){
       : '<div class="aviso bom"><span class="marca">Automática</span><span>Os anos das regras são derivados do ano corrente do relógio ('+
         anoRelogio()+') a cada abertura do sistema. Nenhum ajuste anual é necessário.</span></div>');
   montarReguaExec($('#saldoExecAnos'),E.anos,E.cfg.execAnos,function(sel){
-    clearTimeout(E._recalcExec);
-    E._recalcExec=setTimeout(function(){ aplicarExecAnos(sel); },450);
+    aplicarExecAnos(sel);
   });
   $('#estadoConfig').textContent='Em vigor: '+CRITERIO_ROTULO[E.cfg.criterio]+' · universo: '+rotuloUniverso()+' · '+textoAncora();
   $('#notaUniverso').textContent = {

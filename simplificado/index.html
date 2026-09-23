@@ -2072,8 +2072,11 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
     return norm;
   }
   function mudou(){ aparar(); aoMudar(pintar()); }
-  lo.addEventListener('input',function(){ st.lo=Math.min(+lo.value,st.hi); mudou(); });
-  hi.addEventListener('input',function(){ st.hi=Math.max(+hi.value,st.lo); mudou(); });
+  /* arrastar só redesenha; o recálculo vem ao soltar a alça */
+  lo.addEventListener('input',function(){ st.lo=Math.min(+lo.value,st.hi); aparar(); pintar(); });
+  hi.addEventListener('input',function(){ st.hi=Math.max(+hi.value,st.lo); aparar(); pintar(); });
+  lo.addEventListener('change',mudou);
+  hi.addEventListener('change',mudou);
   de.addEventListener('change',function(){ st.lo=+de.value; if(st.lo>st.hi) st.hi=st.lo; mudou(); });
   ate.addEventListener('change',function(){ st.hi=+ate.value; if(st.hi<st.lo) st.lo=st.hi; mudou(); });
   q('[data-r="todos"]').addEventListener('click',function(){ st.lo=0; st.hi=ult; st.fora.clear(); mudou(); });
@@ -3189,12 +3192,10 @@ function renderSaneamento(){ renderSaneada(); }
 function cfgParaTela(){
   montarReguaExec($('#cfgExecAnos'),E.anos,E.cfg.execAnos,function(sel){
     E.cfg.execAnos=sel;
-    clearTimeout(E._recalcExec);
-    E._recalcExec=setTimeout(async function(){
-      if(!E.mapps.length) return;
-      await veuCarga('Recalculando com os exercícios escolhidos…');
+    if(!E.mapps.length) return;
+    veuCarga('Recalculando com os exercícios escolhidos…').then(function(){
       try{ diagnosticar(); renderTudo(); } finally { veuCarga(false); }
-    },450);
+    });
   });
 }
 
