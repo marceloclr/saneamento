@@ -26,6 +26,20 @@ consistência da base; saneamento final com exclusão individual e exportação 
 abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessão em
 `.json`; tema claro e escuro; sistema de dicas em balão fixo.
 
+## Lote de 23/09/2026 — concluído
+
+- Linha totalizadora e cabeçalho fixo das grades com fundo sólido nas duas versões
+  (colunas `.corrente` e `.novo-programado` passaram a camada sobre `--papel-2`).
+- Boas-vindas de abertura (`modalBV`): passo a passo animado em cinco etapas, só no
+  carregamento; a apresentação completa ficou no botão **Apresentação**.
+- Manual único em `manual.html`, com conteúdo por versão, botão **Manual** nas duas
+  versões e ligação por `postMessage`. O manual embutido do `index.html` foi
+  retirado. Revisão de conteúdo: guia da versão completa atualizado (importação com
+  aba localizada automaticamente, Programação, rótulos atuais), guia próprio da
+  versão essencial, Parte II comum (regras, saldo do programado, comparação entre
+  versões, glossário) e manual técnico corrigido (arquitetura em três páginas,
+  navegação em quatro áreas, ensaio com a aba `Base de Dados`).
+
 ## Lote de setembro de 2026 — concluído
 
 - **Item 4 (parcial)** — botão único *Exportar grade completa* no segmento

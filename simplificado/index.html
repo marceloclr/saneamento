@@ -566,6 +566,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
     </div>
     <div class="topo-acoes">
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
+      <button class="btn discreto" id="btnManual" data-tip="Abre o manual em nova janela: guia de operação passo a passo desta versão, conceitos e regras. O mesmo manual atende à versão completa e mostra o conteúdo desta versão." data-tip-t="Manual">Manual</button>
       <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. A ficha aberta é redesenhada com as cores do novo tema.">Tema</button>
     </div>
   </div>
@@ -2887,6 +2888,7 @@ function atualizarSelo(){
   if(!E.mapps.length){ s.classList.remove('ativa'); $('#seloTexto').textContent='Nenhuma base carregada'; return; }
   s.classList.add('ativa');
   $('#seloTexto').textContent=n(E.mapps.length)+' MAPPs · '+n(Object.keys(E.exclusoes).length)+' excluído(s) · '+(E.arquivo?E.arquivo.name:'base');
+  enviarEstadoManual();   /* mantém o manual aberto em dia com importações, exclusões e retornos */
 }
 
 /* Todos os filtros do diagnóstico; “Situação da revisão” passa a “Situação no saneamento”. */
@@ -3105,7 +3107,62 @@ function renderTudo(){
   return falhas;
 }
 
+/* ------------------------------ Manual único ------------------------------
+   O manual fica em manual.html, compartilhado pelas versões completa e
+   essencial, e mostra o conteúdo da versão indicada em ?versao=. Abre em
+   janela própria e conversa com esta por postMessage: recebe daqui os
+   números da sessão, os textos das regras e os parâmetros em vigor, e pede
+   a abertura da tela de cada passo do guia. */
+
+const VERSAO_SISTEMA='essencial';
+const ENDERECO_MANUAL='../manual.html';
+function CARTOES_MANUAL_EXTRA(){
+  return [['Excluídos do saneamento',n(Object.keys(E.exclusoes).length),'var(--sepia)','MAPPs retirados do saneamento na etapa 2; permanecem na base como estão.']];
+}
+function IR_PELO_MANUAL(d){ irParaAba(d[0]); }
+let _janelaManual=null;
+function abrirManual(){
+  const tema=document.documentElement.getAttribute('data-tema')==='escuro'?'&tema=escuro':'';
+  _janelaManual=window.open(ENDERECO_MANUAL+'?versao='+VERSAO_SISTEMA+tema,'webmapp-manual');
+  if(!_janelaManual){ recado('O navegador bloqueou a janela do manual. Permita janelas deste endereço e tente de novo.'); return; }
+  try{ _janelaManual.focus(); }catch(e){}
+}
+function estadoParaManual(){
+  const d=E.diag;
+  const est={ fonte:'webmapp', tipo:'estado', versao:VERSAO_SISTEMA, base:!!d, cartoes:[], regras:{}, parametros:null, legenda:'' };
+  try{ est.legenda='Critério: '+CRITERIO_ROTULO[E.cfg.criterio]+' · '+textoAncora(); }catch(e){}
+  ['1a','1b','1.2','1.3'].forEach(function(id){ try{ est.regras[id]=dicaRegra(id); }catch(e){} });
+  est.parametros=Object.keys(CFG_OFICIAL).map(function(k){
+    const of=CFG_OFICIAL[k]; return [k,String(E.cfg[k]),(of===0?'resolvido pela âncora':String(of))];
+  });
+  if(!d) return est;
+  const uniao=new Set(); ['1a','1b','1.2','1.3'].forEach(function(id){ d.regras[id].forEach(function(m){ uniao.add(m.chave); }); });
+  est.cartoes=[
+    ['Linhas úteis',n(E.linhas.length),'var(--grafite)','Linhas da aba importada, descontados os subtotais.'],
+    ['MAPPs consolidados',n(E.mapps.length),'var(--ardosia)','Quantidade de chaves ÓRGÃO + MAPP distintas.'],
+    ['Universo de saneamento',n(d.noUniverso.length),'var(--petroleo)','MAPPs submetidos às regras, segundo o recorte em vigor: '+rotuloUniverso()+'.']
+  ].concat(['1a','1b','1.2','1.3'].map(function(id){ return [REGRAS[id].nome,n(d.regras[id].length),REGRAS[id].cor,'Item '+REGRAS[id].doc+' do documento oficial.']; }))
+   .concat([['União das regras',n(uniao.size),'var(--musgo)','MAPPs distintos enquadrados em ao menos uma regra (1 ∪ 2 ∪ 3 ∪ 4).']])
+   .concat(CARTOES_MANUAL_EXTRA());
+  return est;
+}
+function enviarEstadoManual(){
+  if(!_janelaManual || _janelaManual.closed) return;
+  try{ _janelaManual.postMessage(estadoParaManual(), location.protocol==='file:'?'*':location.origin); }catch(e){}
+}
+window.addEventListener('message',function(ev){
+  const okOrigem = ev.origin===location.origin || (location.protocol==='file:' && ev.origin==='null');
+  if(!okOrigem || !ev.data || ev.data.fonte!=='webmapp-manual') return;
+  if(ev.source && ev.source!==_janelaManual) _janelaManual=ev.source;
+  if(ev.data.tipo==='pronto') enviarEstadoManual();
+  else if(ev.data.tipo==='ir' && ev.data.versao===VERSAO_SISTEMA && Array.isArray(ev.data.destino)){
+    IR_PELO_MANUAL(ev.data.destino.map(String));
+    try{ window.focus(); }catch(e){}
+  }
+});
+
 function ligarEventosEss(){
+  $('#btnManual').addEventListener('click',abrirManual);
   $$('#abas .aba').forEach(function(b){ b.addEventListener('click',function(){ irParaAba(b.getAttribute('data-nav')); }); });
   $('#btnTema').addEventListener('click',alternarTema);
   const area=$('#areaSolta');

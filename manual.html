@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="claro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual · Saneamento de MAPPs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paleta, tipografia e componentes copiados de index.html, para o manual ter a mesma aparência do sistema. */
+:root{
+  --papel:#f3f1ec; --papel-2:#e9e6e0; --carta:#fffefc; --carta-2:#faf8f4;
+  --tinta:#1c1f23; --tinta-2:#4a5058; --tinta-3:#737a83;
+  --linha:#d9d4cb; --linha-forte:#c1bab0;
+  --grafite:#3f4750; --latao:#8d7130; --musgo:#4c6847; --ardosia:#3f5c78;
+  --ferrugem:#8a5240; --ameixa:#655070; --ocre:#867123; --carmim:#8b3a3a; --petroleo:#2f5f61; --sepia:#6f5a43;
+  --ok:#4c6847; --alerta:#867123; --risco:#8b3a3a; --neutro:#737a83;
+  --sombra:0 1px 1px rgba(28,31,35,.05), 0 10px 26px -18px rgba(28,31,35,.35);
+  --sombra-alta:0 24px 60px -24px rgba(28,31,35,.45);
+  --raio:12px; --raio-p:7px;
+  --acento:var(--grafite); --acento-tenue:rgba(63,71,80,.09); --acento-medio:rgba(63,71,80,.30);
+}
+html[data-tema="escuro"]{
+  --papel:#14171b; --papel-2:#1a1e23; --carta:#1f242a; --carta-2:#242a31;
+  --tinta:#e9e6e0; --tinta-2:#bab5ac; --tinta-3:#8d949d;
+  --linha:#2e343b; --linha-forte:#3e454e;
+  --grafite:#9fa9b4; --latao:#c4a45e; --musgo:#87ab7f; --ardosia:#7ba3c8;
+  --ferrugem:#c68a74; --ameixa:#ab92b8; --ocre:#c0aa4e; --carmim:#cf7d7d; --petroleo:#64a7a9; --sepia:#c0a281;
+  --ok:#87ab7f; --alerta:#c0aa4e; --risco:#cf7d7d; --neutro:#8d949d;
+  --sombra:0 1px 1px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.8);
+  --sombra-alta:0 24px 60px -24px rgba(0,0,0,.9);
+}
+
+html,body{margin:0;padding:0}
+body{
+  background:var(--papel); color:var(--tinta);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"IBM Plex Serif",Georgia,serif; font-weight:600; letter-spacing:-.01em; margin:0}
+h1{font-size:19px} h2{font-size:17px} h3{font-size:15px} h4{font-size:13.5px}
+p{margin:0 0 10px}
+a{color:var(--ardosia)}
+.mono,.num{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+.tenue{color:var(--tinta-3)}
+.pequeno{font-size:12px}
+.minusculo{font-size:11px}
+hr.divisa{border:0;border-top:1px solid var(--linha);margin:16px 0}
+
+/* ---------- Cabeçalho ---------- */
+.topo{
+  position:sticky; top:0; z-index:40; background:var(--carta);
+  border-bottom:1px solid var(--linha); box-shadow:var(--sombra);
+}
+.topo-linha{display:flex; align-items:center; gap:16px; padding:10px 20px}
+.brasao{
+  width:34px;height:34px;border-radius:9px;flex:0 0 auto;
+  background:linear-gradient(150deg,var(--grafite),var(--ardosia));
+  display:grid;place-items:center;color:#fff;font-family:"IBM Plex Serif",serif;font-weight:600;font-size:15px;
+}
+html[data-tema="escuro"] .brasao{color:#14171b}
+.titulo-bloco{display:flex;flex-direction:column;line-height:1.25}
+.titulo-bloco .sub{font-size:11.5px;color:var(--tinta-3)}
+.topo-acoes{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.selo-base{
+  display:flex;align-items:center;gap:8px;padding:5px 11px;border:1px solid var(--linha);
+  border-radius:99px;background:var(--carta-2);font-size:12px;color:var(--tinta-2);
+}
+.selo-base .pt{width:7px;height:7px;border-radius:50%;background:var(--neutro)}
+.selo-base.ativa .pt{background:var(--ok)}
+
+/* ---------- Abas ---------- */
+.abas{display:flex;gap:2px;padding:0 14px;overflow-x:auto;background:var(--carta);border-bottom:1px solid var(--linha)}
+.aba{
+  appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;
+  font-family:inherit;font-size:13px;color:var(--tinta-3);padding:9px 13px 8px;
+  border-bottom:2px solid transparent;border-radius:var(--raio-p) var(--raio-p) 0 0;display:flex;gap:7px;align-items:center;
+}
+.aba:hover{color:var(--tinta);background:var(--papel-2)}
+.aba .ponto{width:8px;height:8px;border-radius:2px;background:var(--cor);opacity:.55}
+.aba[aria-selected="true"]{color:var(--cor);border-bottom-color:var(--cor);font-weight:600;background:var(--carta)}
+.aba[aria-selected="true"] .ponto{opacity:1}
+.aba:disabled{opacity:.4;cursor:not-allowed}
+.aba:focus-visible{outline:2px solid var(--ardosia);outline-offset:-2px}
+
+main{padding:20px; max-width:1560px; margin:0 auto}
+
+.gaveta.estreita{width:min(660px,96vw)}
+section[role="tabpanel"]{animation:surgir .18s ease-out}
+@keyframes surgir{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- Blocos ---------- */
+.bloco{
+  background:var(--carta); border:1px solid var(--linha); border-left:3px solid var(--acento);
+  border-radius:var(--raio); box-shadow:var(--sombra); padding:16px 18px; margin-bottom:16px;
+}
+.bloco > header{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.bloco > header h2, .bloco > header h3{color:var(--acento)}
+.bloco > header .legenda{font-size:12px;color:var(--tinta-3);margin-left:auto}
+.bloco.tenor-alerta{border-left-color:var(--alerta)}
+.bloco.tenor-risco{border-left-color:var(--risco)}
+.grade{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1180px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ---------- Cartões de indicador ---------- */
+.cartoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:12px}
+.cartao{
+  position:relative;background:var(--carta);border:1px solid var(--linha);border-radius:var(--raio);
+  padding:13px 14px 12px;box-shadow:var(--sombra);
+}
+.cartao::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--cor,var(--neutro));
+  border-radius:var(--raio) 0 0 var(--raio)}
+.cartao .rotulo{font-size:11.5px;color:var(--tinta-3);display:flex;align-items:center;gap:6px}
+.cartao .valor{font-family:"IBM Plex Mono",monospace;font-size:23px;font-weight:500;letter-spacing:-.02em;margin-top:3px;color:var(--cor,var(--tinta))}
+.cartao .valor.reduzido{font-size:17px}
+.cartao .nota{font-size:11.5px;color:var(--tinta-3);margin-top:3px}
+.cartao.clicavel{cursor:pointer;transition:border-color .15s}
+.cartao.clicavel:hover{border-color:var(--cor)}
+.btn{
+  appearance:none;border:1px solid var(--linha-forte);background:var(--carta);color:var(--tinta);
+  padding:7px 13px;border-radius:var(--raio-p);cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  transition:background .14s,border-color .14s,color .14s;
+}
+.btn:hover{background:var(--papel-2);border-color:var(--acento)}
+.btn:focus-visible{outline:2px solid var(--ardosia);outline-offset:1px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.principal{background:var(--acento);border-color:var(--acento);color:var(--carta)}
+html[data-tema="escuro"] .btn.principal{color:#14171b}
+.btn.principal:hover{filter:brightness(1.08)}
+.btn.discreto{border-color:transparent;background:transparent;color:var(--tinta-2);padding:5px 8px}
+.btn.discreto:hover{background:var(--papel-2);color:var(--tinta)}
+.btn.risco{border-color:var(--risco);color:var(--risco)}
+.btn.pequeno{padding:4px 9px;font-size:12px}
+.barra-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* ---------- Etiquetas ---------- */
+.etq{
+  display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:99px;font-size:11.5px;
+  border:1px solid var(--cor,var(--linha-forte)); color:var(--cor,var(--tinta-2)); background:transparent; white-space:nowrap;
+}
+.etq.solida{background:var(--cor);color:var(--carta);border-color:var(--cor)}
+.tabela-caixa{overflow:auto;border:1px solid var(--linha);border-radius:var(--raio);background:var(--carta);max-height:64vh}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+thead th{
+  position:sticky;top:0;z-index:2;background:var(--papel-2);color:var(--tinta-2);text-align:left;
+  padding:8px 10px;border-bottom:1px solid var(--linha-forte);font-weight:600;font-size:11.5px;white-space:nowrap;
+}
+thead th.ordenavel{cursor:pointer;user-select:none;position:relative}
+thead th.ordenavel:hover{color:var(--acento)}
+thead th.ordenavel::after{content:"⇅";font-size:9px;opacity:.28;margin-left:5px}
+thead th[data-dir="asc"]{color:var(--acento)}
+thead th[data-dir="desc"]{color:var(--acento)}
+thead th[data-dir="asc"]::after{content:"↑";opacity:.95;font-size:10px}
+thead th[data-dir="desc"]::after{content:"↓";opacity:.95;font-size:10px}
+tbody td{padding:7px 10px;border-bottom:1px solid var(--linha);vertical-align:top}
+tbody tr:hover{background:var(--acento-tenue)}
+/* ---------- Avisos ---------- */
+.aviso{
+  display:flex;gap:9px;align-items:flex-start;border:1px solid var(--cor,var(--linha));
+  border-left:3px solid var(--cor,var(--neutro));background:var(--carta);border-radius:var(--raio-p);
+  padding:9px 12px;font-size:12.5px;margin-bottom:10px;
+}
+.aviso .marca{font-weight:600;color:var(--cor)}
+.aviso.alerta{--cor:var(--alerta)} .aviso.risco{--cor:var(--risco)}
+.aviso.nota{--cor:var(--ardosia)} .aviso.bom{--cor:var(--ok)}
+.apr-cadeia{display:flex;align-items:center;flex-wrap:wrap;row-gap:8px}
+.apr-elo{padding:6px 13px;border-radius:99px;font-size:11.5px;font-weight:600;letter-spacing:.03em;border:1px solid var(--cor);
+  color:var(--cor);background:color-mix(in srgb,var(--cor) 8%,var(--carta))}
+.apr-elo.final{background:var(--cor);color:var(--carta)}
+html[data-tema="escuro"] .apr-elo.final{color:#14171b}
+.apr-elo.mono{font-family:"IBM Plex Mono",monospace;font-weight:500;letter-spacing:0}
+.apr-seta{color:var(--tinta-3);padding:0 4px;display:grid;place-items:center}
+/* ---------- Manual ---------- */
+.manual{display:grid;grid-template-columns:266px minmax(0,1fr);gap:18px;align-items:start}
+.manual-indice{position:sticky;top:var(--topo-alt,110px);max-height:calc(100vh - var(--topo-alt,110px) - 16px);overflow:auto;
+  background:var(--carta);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);padding:12px}
+.manual-indice .busca{width:100%;padding:6px 9px;border:1px solid var(--linha);border-radius:var(--raio-p);background:var(--carta-2);margin-bottom:8px}
+.manual-indice .grupo{margin-top:10px}
+.manual-indice .grupo > h4{font-size:12px;color:var(--cor);display:flex;gap:6px;align-items:center;margin-bottom:5px}
+.ind-item{display:block;width:100%;appearance:none;border:0;border-left:2px solid transparent;background:transparent;text-align:left;
+  font-size:12px;color:var(--tinta-2);padding:4px 8px;border-radius:0 var(--raio-p) var(--raio-p) 0;cursor:pointer}
+.ind-item:hover{background:var(--papel-2);color:var(--tinta)}
+.ind-item.ativo{border-left-color:var(--cor);color:var(--cor);background:color-mix(in srgb,var(--cor) 8%,var(--carta));font-weight:600}
+.ind-item .n{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--tinta-3);margin-right:5px}
+.man-parte{border-radius:var(--raio);padding:16px 18px;margin-bottom:14px;border:1px solid color-mix(in srgb,var(--cor) 32%,var(--linha));
+  background:linear-gradient(120deg,color-mix(in srgb,var(--cor) 11%,var(--carta)),var(--carta) 70%);display:flex;gap:14px;align-items:center}
+.man-parte .icone-fase{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--cor);color:var(--carta);flex:0 0 auto}
+html[data-tema="escuro"] .man-parte .icone-fase{color:#14171b}
+.man-parte h2{font-size:19px;color:var(--cor)}
+.man-parte p{margin:3px 0 0;font-size:12.5px;color:var(--tinta-2);max-width:78ch}
+.man-secao{scroll-margin-top:calc(var(--topo-alt,110px) + 10px)}
+.man-secao p,.man-secao li{font-size:13px;line-height:1.6;color:var(--tinta-2);max-width:92ch}
+.man-secao p{margin:0 0 8px}
+.man-secao ol,.man-secao ul{margin:0 0 8px;padding-left:20px}
+.man-secao code,.man-quad code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--papel-2);border:1px solid var(--linha);border-radius:4px;padding:0 4px;color:var(--tinta)}
+.man-passo-cab{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.man-num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;
+  background:color-mix(in srgb,var(--acento) 14%,var(--carta));color:var(--acento);border:1px solid color-mix(in srgb,var(--acento) 40%,var(--linha));flex:0 0 auto}
+.man-onde{font-size:11.5px;color:var(--tinta-3)}
+.man-quads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.man-quad{border:1px solid var(--linha);border-left:3px solid var(--cor);border-radius:var(--raio-p);padding:9px 12px;background:color-mix(in srgb,var(--cor) 4%,var(--carta))}
+.man-quad h5{margin:0 0 5px;font-size:12px;color:var(--cor);font-family:"IBM Plex Sans",sans-serif;font-weight:600}
+.man-quad ul{margin:0;padding-left:17px}
+.man-quad li{font-size:12.5px;line-height:1.55;color:var(--tinta-2)}
+pre.codigo{position:relative;margin:6px 0 10px;background:var(--papel-2);border:1px solid var(--linha);border-radius:var(--raio-p);
+  padding:11px 13px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.55;overflow:auto;white-space:pre;color:var(--tinta)}
+pre.codigo .copiar{position:absolute;top:6px;right:6px}
+.man-vivo{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.man-tab{max-height:none}
+.man-tab td{vertical-align:top}
+@media(max-width:1060px){.manual{grid-template-columns:1fr}.manual-indice{position:static;max-height:none}.man-quads{grid-template-columns:1fr}}
+/* ---------- Página do manual ---------- */
+.oculto{display:none!important}
+.topo-linha .sub b{color:var(--cor-versao);font-weight:600}
+.versoes{display:flex;gap:2px;padding:3px;border:1px solid var(--linha);border-radius:99px;background:var(--carta-2)}
+.versoes button{appearance:none;border:0;background:transparent;font:inherit;font-size:12px;color:var(--tinta-3);padding:4px 12px;border-radius:99px;cursor:pointer}
+.versoes button:hover{color:var(--tinta)}
+.versoes button[aria-pressed="true"]{background:var(--cor-versao);color:var(--carta);font-weight:600}
+html[data-tema="escuro"] .versoes button[aria-pressed="true"]{color:#14171b}
+.versoes button:focus-visible{outline:2px solid var(--cor-versao);outline-offset:1px}
+.selo-versao{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--cor-versao);border:1px solid color-mix(in srgb,var(--cor-versao) 45%,var(--linha));border-radius:99px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+.man-secao h3{font-size:15px}
+.man-regras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.man-regra{border:1px solid var(--linha);border-left:3px solid var(--cor);border-radius:var(--raio-p);padding:10px 12px;background:color-mix(in srgb,var(--cor) 4%,var(--carta))}
+.man-regra h4{color:var(--cor);font-size:13.5px;margin-bottom:4px;display:flex;gap:8px;align-items:baseline}
+.man-regra h4 small{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--tinta-3);font-weight:500}
+.man-regra p{font-size:12.5px!important;margin:0 0 5px!important}
+.man-regra .acao{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--cor);letter-spacing:.02em}
+.man-regra .vivo{font-size:12px!important;color:var(--tinta-3)!important;border-top:1px dashed var(--linha);padding-top:6px;margin-top:6px!important;white-space:pre-line}
+.tab-versoes td:nth-child(2),.tab-versoes td:nth-child(3){white-space:nowrap}
+.sim{color:var(--ok);font-weight:600}.nao{color:var(--tinta-3)}
+.aviso .ligacao{margin-left:auto}
+@media(max-width:900px){.man-quads{grid-template-columns:1fr}.man-regras{grid-template-columns:1fr}}
+@media(max-width:760px){.topo-linha{flex-wrap:wrap}.topo-acoes{margin-left:0}main{padding:14px 16px}}
+@media print{
+  .topo,.manual-indice,.man-acoes,.copiar,.aviso.sem-ligacao{display:none!important}
+  .manual{display:block}
+  .bloco,.man-quad,.man-regra{box-shadow:none;break-inside:avoid-page}
+  pre.codigo{white-space:pre-wrap}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-linha">
+    <div class="brasao" aria-hidden="true">W</div>
+    <div class="titulo-bloco">
+      <h1>Manual · Módulo de Saneamento da base de Projetos MAPP <span class="selo-versao" id="versaoNome">Versão completa</span></h1>
+      <span class="sub">Guia de operação, conceitos e regras — o conteúdo acompanha a versão do sistema que abriu o manual</span>
+    </div>
+    <div class="topo-acoes">
+      <div class="versoes" role="group" aria-label="Versão do sistema">
+        <button type="button" data-versao="completa" aria-pressed="true" title="Mostra o manual da versão completa (index.html).">Completa</button>
+        <button type="button" data-versao="essencial" aria-pressed="false" title="Mostra o manual da versão essencial (simplificado/index.html).">Essencial</button>
+      </div>
+      <button class="btn discreto" id="btnImprimir" title="Abre a impressão do navegador apenas com o manual; escolha “Salvar como PDF” para gerar o arquivo.">Imprimir</button>
+      <button class="btn discreto" id="btnTema" aria-pressed="false" title="Alterna entre o tema claro e o escuro.">Tema</button>
+    </div>
+  </div>
+</header>
+<main style="--acento:var(--ferrugem);--acento-tenue:rgba(138,82,64,.10);--acento-medio:rgba(138,82,64,.3)">
+  <div class="manual">
+    <aside class="manual-indice" id="manualIndice" aria-label="Índice do manual"></aside>
+    <div class="manual-conteudo" id="manualConteudo"></div>
+  </div>
+</main>
+<script>
+"use strict";
+/* ==========================================================================
+   Manual único do Módulo de Saneamento da base de Projetos MAPP
+   Servido às duas versões do sistema: a completa (index.html) e a essencial
+   (simplificado/index.html). A versão é resolvida, em ordem, pelo parâmetro
+   ?versao= que o sistema passa ao abrir o manual, pelo endereço de origem e,
+   na falta de ambos, pela versão completa. Cada seção declara a que versão
+   pertence: 'ambas', 'completa' ou 'essencial'.
+
+   Quando aberto pelo botão Manual do sistema, o manual conversa com a janela
+   de origem por postMessage: recebe os números da sessão e os textos das
+   regras com os parâmetros em vigor, e pede ao sistema que abra a tela de
+   cada passo. Aberto isoladamente, funciona como documento estático.
+   ========================================================================== */
+
+const $  = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function norm(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+/* Texto com marcação mínima: `código` e **negrito**. */
+function fmtTexto(s){
+  return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+}
+/* Dica nativa do navegador: o manual não carrega o motor de dicas do sistema. */
+function tip(texto,titulo){ return ' title="'+esc((titulo?titulo+' — ':'')+texto)+'"'; }
+
+/* ------------------------------ Versão e ligação ------------------------- */
+
+const VERSOES = {
+  completa:  { nome:'Versão completa',  cor:'var(--ferrugem)', sistema:'index.html' },
+  essencial: { nome:'Versão essencial', cor:'var(--musgo)',    sistema:'simplificado/index.html' }
+};
+function versaoInicial(){
+  const q=new URLSearchParams(location.search).get('versao');
+  if(VERSOES[q]) return q;
+  if(/\/simplificado\//.test(document.referrer||'')) return 'essencial';
+  return 'completa';
+}
+let VERSAO = versaoInicial();
+const VERSAO_ORIGEM = versaoInicial();   // versão que abriu o manual
+let ESTADO = null;           // números da sessão enviados pelo sistema
+const ORIGEM = (function(){ try{ return window.opener && !window.opener.closed ? window.opener : null; }catch(e){ return null; } })();
+function destinoMensagem(){ return location.protocol==='file:' ? '*' : location.origin; }
+function origemAceita(o){ return o===location.origin || (location.protocol==='file:' && o==='null'); }
+function avisarSistema(msg){
+  if(!ORIGEM) return false;
+  try{ msg.fonte='webmapp-manual'; ORIGEM.postMessage(msg,destinoMensagem()); return true; }catch(e){ return false; }
+}
+window.addEventListener('message',function(ev){
+  if(!origemAceita(ev.origin) || !ev.data || ev.data.fonte!=='webmapp' || ev.data.tipo!=='estado') return;
+  ESTADO=ev.data;
+  renderSituacao();
+  renderRegrasVivas();
+  const t=$('#man-t-regras .man-corpo'); if(t) t.innerHTML=htmlParametros();
+});
+
+/* ------------------------------ Ícones (SVG) ----------------------------- */
+
+const ICONES = {
+  livro:'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/>',
+  codigo:'<path d="M8.5 7L3.5 12l5 5M15.5 7l5 5-5 5M13.5 5l-3 14"/>',
+  bussola:'<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  balanca:'<path d="M12 4v16M8 20h8M4.5 7.5h15"/><path d="M4.5 7.5L2.5 13h4zM19.5 7.5L17.5 13h4z"/>'
+};
+function icone(nome,tam){
+  const t=tam||18;
+  return '<svg width="'+t+'" height="'+t+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '+
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONES[nome]||'')+'</svg>';
+}
+function setaFluxo(tam){
+  const t=tam||22;
+  return '<svg width="'+t+'" height="'+t+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '+
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h16"/><path d="M14 7l5 5-5 5"/></svg>';
+}
+
+const PRINCIPIO = [
+  ['DADO','A planilha de execução, tal como importada. Nunca é alterada.','var(--grafite)'],
+  ['CÁLCULO','Somatórios por exercício e aferição da execução segundo o critério em vigor.','var(--ardosia)'],
+  ['REGRA','Enquadramento nas Regras 1, 2, 3 e 4, com a âncora temporal resolvida.','var(--latao)'],
+  ['RECOMENDAÇÃO','Ação que a regra indica para o MAPP, acompanhada de evidência e grau de confiança.','var(--ameixa)'],
+  ['DECISÃO HUMANA','Único ato que produz efeito: na versão completa, registrado com responsável e data na auditoria; na essencial, a exclusão ou o retorno de cada MAPP.','var(--musgo)']
+];
+function cadeiaPrincipio(){
+  return '<div class="apr-cadeia">'+PRINCIPIO.map(function(p,i){
+    return (i?'<span class="apr-seta">'+setaFluxo(18)+'</span>':'')+
+      '<span class="apr-elo'+(i===PRINCIPIO.length-1?' final':'')+'" style="--cor:'+p[2]+'"'+tip(p[1],p[0])+' tabindex="0">'+esc(p[0])+'</span>';
+  }).join('')+'</div>';
+}
+
+/* ------------------------------ Parte I · Guia de operação ----------------
+   `ir` é o destino no sistema de origem: [aba] ou [aba, segmento]. */
+
+const PASSO_PREPARAR = { t:'Preparar a base de execução', cor:'var(--grafite)', ir:null, onde:'Fora do sistema',
+  fazer:['Obter a extração mais recente da execução dos MAPPs em .xlsx (por exemplo, `mapps-regis18-09.xlsx`).','Manter os cabeçalhos originais, sem renomeá-los.'],
+  conferir:['Presença de `SECRETARIA`, `ORGAO`, `MAPP`, `PROGRAMA`, `DATA_APROVACAO`, `ESTAGIO_EXECUCAO` e `FONTE`.','Séries `VLR_PLANEJADO_aa`, `VLR_EMPENHO_aa` e `VLR_PAGO_aa`; `VLR_LIMITE` sem ano herda o exercício da coluna anterior.'],
+  cautela:['Não há empenho de 2027 nem de 2028 na base: esses exercícios têm apenas programado.','Cada linha é uma combinação de MAPP e fonte: uma linha nunca é um MAPP.'] };
+
+const GUIA_COMPLETA = [
+  PASSO_PREPARAR,
+  { t:'Importar a base', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Visão Geral › Importação',
+    fazer:['Clicar na área **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até ela.','Acionar **Importar e diagnosticar**.'],
+    conferir:['O painel de processamento, com cada fase e o percentual concluído.','O selo no alto, que passa a indicar a base carregada.','A aba de dados localizada automaticamente (em regra, “Base de Dados”).'],
+    cautela:['O processamento ocorre na memória do navegador; nada é transmitido a servidor.','Se algum painel falhar, o sistema conclui a composição dos demais e informa qual falhou.'] },
+  { t:'Conferir o retrato da importação', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Visão Geral › Importação › Retrato da importação',
+    fazer:['Examinar linhas úteis, colunas reconhecidas e exercícios encontrados.','Consultar a tabela de normalização dos estágios de execução.'],
+    conferir:['Quantidade de MAPPs consolidados coerente com a base de origem.','Colunas não reconhecidas, se houver, e seu eventual impacto.'],
+    cautela:['Conflitos entre linhas da mesma chave são sinalizados, nunca resolvidos pelo sistema.'] },
+  { t:'Identificar o responsável e ajustar parâmetros', cor:'var(--ocre)', ir:null, onde:'Botão Configurações, no alto',
+    fazer:['Preencher **Responsável pelas ações**: o nome acompanha todo lançamento de auditoria.','Conferir critério de execução, âncora temporal, universo e limiares; alterar apenas o necessário e acionar **Aplicar e recalcular**.'],
+    conferir:['Os anos resolvidos pela âncora (ano corrente e anterior).','O quadro “Parâmetros em vigor”, em Visão Geral › Regras aplicadas.'],
+    cautela:['As ações são executadas sem diálogo de confirmação; a justificativa é registrada como “Ação executada diretamente, sem diálogo de confirmação”.','**Restaurar valores oficiais** devolve os parâmetros ao padrão das regras.'] },
+  { t:'Ler os indicadores, as regras e o saldo', cor:'var(--latao)', ir:['panorama','indicadores'], onde:'Visão Geral › Indicadores, Universo, Regras aplicadas, Saldo por exercício',
+    fazer:['Percorrer os cartões de indicadores e as populações das Regras 1 a 4.','No Saldo por exercício, escolher agrupamento, conjunto e fonte, e os **Anos do saldo para o Novo Programado 2027**.','Alternar a forma dos gráficos pelos botões de cada quadro.'],
+    conferir:['A união das regras e as sobreposições, em Universo.','A coluna Novo Programado 2027, logo após 2028, e o bloco de inconsistências, se houver.'],
+    cautela:['Os valores monetários são saldo do programado, não programado bruto.','Novo Programado 2027 = VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano) dos anos marcados; saldo negativo não é somado.','As contagens são por MAPP consolidado, não por linha da planilha.'] },
+  { t:'Examinar a programação', cor:'var(--latao)', ir:['panorama','programacao'], onde:'Visão Geral › Programação',
+    fazer:['Consultar os cartões de concentração no exercício corrente, programação sem execução e ausência de programação futura.','Acionar **Exportar grade completa**, se necessário.'],
+    conferir:['O indício atribuído a cada MAPP e os totais da grade.'],
+    cautela:['São apontamentos de acompanhamento: não geram recomendação automática.'] },
+  { t:'Examinar o diagnóstico', cor:'var(--ardosia)', ir:['diagnostico'], onde:'Análise › Diagnóstico',
+    fazer:['Filtrar por secretaria, órgão, programa, ano de aprovação, regra, estágio, situação da revisão, execução, saldo mínimo, confiança, fonte e busca livre.','Ordenar por qualquer coluna, clicando no cabeçalho.','Abrir a ficha do MAPP para ver todas as regras testadas e suas evidências.'],
+    conferir:['A ação recomendada e o grau de confiança de cada MAPP.','Os totais filtrados, na linha totalizadora da grade.'],
+    cautela:['Filtro vazio significa ausência de restrição.','Casos de múltiplas regras, paralisados e dados insuficientes exigem exame manual.'] },
+  { t:'Registrar a decisão humana', cor:'var(--ameixa)', ir:['diagnostico'], onde:'Análise › Diagnóstico, ou ficha do MAPP',
+    fazer:['Selecionar um ou mais MAPPs.','Acionar **Acatar recomendação** ou **Rejeitar recomendação**: o registro é imediato.'],
+    conferir:['A situação da revisão atualizada na grade.','O lançamento correspondente no registro de auditoria.'],
+    cautela:['Somente a decisão produz efeito; a recomendação isolada nada altera.'] },
+  { t:'Revisar a consistência da base', cor:'var(--carmim)', ir:['qualidade'], onde:'Análise › Revisão da base',
+    fazer:['Clicar em cada cartão de achado para listar os MAPPs envolvidos.','Acionar **Exportar achado** ou **Exportar apontamentos**, quando necessário.'],
+    conferir:['Duplicidades, conflitos, divergências de indicador e títulos pouco informativos.'],
+    cautela:['O sistema aponta; jamais corrige a base por conta própria.'] },
+  { t:'Examinar as despesas de continuidade', cor:'var(--petroleo)', ir:['fase2'], onde:'Análise › Despesas de continuidade',
+    fazer:['Consultar os MAPPs com empenho em exercícios consecutivos.','Ajustar os limiares e acionar **Recalcular indícios**; **Exportar**, se necessário.'],
+    conferir:['Candidatos à migração de investimento para custeio finalístico.'],
+    cautela:['São indícios da segunda fase, sem qualquer efeito automático.'] },
+  { t:'Concluir o saneamento', cor:'var(--sepia)', ir:['saneamento'], onde:'Decisão',
+    fazer:['Examinar a grade do conjunto enquadrado, com seus filtros próprios.','Retirar do resultado o que não deva constar (**Ocultar selecionados** ou coluna Providência).','Acionar **Declarar saneamento concluído** e **Exportar resultado do saneamento**.'],
+    conferir:['Mantidos e ocultados, conforme o filtro.','O arquivo exportado em duas abas: RESULTADO DO SANEAMENTO e EXCLUIDOS.'],
+    cautela:['A exclusão é imediata, reversível (**Restabelecer selecionados** ou **Restabelecer tudo**) e auditada.','**Reabrir** desfaz a declaração de conclusão.'] },
+  { t:'Comparar antes e depois', cor:'var(--ardosia)', ir:['antesdepois'], onde:'Resultado › Antes e depois',
+    fazer:['Escolher base da projeção, medida, agrupamento, conjunto, órgão, busca e anos do Novo Programado 2027.','Acionar **Exportar quadro**, se necessário.'],
+    conferir:['A redução do conjunto ativo por situação.','No quadro por órgão, o Novo Programado 2027 dos MAPPs ativos depois do saneamento.'],
+    cautela:['Os anos do Novo Programado são os mesmos do Saldo por exercício: alterar num quadro altera no outro.','O quadro projeta o efeito das decisões; não altera a base.'] },
+  { t:'Exportar relações e a auditoria', cor:'var(--grafite)', ir:['auditoria'], onde:'Resultado › Auditoria e exportações',
+    fazer:['Exportar as relações específicas necessárias, uma a uma, ou a **Base consolidada em CSV**.','Acionar **Exportar auditoria** para o registro integral.'],
+    conferir:['MAPP, regra, campo, valor anterior, valor novo, responsável, data e justificativa em cada lançamento.'],
+    cautela:['A base original exportada é reconstruída a partir dos dicionários, sem alteração.'] },
+  { t:'Guardar e retomar a sessão', cor:'var(--musgo)', ir:null, onde:'Botões Guardar sessão e Retomar sessão, no alto',
+    fazer:['Acionar **Guardar sessão** ao fim de cada jornada de trabalho.','Em nova jornada, importar a mesma base e acionar **Retomar sessão**.'],
+    conferir:['A mensagem de retomada com a quantidade de decisões restauradas.'],
+    cautela:['O arquivo .json guarda decisões, exclusões, configurações, anos do Novo Programado e auditoria, mas não a base de dados.','Nada fica gravado no navegador: sem a sessão guardada, o trabalho se perde ao fechar a página.'] }
+];
+
+const GUIA_ESSENCIAL = [
+  PASSO_PREPARAR,
+  { t:'Importar a planilha', cor:'var(--grafite)', ir:['base'], onde:'1 · Base e regras › Importação',
+    fazer:['Clicar na área **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até ela.','Acionar **Importar e aplicar as regras**.'],
+    conferir:['O painel de processamento, com cada fase e o percentual concluído.','O selo no alto, que passa a indicar a quantidade de MAPPs e de excluídos.'],
+    cautela:['O processamento ocorre na memória do navegador; nada é transmitido a servidor.','Sem conexão, as bibliotecas externas não carregam e a importação fica indisponível.'] },
+  { t:'Conferir o retrato e as regras aplicadas', cor:'var(--latao)', ir:['base'], onde:'1 · Base e regras',
+    fazer:['Examinar os cartões do retrato da importação, as colunas reconhecidas e a normalização dos estágios.','Passar o ponteiro sobre os cartões das Regras 1 a 4 para ler o critério completo.'],
+    conferir:['A tabela de parâmetros em vigor, já resolvidos pela âncora temporal.','A quantidade de MAPPs alcançados por regra.'],
+    cautela:['Os parâmetros são sempre os oficiais e não se alteram nesta versão; para outro critério de execução, use a versão completa.'] },
+  { t:'Filtrar e examinar os MAPPs', cor:'var(--ardosia)', ir:['saneamento'], onde:'2 · Exclusão e retorno',
+    fazer:['Filtrar por secretaria, órgão, programa, ano de aprovação, regra, estágio, situação no saneamento, execução no período atual, saldo mínimo, confiança, fonte e busca livre.','Ordenar por qualquer coluna, clicando no cabeçalho.','Clicar na linha para abrir a ficha do MAPP, com todas as regras testadas.','Acionar **Exportar seleção filtrada**, se necessário.'],
+    conferir:['A regra, a ação do saneamento e a situação de cada MAPP.','Os totais filtrados, na linha totalizadora da grade.'],
+    cautela:['Filtro vazio significa ausência de restrição.','O filtro de fonte seleciona MAPPs, mas o saldo exibido soma todas as fontes do MAPP; a ficha mostra a quebra por fonte.'] },
+  { t:'Excluir ou retornar MAPPs', cor:'var(--carmim)', ir:['saneamento'], onde:'2 · Exclusão e retorno',
+    fazer:['Usar a coluna **Providência** para excluir ou retornar um MAPP.','Para vários, marcar as caixas e acionar **Excluir selecionados**, **Retornar selecionados** ou **Retornar todos**.'],
+    conferir:['A situação passa a “Excluído do saneamento”, e o selo no alto atualiza a contagem.'],
+    cautela:['Só MAPPs alcançados por regra podem ser excluídos.','O MAPP excluído não recebe a ação da regra e permanece na base como está.','A ação é imediata e não pede responsável nem justificativa.'] },
+  { t:'Conferir e exportar a base saneada', cor:'var(--musgo)', ir:['saneada'], onde:'3 · Base saneada',
+    fazer:['Examinar os cartões de composição da base saneada.','Na grade, escolher recorte, órgão, regra, exercícios exibidos e busca.','Acionar **Exportar base saneada**.'],
+    conferir:['O arquivo exportado em duas abas: RESULTADO DO SANEAMENTO e EXCLUIDOS.','O quadro Excluídos do saneamento, de onde também é possível retornar o MAPP.'],
+    cautela:['A exportação traz a base saneada inteira e todos os exercícios, independentemente dos filtros da grade.','Saldo negativo aparece em carmim.'] },
+  { t:'Antes de fechar a página', cor:'var(--sepia)', ir:null, onde:'Fora do sistema',
+    fazer:['Exportar a base saneada ao fim do trabalho.'],
+    conferir:['O arquivo .xlsx gravado na pasta de downloads.'],
+    cautela:['A versão essencial não guarda sessão: ao recarregar ou fechar a página, as exclusões se perdem.','Para guardar e retomar o trabalho em outra jornada, use a versão completa.'] }
+];
+
+function guiaAtual(){ return VERSAO==='essencial' ? GUIA_ESSENCIAL : GUIA_COMPLETA; }
+
+function htmlPasso(p,i){
+  const quad=function(titulo,cor,itens){
+    return '<div class="man-quad" style="--cor:'+cor+'"><h5>'+esc(titulo)+'</h5><ul>'+
+      itens.map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul></div>';
+  };
+  return '<div class="bloco man-secao" id="man-g'+(i+1)+'" style="--acento:'+p.cor+'">'+
+    '<div class="man-passo-cab"><span class="man-num">'+String(i+1).padStart(2,'0')+'</span>'+
+      '<div style="flex:1"><h3 style="color:var(--acento)">'+esc(p.t)+'</h3><div class="man-onde">Onde: '+esc(p.onde)+'</div></div>'+
+      (p.ir&&ORIGEM&&VERSAO===VERSAO_ORIGEM?'<button type="button" class="btn pequeno man-acoes" data-man-ir="'+p.ir.join('|')+'"'+
+        tip('Abre, na janela do sistema, a tela em que este passo se realiza.','Ir para a tela')+'>Ir para a tela ›</button>':'')+
+    '</div>'+
+    '<div class="man-quads">'+quad('O que fazer','var(--musgo)',p.fazer)+quad('O que conferir','var(--ardosia)',p.conferir)+
+      quad('Cautelas','var(--carmim)',p.cautela)+
+    '</div></div>';
+}
+
+/* ------------------------------ Parte II · Conceitos e regras ------------ */
+
+const REGRAS_MAN = [
+  { id:'1a',  nome:'Regra 1', doc:'1.a', cor:'var(--carmim)',
+    criterio:'MAPPs aprovados até o ano anterior e sem qualquer execução.', acao:'TORNAR PENDENTE',
+    desdobramento:'Listagem à Casa Civil; reativação mediante justificativa validada; sem pedido de reativação no prazo de permanência, exclusão definitiva.' },
+  { id:'1b',  nome:'Regra 2', doc:'1.b', cor:'var(--ferrugem)',
+    criterio:'MAPPs aprovados no ano corrente e sem qualquer execução.', acao:'ENVIAR AO ÓRGÃO — MANIFESTAÇÃO EM 30 DIAS',
+    desdobramento:'Sem resposta no prazo, torna-se pendente por mais 120 dias; depois, exclusão definitiva.' },
+  { id:'1.2', nome:'Regra 3', doc:'1.2', cor:'var(--ardosia)',
+    criterio:'MAPPs com execução no período histórico e nenhuma execução no período atual.', acao:'CONCLUÍDO FÍSICO E FINANCEIRO',
+    desdobramento:'O MAPP fica oculto da listagem principal, consultável por filtro, com reativação pelo próprio órgão.' },
+  { id:'1.3', nome:'Regra 4', doc:'1.3', cor:'var(--musgo)',
+    criterio:'MAPPs cujo estágio registrado indica execução física concluída.', acao:'ENVIAR AO ÓRGÃO — 30 DIAS, DEPOIS CONCLUÍDO FÍSICO E FINANCEIRO',
+    desdobramento:'Após o prazo de manifestação, altera-se o status; a reativação cabe ao próprio órgão.' }
+];
+
+const COMPARATIVO = [
+  ['Importação, consolidação e Regras 1 a 4','sim','sim'],
+  ['Parâmetros das regras','alteráveis em Configurações','sempre os oficiais'],
+  ['Filtros e ficha do MAPP','sim','sim'],
+  ['Indicadores, universo, saldo por exercício e programação','sim','—'],
+  ['Novo Programado 2027','sim','—'],
+  ['Decisão humana (acatar ou rejeitar)','sim, com auditoria','—'],
+  ['Retirada de MAPPs do resultado','ocultar e restabelecer, auditado','excluir e retornar, sem registro'],
+  ['Revisão de consistência da base','sim','—'],
+  ['Despesas de continuidade (segunda fase)','sim','—'],
+  ['Antes e depois','sim','—'],
+  ['Exportação do resultado','resultado, relações e auditoria','base saneada'],
+  ['Guardar e retomar sessão (.json)','sim','—']
+];
+
+const GLOSSARIO = [
+  ['MAPP','Projeto do Monitoramento de Ações e Projetos Prioritários; na planilha, `código - título`.','ambas'],
+  ['Chave de consolidação','Coluna `ÓRGÃO MAPP`, quando existir; senão, composição de `ORGAO` e `MAPP`. Normalizada por colapso de espaços.','ambas'],
+  ['Universo de saneamento','MAPPs consolidados, exceto cancelados e concluídos físico e financeiramente.','ambas'],
+  ['Âncora temporal','Resolução de “ano corrente” e “ano anterior” a partir do relógio, limitada ao último exercício com execução na base.','ambas'],
+  ['Critério de execução','O que o sistema considera execução: empenho, pago, ambos, indicador ou combinado. Na versão essencial, sempre o critério oficial.','ambas'],
+  ['Movimentação positiva','Houve empenho positivo em algum momento, ainda que estornado.','completa'],
+  ['Saldo líquido','Positivos menos estornos.','completa'],
+  ['Saldo do programado','Grandeza monetária com que o sistema trabalha após a aplicação das regras: Σ (programado − empenhado) de cada exercício até o corrente, mais o programado dos exercícios posteriores ao corrente, que não têm empenho na base.','ambas'],
+  ['Regras 1 a 4','Regras da primeira fase: 1 — aprovado até o ano anterior e sem execução (item 1.a); 2 — aprovado no ano corrente e sem execução (item 1.b); 3 — execução encerrada (item 1.2); 4 — execução física concluída (item 1.3).','ambas'],
+  ['Sobreposição','MAPP enquadrado em mais de uma regra; exige exame manual.','ambas'],
+  ['Confiança','Alta, média ou baixa, conforme a completude e a coerência dos dados.','ambas'],
+  ['Novo Programado 2027','VLR_PLANEJADO_27 somado aos saldos (programado − empenhado) dos exercícios escolhidos; saldo negativo não é somado e o MAPP é apontado como inconsistente.','completa'],
+  ['Providência','Coluna que retira um MAPP do resultado ou o devolve a ele, de imediato e de forma reversível. Na versão completa, o ato é auditado.','ambas'],
+  ['Excluído do saneamento','Na versão essencial, MAPP alcançado por regra que não recebe a ação da regra e permanece na base como está.','essencial'],
+  ['Responsável pelas ações','Nome informado em Configurações e lançado em cada registro de auditoria.','completa']
+];
+
+function htmlSaldo(){
+  return '<p>'+fmtTexto('Depois de aplicadas as regras, os valores monetários exibidos são **saldo do programado**, não programado bruto:')+'</p>'+
+    '<ul>'+[
+      'Até o exercício corrente, cada ano contribui com `VLR_PLANEJADO − VLR_EMPENHO`.',
+      'Nos exercícios posteriores ao corrente, que não têm empenho na base, entra o próprio programado.',
+      'O saldo do MAPP é a soma de todas as suas fontes; a ficha do MAPP mostra a quebra por fonte.',
+      'Saldo negativo é exibido em carmim e sinaliza empenho acima do programado no exercício.'
+    ].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul>'+
+    '<p>'+fmtTexto('Programado, empenhado e pago brutos aparecem apenas como dados da base e como evidência das regras, na ficha do MAPP.')+'</p>';
+}
+function htmlRegras(){
+  return '<p>'+fmtTexto('As Regras 1 a 4 correspondem aos itens 1.a, 1.b, 1.2 e 1.3 do documento oficial de saneamento. Cada MAPP do universo é testado contra as quatro; quem satisfaz mais de uma cai em **sobreposição** e exige exame manual.')+'</p>'+
+    '<div class="man-regras">'+REGRAS_MAN.map(function(r){
+      return '<div class="man-regra" style="--cor:'+r.cor+'"><h4>'+esc(r.nome)+'<small>item '+esc(r.doc)+'</small></h4>'+
+        '<p>'+esc(r.criterio)+'</p><div class="acao">'+esc(r.acao)+'</div>'+
+        '<p style="margin-top:6px!important">'+esc(r.desdobramento)+'</p>'+
+        '<p class="vivo oculto" data-regra-viva="'+r.id+'"></p></div>';
+    }).join('')+'</div>';
+}
+function htmlComparativo(){
+  const cel=function(v){ return v==='sim'?'<span class="sim">sim</span>':v==='—'?'<span class="nao">—</span>':esc(v); };
+  return '<p>'+fmtTexto(VERSAO==='essencial'
+      ? 'A versão essencial cobre o caminho mínimo: carregar a base, ver em que regra cada MAPP se enquadra, excluir o que não deve entrar e gerar a base saneada. O restante fica na versão completa.'
+      : 'A versão essencial cobre o caminho mínimo do saneamento, com os parâmetros oficiais. Serve a quem só precisa gerar a base saneada.')+'</p>'+
+    '<div class="tabela-caixa man-tab tab-versoes"><table><thead><tr><th>Recurso</th><th>Completa</th><th>Essencial</th></tr></thead><tbody>'+
+    COMPARATIVO.map(function(l){ return '<tr><td>'+esc(l[0])+'</td><td>'+cel(l[1])+'</td><td>'+cel(l[2])+'</td></tr>'; }).join('')+
+    '</tbody></table></div>';
+}
+function htmlGlossario(){
+  const linhas=GLOSSARIO.filter(function(g){ return g[2]==='ambas'||g[2]===VERSAO; });
+  return '<div class="tabela-caixa man-tab"><table><thead><tr><th>Termo</th><th>Significado</th></tr></thead><tbody>'+
+    linhas.map(function(g){ return '<tr><td><b>'+esc(g[0])+'</b></td><td>'+fmtTexto(g[1])+'</td></tr>'; }).join('')+'</tbody></table></div>';
+}
+
+const CONCEITOS = [
+  { id:'c-regras', t:'As Regras 1 a 4', cor:'var(--latao)', v:'ambas', html:htmlRegras },
+  { id:'c-saldo', t:'Saldo do programado', cor:'var(--petroleo)', v:'ambas', html:htmlSaldo },
+  { id:'c-versoes', t:'Versão completa e versão essencial', cor:'var(--ameixa)', v:'ambas', html:htmlComparativo },
+  { id:'c-glossario', t:'Glossário', cor:'var(--grafite)', v:'ambas', html:htmlGlossario }
+];
+
+/* ------------------------------ Parte III · Manual técnico (versão completa) */
+
+function codigo(txt){
+  return '<pre class="codigo"><button type="button" class="btn pequeno copiar"'+
+    tip('Copia o trecho para a área de transferência.','Copiar')+'>Copiar</button><code>'+esc(txt)+'</code></pre>';
+}
+function tabela(cab,linhas,id){
+  return '<div class="tabela-caixa man-tab"><table'+(id?' id="'+id+'"':'')+'><thead><tr>'+
+    cab.map(function(c){ return '<th>'+esc(c)+'</th>'; }).join('')+'</tr></thead><tbody>'+
+    linhas.map(function(l){ return '<tr>'+l.map(function(c,j){ return '<td'+(j===0?' class="mono"':'')+'>'+fmtTexto(String(c))+'</td>'; }).join('')+'</tr>'; }).join('')+
+    '</tbody></table></div>';
+}
+function cadeiaFuncoes(lista,cor){
+  return '<div class="apr-cadeia" style="margin:6px 0 12px">'+lista.map(function(f,i){
+    return (i?'<span class="apr-seta">'+setaFluxo(16)+'</span>':'')+
+      '<span class="apr-elo mono" style="--cor:'+(f[2]||cor)+'"'+tip(f[1],f[0])+' tabindex="0">'+esc(f[0])+'</span>';
+  }).join('')+'</div>';
+}
+
+const BLOCOS_SCRIPT = [
+  ['1','Núcleo','Constantes, estado global, utilitários pt-BR, dicas, seleção múltipla, ordenação de grades, abas, âncora temporal, leitura, reconhecimento de colunas e consolidação.','`REGRAS` `GRUPOS_ESTAGIO` `CFG_OFICIAL` `E` `iniciarDicas` `tip` `sinal` `montarMulti` `irParaAba` `aplicarAncora` `lerArquivo` `reconhecerColunas` `montarBase` `consolidar` `soma`'],
+  ['2','Regras','Aferição da execução, universo, avaliação de cada MAPP, diagnóstico, revisão de consistência, segunda fase e textos explicativos.','`executou` `noUniverso` `avaliar` `diagnosticar` `calcularQualidade` `calcularFase2` `composicaoUniverso` `dicaRegra`'],
+  ['3','Painel','Cartões, orquestração da renderização e gráficos.','`cartao` `renderTudo` `renderPainel` `renderSaldoPorRegra` `desenharGraficos`'],
+  ['4','Saldo','Saldo do programado por exercício, filtros, Novo Programado 2027 e exportação.','`periodosSaldo` `apurarSaldo` `renderSaldo` `exportarSaldo`'],
+  ['5','Diagnóstico','Filtros, grade, decisão humana e ficha do MAPP.','`prepararFiltros` `filtrar` `renderDiagnostico` `registrarDecisao` `auditar` `abrirFicha`'],
+  ['6','Universo, revisão e auditoria','Demonstração do universo, regras aplicadas, achados de consistência, segunda fase e registro de auditoria.','`renderUniverso` `renderRegrasAplicadas` `renderQualidade` `mostrarAchado` `renderFase2` `renderAuditoria`'],
+  ['7','Saneamento final','Conjunto enquadrado, exclusão individual, encerramento e exportação do resultado.','`conjuntoEnquadrado` `celulaProvidencia` `ocultarMapps` `restabelecerMapps` `finalizarSaneamento` `exportarResultadoFinal`'],
+  ['8','Antes e Depois','Situação antes e depois das decisões, por medida e por órgão (ou outro agrupamento).','`situacaoAntes` `situacaoDepois` `apurarAntesDepois` `renderAntesDepois`'],
+  ['9','Exportações e ligações','Relações exportáveis, configurações, sessão em .json, ligação de eventos e inicialização.','`linhasMapp` `conjuntos` `exportar` `cfgParaTela` `aplicarConfig` `guardarSessao` `retomarSessao` `ligarEventos` `iniciar`'],
+  ['10','Boas-vindas, apresentação e manual','Boas-vindas de abertura, apresentação completa e ligação com o manual único (`manual.html`). Somente leitura do estado.','`abrirBoasVindas` `abrirApresentacao` `abrirManual` `estadoParaManual` `enviarEstadoManual` `iniciarManual`']
+];
+
+const CHAVES_E = [
+  ['arquivo · buffer','Arquivo escolhido e seu conteúdo binário.'],
+  ['colunas · mapaColunas · anos · metricas','Cabeçalho original, posição de cada campo reconhecido, exercícios e métricas (Programado, Empenhado, Pago, Limite).'],
+  ['dic','Dicionários de strings (secretaria, órgão, MAPP, programa, estágio, fonte, chave). As linhas guardam índices, não textos.'],
+  ['linhas','Registros dicionarizados; valores anuais em `Float64Array`.'],
+  ['mapps · indice','MAPPs consolidados pela chave ÓRGÃO + MAPP e o mapa chave → MAPP.'],
+  ['cfg','Parâmetros em vigor, partindo de `CFG_OFICIAL` e resolvidos por `aplicarAncora`.'],
+  ['diag','Resultado de `diagnosticar`: `regras`, `classes`, `noUniverso`, `forade`, `cancelados`, `paralisados`, `divergentes`, `totais`.'],
+  ['decisoes · exclusoes · encerramento','Decisões humanas por chave, exclusões individuais do saneamento final e declaração de conclusão.'],
+  ['auditoria · seq · responsavel','Registro integral das alterações, sequencial e último responsável informado.'],
+  ['qualidade · fase2 · saldo · ad','Achados de consistência, indícios da segunda fase, saldo por exercício e quadro Antes e Depois.'],
+  ['filtro · ordem · pagina · porPagina','Estado da grade do diagnóstico; os equivalentes com sufixo `San` servem ao saneamento final.'],
+  ['passo','Etapa corrente do rito, pintada por `pintarFluxo`.']
+];
+
+const MAPAS_ROTULO = [
+  ['REGRAS[id].nome · REGRAS[id].doc','Nome exibido (Regra 1 a Regra 4) e item correspondente do documento oficial (1.a, 1.b, 1.2, 1.3). O identificador interno (`1a`, `1b`, `1.2`, `1.3`) permanece em filtros, sessão e exportações.'],
+  ['GRUPOS_ESTAGIO[g].rotulo','Rótulo de cada grupo normalizado de estágio.'],
+  ['CRITERIO_ROTULO','Descrição de cada critério de execução.'],
+  ['ROTULO_ESTRATO · PLURAL_ESTRATO','Rótulos dos agrupamentos do quadro por órgão (Antes e Depois).'],
+  ['PASSOS · PASSOS_DICA','Nomes e explicações das nove etapas do rito.'],
+  ['ROTULO_DESTINO','Nomes das abas e segmentos usados na apresentação.']
+];
+
+const TECNICO = [
+  { id:'t-arq', t:'Arquitetura do projeto', cor:'var(--grafite)', html:function(){
+    return '<p>'+fmtTexto('O projeto tem três páginas autônomas, sem servidor nem etapa de construção: `index.html` (versão completa), `simplificado/index.html` (versão essencial) e `manual.html` (este manual, único para as duas versões).')+'</p>'+
+      '<p>'+fmtTexto('A versão completa é um único arquivo HTML: o `<head>` concentra todo o CSS, o `<body>` traz a marcação estática e dez blocos `<script>` sequenciais, em JavaScript simples, sem módulos nem framework, compartilham o escopo global. Não há uso de `localStorage` nem de qualquer armazenamento do navegador.')+'</p>'+
+      '<p>'+fmtTexto('O botão **Manual** de cada versão abre `manual.html?versao=completa` ou `?versao=essencial` numa janela nomeada. O manual conversa com o sistema por `postMessage`: pede o estado (`tipo:\'pronto\'`), recebe os números da sessão, os textos das regras e os parâmetros em vigor (`tipo:\'estado\'`) e pede a abertura de telas (`tipo:\'ir\'`). Cada seção do manual declara a versão a que pertence.')+'</p>'+
+      tabela(['Bloco','Nome','Responsabilidade','Funções principais'],BLOCOS_SCRIPT.map(function(b){ return [b[0],b[1],b[2],b[3]]; }),'manTabBlocos');
+  }},
+  { id:'t-estado', t:'Estado global E', cor:'var(--ardosia)', html:function(){
+    return '<p>'+fmtTexto('Todo o estado vive no objeto `E`, declarado com `const` no bloco 1. Por não ser propriedade de `window`, é alcançado nos ensaios por `window.eval(\'E\')`.')+'</p>'+
+      tabela(['Chave','Conteúdo'],CHAVES_E,'manTabEstado');
+  }},
+  { id:'t-fluxo', t:'Fluxo de dados e de funções', cor:'var(--petroleo)', html:function(){
+    return '<p>Da leitura do arquivo à exportação, o processamento percorre a cadeia abaixo. Passe o cursor sobre cada função para sua atribuição.</p>'+
+      cadeiaFuncoes([
+        ['selecionarArquivo · localizarAba','Registra o arquivo escolhido; ao importar, examina as abas e escolhe a de formato esperado.','var(--ardosia)'],
+        ['iniciarProcesso · fase · concluirProcesso','Painel de processamento: rosca por fases, barra percentual e tempo de cada fase.','var(--petroleo)'],
+        ['importar','Converte a aba escolhida em matriz e comanda a sequência de processamento.','var(--ardosia)'],
+        ['montarBase','Reconhece colunas, descarta subtotais e dicionariza as linhas.','var(--ardosia)'],
+        ['consolidar','Agrupa as linhas pela chave ÓRGÃO + MAPP e aponta conflitos.','var(--ardosia)'],
+        ['diagnosticar','Soma séries, aplica o universo e avalia cada MAPP.','var(--latao)'],
+        ['avaliar','Testa as quatro regras, classifica e atribui confiança.','var(--latao)'],
+        ['renderTudo','Renderiza todas as abas a partir do estado.','var(--ameixa)'],
+        ['registrarDecisao','Grava a decisão humana e o lançamento de auditoria.','var(--ameixa)'],
+        ['exportar','Gera as pastas de trabalho a partir de conjuntos().','var(--musgo)']
+      ])+
+      '<p>'+fmtTexto('`diagnosticar` chama, ao final, `calcularQualidade` e `calcularFase2`. `renderTudo` chama, em ordem, as funções de renderização de cada aba, depois `prepararCabecalhos` e, por último, `enviarEstadoManual`, que atualiza o manual se ele estiver aberto.')+'</p>';
+  }},
+  { id:'t-regras', t:'Motor de regras e parâmetros em vigor', cor:'var(--latao)', html:htmlParametros },
+  { id:'t-rotulos', t:'Rótulos e identificadores', cor:'var(--ameixa)', html:function(){
+    return '<p>'+fmtTexto('Rótulo e identificador são coisas distintas. Quando só o texto exibido muda, altera-se o mapa de rótulo; **nunca** o identificador, que é referenciado em filtros, exportações, sessão e auditoria. Assim, `p-qualidade` exibe “Revisão da base” e `p-fase2` exibe “Despesas de continuidade”.')+'</p>'+
+      tabela(['Mapa','Uso'],MAPAS_ROTULO,'manTabRotulos');
+  }},
+  { id:'t-comp', t:'Componentes comuns', cor:'var(--musgo)', html:function(){
+    return '<p><b>Dicas.</b> '+fmtTexto('Balão único em `position:fixed` no `body`, controlado por `iniciarDicas`. Basta marcar o elemento com `data-tip` (e, opcionalmente, `data-tip-t` para o título). Quebras de linha viram parágrafos, e o trecho antes de dois-pontos fica em negrito. Em HTML gerado, usar `tip(texto,titulo)` e `sinal(texto,titulo)`.')+'</p>'+
+      codigo("'<button class=\"btn\"'+tip('Recalcula os indícios.\\nFórmula: soma dos empenhos por exercício.','Recalcular')+'>Recalcular</button>'")+
+      '<p><b>Seleção múltipla.</b> '+fmtTexto('`montarMulti(idSel)` transforma um `<select>` em lista com caixas, busca e “todos/limpar”. Ler com `valoresMulti`, testar com `casaMulti`, zerar com `limparMulti`. Lista vazia equivale a ausência de restrição.')+'</p>'+
+      '<p><b>Ordenação.</b> '+fmtTexto('`ligarOrdenacaoGenerica` torna ordenadora toda coluna de toda grade; `prepararCabecalhos` marca os cabeçalhos. As grades com ordenação própria estão em `TABELAS_PROPRIAS`.')+'</p>'+
+      '<p><b>Diálogos e avisos.</b> '+fmtTexto('`dialogo` abre o modal de confirmação, com `campoTexto`, `campoArea` e `campoLista`; `recado` exibe mensagem breve; `veuCarga` cobre a tela durante processamentos longos.')+'</p>';
+  }},
+  { id:'t-receitas', t:'Receitas de extensão', cor:'var(--ferrugem)', html:function(){
+    return '<h4 style="margin:4px 0 6px">Criar uma aba</h4><ol>'+
+      ['Incluir `<section role="tabpanel" id="p-X" class="oculto">` com `--acento` próprio.','A navegação tem quatro áreas (Visão Geral, Análise, Decisão, Resultado): associar a seção a uma delas nos mapas `grupos` e `aliases` de `irParaAba`, ou criar uma área nova com um botão `.aba` e `data-nav` próprio em `nav#abas`.','Escrever a função de renderização e chamá-la em `renderTudo`.','Dar nome ao destino em `ROTULO_DESTINO`, se a seção for citada na apresentação.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      codigo('// em irParaAba: grupos.analise = [\'diagnostico\',\'qualidade\',\'fase2\',\'exemplo\']; aliases.exemplo = \'analise\';\n\n<section role="tabpanel" id="p-exemplo" class="oculto" aria-labelledby="aba-exemplo"\n  style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">\n  <div class="bloco"><header><h2>Título</h2></header>…</div>\n</section>')+
+      '<h4 style="margin:10px 0 6px">Incluir ou alterar uma regra</h4><ol>'+
+      ['Declarar a regra em `REGRAS` (nome, cor, classe, descrição, ação, desdobramento).','Acrescentar a chave em `res.regras` dentro de `diagnosticar`.','Implementar o teste em `avaliar`, com evidência e cálculo exibíveis na ficha.','Redigir o texto em `dicaRegra`.','Acrescentar a regra às listas `[\'1a\',\'1b\',\'1.2\',\'1.3\']` (regras aplicadas, saldo por regra, apresentação) e a `conjuntos()`.','Localizar as ocorrências de uma regra existente, por exemplo `\'1.3\'`, e reproduzi-las.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      '<h4 style="margin:10px 0 6px">Criar um parâmetro de configuração</h4><ol>'+
+      ['Acrescentar o valor padrão em `CFG_OFICIAL`.','Incluir o campo na gaveta `gavetaConfig` como lista suspensa, com dica.','Mapeá-lo em `CAMPOS_CFG` e, se numérico, em `CFG_NUMERICOS`.','Exibi-lo no quadro de parâmetros de `renderRegrasAplicadas`.','A sessão em .json já guarda `E.cfg` integralmente.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      '<h4 style="margin:10px 0 6px">Criar uma exportação</h4><ol>'+
+      ['Acrescentar um item a `conjuntos()` com `id`, `nome`, `aba` (até 31 caracteres), `dica` e `dados`.','Para uma exportação avulsa, compor as linhas e usar `exportarLista(lista,nome)`.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
+      codigo("{ id:'exemplo', nome:'Relação de exemplo', aba:'EXEMPLO',\n  dica:'O que a relação contém.',\n  dados:function(){ return linhasMapp(E.diag.paralisados); } }");
+  }},
+  { id:'t-conv', t:'Convenções de trabalho e de interface', cor:'var(--sepia)', html:function(){
+    return '<ul>'+[
+      'Alterações cirúrgicas, por substituição de trechos; cada entrega vai em commit próprio no repositório.',
+      'Apresentar o entendimento antes de implementar alterações não triviais.',
+      'Nunca refatorar identificadores quando só o rótulo muda.',
+      'Vocabulário culto e sóbrio; nada de jargão.',
+      'Paleta discreta: grafite, latão, musgo, ardósia, ferrugem, ameixa, ocre, carmim, petróleo, sépia. Tipografia IBM Plex (Sans, Serif, Mono).',
+      'Abas, cartões e blocos diferenciados por cor; tema claro e escuro alternáveis.',
+      'Dicas obrigatórias em botões (o que fazem), em campos com cálculo (a fórmula) e em toda etiqueta com significado.',
+      'Gráficos dinâmicos (Chart.js) com botões de alternância.',
+      'Nada de campos numéricos com setas: usar listas suspensas. Filtros em seleção múltipla.',
+      'Todas as colunas de todas as grades são ordenadoras.',
+      'Nenhuma alteração automática: toda decisão é humana, imediata e auditada com o responsável.',
+      'Manual único em `manual.html`: todo texto novo declara a versão a que pertence (`ambas`, `completa` ou `essencial`).'
+    ].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul>';
+  }},
+  { id:'t-valid', t:'Validação e ensaio', cor:'var(--carmim)', html:function(){
+    return '<p>Antes de cada entrega: sintaxe de todos os blocos de script e balanceamento de etiquetas.</p>'+
+      codigo("python3 - <<'PY'\nimport re, subprocess\nh = open('index.html', encoding='utf-8').read()\nfor i, b in enumerate(re.findall(r'<script>(.*?)<\/script>', h, re.S), 1):\n    open(f'bloco{i}.js', 'w').write(b)\n    r = subprocess.run(['node', '--check', f'bloco{i}.js'], capture_output=True, text=True)\n    print(i, 'ok' if r.returncode == 0 else r.stderr)\ncorpo = re.sub(r'<script.*?<\/script>|<style.*?<\/style>', '', h, flags=re.S)\nfor t in ['div', 'section', 'table', 'aside', 'button']:\n    print(t, len(re.findall(f'<{t}[ >]', corpo)), len(re.findall(f'</{t}>', corpo)))\nPY")+
+      '<p>'+fmtTexto('Repetir a verificação em `simplificado/index.html` e em `manual.html` quando forem alterados.')+'</p>'+
+      '<p>'+fmtTexto('Ensaio com a base real em Node, com `jsdom` e `xlsx`. As bibliotecas de CDN não sobem no `jsdom`; o código tolera a ausência do Chart.js. O parse leva cerca de 10 s: rodar uma vez por lote e imprimir só o resumo.')+'</p>'+
+      codigo("const fs = require('fs'), { JSDOM } = require('jsdom'), XLSX = require('xlsx');\nconst dom = new JSDOM(fs.readFileSync('index.html', 'utf8'),\n  { runScripts: 'dangerously', pretendToBeVisual: true });\nconst w = dom.window;\nconst wb = XLSX.read(fs.readFileSync('mapps-regis18-09.xlsx'),\n  { type: 'buffer', cellDates: true, dense: true, sheets: ['Base de Dados'] });\nconst linhas = XLSX.utils.sheet_to_json(wb.Sheets['Base de Dados'],\n  { header: 1, raw: true, defval: null, blankrows: false });\nw.montarBase(linhas, 'Base de Dados'); w.consolidar(); w.diagnosticar(); w.renderTudo();\nconst E = w.eval('E'), d = E.diag;\nconsole.log({ linhas: E.linhas.length, mapps: E.mapps.length, universo: d.noUniverso.length,\n  r1a: d.regras['1a'].length, r1b: d.regras['1b'].length,\n  r12: d.regras['1.2'].length, r13: d.regras['1.3'].length });");
+  }},
+  { id:'t-ref', t:'Números de referência e limitações', cor:'var(--ocre)', html:function(){
+    return '<p>'+fmtTexto('Extração de 18/09/2026 (`mapps-regis18-09.xlsx`), âncora automática em 2026 e critério de empenho. Servem de sanidade, não de meta.')+'</p>'+
+      tabela(['Grandeza','Valor'],[
+        ['Linhas úteis','31.177'],['MAPPs consolidados','21.463'],['Universo de saneamento','6.473'],
+        ['Regra 1 (item 1.a)','796'],['Regra 2 (item 1.b)','688'],['Regra 3 (item 1.2)','2.455'],['Regra 4 (item 1.3)','538'],['União das regras','4.014'],
+        ['Saldo do programado no exercício corrente','R$ 12,06 bi'],
+        ['Novo Programado 2027 — base integral, anos 2025 e 2026','R$ 18,15 bi (1 inconsistência)']
+      ],'manTabRef')+
+      '<h4 style="margin:10px 0 6px">Limitações conhecidas</h4><ul>'+[
+      'A base não traz percentual de execução física; a regra 4 apoia-se exclusivamente no estágio registrado.',
+      'O indicador `Sem Exec 23-26` cobre faixa fixa; fora dela o cotejo é suspenso, sem acusar inconsistência.',
+      'Prazos e manifestações dos órgãos não são controlados pelo sistema; os prazos figuram apenas como texto e parâmetro.',
+      'Sem persistência no navegador: o trabalho só se conserva pela sessão em .json.',
+      'Sem conexão, as bibliotecas de CDN não carregam e a importação fica indisponível.',
+      'O manual mostra os números da sessão e o atalho “Ir para a tela” apenas quando aberto pelo botão Manual do sistema.'
+      ].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul>';
+  }}
+];
+
+/* Parâmetros em vigor: vêm do sistema de origem; sem ligação, fica a referência oficial. */
+function htmlParametros(){
+  const intro='<p>'+fmtTexto('Cada MAPP é submetido a `avaliar(m)`, que usa `executou(m,ini,fim)` segundo o critério de `E.cfg.criterio` e o tratamento `E.cfg.baseValor`. O universo é decidido por `noUniverso(m)`. As regras citam posições relativas: `aplicarAncora` resolve ano corrente e ano anterior a partir do relógio, limitado ao último exercício com execução na base (`anoCorrenteEfetivo`).')+'</p>'+
+    '<p>'+fmtTexto('Os textos explicativos de cada regra são compostos por `dicaRegra(id)` com os parâmetros em vigor, de modo que as dicas acompanhem qualquer alteração de configuração. O padrão das regras está em `CFG_OFICIAL`.')+'</p>';
+  if(!ESTADO || !ESTADO.parametros)
+    return intro+'<div class="aviso nota sem-ligacao"><span class="marca">Parâmetros</span><span>Abra o manual pelo botão Manual do sistema para ver aqui a tabela de parâmetros em vigor ao lado dos valores oficiais.</span></div>';
+  return intro+tabela(['Parâmetro','Em vigor','Valor oficial'],ESTADO.parametros,'manTabCfg');
+}
+
+/* ------------------------------ Renderização ----------------------------- */
+
+function secao(s,grupo){
+  return '<div class="bloco man-secao" id="man-'+s.id+'" data-man-grupo="'+grupo+'" style="--acento:'+s.cor+'">'+
+    '<header><h2>'+esc(s.t)+'</h2></header><div class="man-corpo">'+s.html()+'</div></div>';
+}
+function parte(cor,ic,titulo,texto){
+  return '<div class="man-parte" style="--cor:'+cor+'"><span class="icone-fase">'+icone(ic,24)+'</span><div>'+
+    '<h2>'+esc(titulo)+'</h2><p>'+esc(texto)+'</p></div></div>';
+}
+function tecnicoAtual(){ return VERSAO==='completa' ? TECNICO : []; }
+function conceitosAtuais(){ return CONCEITOS.filter(function(s){ return s.v==='ambas'||s.v===VERSAO; }); }
+
+function renderManual(){
+  const V=VERSOES[VERSAO];
+  document.documentElement.style.setProperty('--cor-versao',V.cor);
+  document.title='Manual · '+V.nome+' · Saneamento de MAPPs';
+  $('#versaoNome').textContent=V.nome;
+  $$('.versoes button').forEach(function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-versao')===VERSAO?'true':'false'); });
+
+  const guia=guiaAtual(), tec=tecnicoAtual(), conc=conceitosAtuais();
+  $('#manualConteudo').innerHTML=
+    '<div class="bloco man-secao" id="man-situacao" data-man-grupo="abertura" style="--acento:var(--cor-versao)">'+
+      '<header><h2>Situação desta sessão</h2><span class="legenda" id="manualVivoLegenda"></span></header>'+
+      '<div id="manualVivo"></div>'+
+      '<div style="margin-top:12px">'+cadeiaPrincipio()+'</div>'+
+    '</div>'+
+    parte('var(--ardosia)','bussola','Parte I · Guia de operação',
+      VERSAO==='essencial'
+        ? 'Passo a passo da versão essencial, na ordem das três etapas do sistema, com o que fazer, o que conferir e as cautelas de cada uma.'
+        : 'Passo a passo do trabalho de saneamento na versão completa, na ordem do rito, com o que fazer, o que conferir e as cautelas de cada etapa.')+
+    guia.map(htmlPasso).join('')+
+    parte('var(--latao)','balanca','Parte II · Conceitos e regras','As regras de saneamento, a grandeza monetária com que o sistema trabalha, a comparação entre as versões e o glossário.')+
+    conc.map(function(s){ return secao(s,'conceitos'); }).join('')+
+    (tec.length
+      ? parte('var(--ferrugem)','codigo','Parte III · Manual técnico','Referência para evolução e manutenção: arquitetura, estado, fluxo de funções, motor de regras, componentes, receitas de extensão, convenções e ensaios.')+
+        tec.map(function(s){ return secao(s,'tecnico'); }).join('')
+      : '');
+
+  const grupo=function(titulo,cor,ic,itens){
+    return '<div class="grupo" style="--cor:'+cor+'"><h4>'+icone(ic,14)+esc(titulo)+'</h4>'+itens.map(function(it){
+      return '<button type="button" class="ind-item" style="--cor:'+cor+'" data-man-alvo="'+it[0]+'"'+tip('Rola o manual até esta seção.',it[1])+'>'+
+        (it[2]?'<span class="n">'+it[2]+'</span>':'')+esc(it[1])+'</button>';
+    }).join('')+'</div>';
+  };
+  $('#manualIndice').innerHTML=
+    '<input type="search" class="busca" id="manualBusca" placeholder="Localizar no manual…" aria-label="Localizar no manual"'+
+      tip('Filtra as seções do manual que contêm o termo digitado. Apague o termo para exibir todas.','Localizar')+'>'+
+    grupo('Abertura','var(--cor-versao)','livro',[['man-situacao','Situação desta sessão','']])+
+    grupo('Parte I · Guia de operação','var(--ardosia)','bussola',guia.map(function(p,i){ return ['man-g'+(i+1),p.t,String(i+1).padStart(2,'0')]; }))+
+    grupo('Parte II · Conceitos e regras','var(--latao)','balanca',conc.map(function(s,i){ return ['man-'+s.id,s.t,'C'+(i+1)]; }))+
+    (tec.length?grupo('Parte III · Manual técnico','var(--ferrugem)','codigo',tec.map(function(s,i){ return ['man-'+s.id,s.t,'T'+(i+1)]; })):'');
+  renderSituacao();
+  renderRegrasVivas();
+  vigiarSecoes();
+}
+
+function cartaoMan(c){
+  return '<div class="cartao" style="--cor:'+c[2]+'"'+(c[3]?tip(c[3],c[0]):'')+'><div class="rotulo">'+esc(c[0])+'</div><div class="valor">'+esc(c[1])+'</div></div>';
+}
+function renderSituacao(){
+  const alvo=$('#manualVivo'); if(!alvo) return;
+  const leg=$('#manualVivoLegenda');
+  if(!ORIGEM){
+    alvo.innerHTML='<div class="aviso nota sem-ligacao"><span class="marca">Situação</span><span>Manual aberto fora do sistema. Pelo botão <b>Manual</b>, no alto do sistema, esta seção mostra os números da sessão e cada passo ganha o atalho “Ir para a tela”.</span></div>';
+    if(leg) leg.textContent=''; return;
+  }
+  if(!ESTADO){
+    alvo.innerHTML='<div class="aviso nota"><span class="marca">Situação</span><span>Aguardando os números da sessão enviados pelo sistema…</span></div>';
+    if(leg) leg.textContent=''; return;
+  }
+  if(ESTADO.versao && ESTADO.versao!==VERSAO){
+    alvo.innerHTML='<div class="aviso nota"><span class="marca">Situação</span><span>Os números da sessão aberta são da '+esc(VERSOES[ESTADO.versao].nome.toLowerCase())+'. Volte a ela no seletor do alto para vê-los aqui.</span></div>';
+    if(leg) leg.textContent=''; return;
+  }
+  if(leg) leg.textContent=ESTADO.legenda||'';
+  alvo.innerHTML=ESTADO.base
+    ? '<div class="man-vivo">'+ESTADO.cartoes.map(cartaoMan).join('')+'</div>'
+    : '<div class="aviso nota"><span class="marca">Situação</span><span>Nenhuma base carregada nesta sessão. Os números surgem aqui depois da importação.</span></div>';
+}
+function renderRegrasVivas(){
+  $$('[data-regra-viva]').forEach(function(p){
+    const txt=ESTADO && ESTADO.versao===VERSAO && ESTADO.regras ? ESTADO.regras[p.getAttribute('data-regra-viva')] : '';
+    p.textContent=txt?('Com os parâmetros desta sessão: '+txt):'';
+    p.classList.toggle('oculto',!txt);
+  });
+}
+
+/* Realce, no índice, da seção visível. */
+let _vigia=null;
+function vigiarSecoes(){
+  if(typeof IntersectionObserver==='undefined') return;
+  if(_vigia) _vigia.disconnect();
+  _vigia=new IntersectionObserver(function(ents){
+    ents.forEach(function(en){
+      if(!en.isIntersecting) return;
+      $$('#manualIndice .ind-item').forEach(function(b){ b.classList.toggle('ativo', b.getAttribute('data-man-alvo')===en.target.id); });
+    });
+  },{rootMargin:'-30% 0px -60% 0px'});
+  $$('#manualConteudo .man-secao').forEach(function(s){ _vigia.observe(s); });
+}
+
+function filtrarManual(termo){
+  const t=norm(termo);
+  $$('#manualConteudo .man-secao').forEach(function(s){
+    const ok=!t || norm(s.textContent).indexOf(t)>=0;
+    s.classList.toggle('oculto',!ok);
+    const b=$('#manualIndice [data-man-alvo="'+s.id+'"]'); if(b) b.classList.toggle('oculto',!ok);
+  });
+  $$('#manualConteudo .man-parte').forEach(function(p){ p.classList.toggle('oculto',!!t); });
+}
+
+function copiarTexto(txt,botao){
+  const ok=function(){ if(botao){ const r=botao.textContent; botao.textContent='Copiado'; setTimeout(function(){ botao.textContent=r; },1200); } };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok,function(){ copiaReserva(txt); ok(); }); return; }
+  copiaReserva(txt); ok();
+}
+function copiaReserva(txt){
+  const a=document.createElement('textarea'); a.value=txt; a.style.position='fixed'; a.style.opacity='0';
+  document.body.appendChild(a); a.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(a);
+}
+
+function trocarVersao(v){
+  if(!VERSOES[v] || v===VERSAO) return;
+  VERSAO=v;
+  try{ const u=new URL(location.href); u.searchParams.set('versao',v); history.replaceState(null,'',u); }catch(e){}
+  const bx=$('#manualBusca'); if(bx) bx.value='';
+  renderManual();
+  window.scrollTo({top:0});
+}
+function alternarTema(){
+  const r=document.documentElement;
+  r.setAttribute('data-tema',r.getAttribute('data-tema')==='escuro'?'claro':'escuro');
+  $('#btnTema').setAttribute('aria-pressed',r.getAttribute('data-tema')==='escuro'?'true':'false');
+}
+function ajustarTopo(){
+  const t=$('.topo'); if(t) document.documentElement.style.setProperty('--topo-alt',(t.offsetHeight+14)+'px');
+}
+
+function iniciar(){
+  if(new URLSearchParams(location.search).get('tema')==='escuro'){
+    document.documentElement.setAttribute('data-tema','escuro'); $('#btnTema').setAttribute('aria-pressed','true');
+  }
+  ajustarTopo();
+  renderManual();
+  $('#btnTema').addEventListener('click',alternarTema);
+  $('#btnImprimir').addEventListener('click',function(){ filtrarManual(''); const bx=$('#manualBusca'); if(bx) bx.value=''; window.print(); });
+  $$('.versoes button').forEach(function(b){ b.addEventListener('click',function(){ trocarVersao(b.getAttribute('data-versao')); }); });
+  $('#manualIndice').addEventListener('input',function(ev){ if(ev.target.id==='manualBusca') filtrarManual(ev.target.value); });
+  document.addEventListener('click',function(ev){
+    const alvo=ev.target.closest('[data-man-alvo]');
+    if(alvo){ const s=document.getElementById(alvo.getAttribute('data-man-alvo')); if(s) s.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+    const ir=ev.target.closest('[data-man-ir]');
+    if(ir){ avisarSistema({tipo:'ir',versao:VERSAO,destino:ir.getAttribute('data-man-ir').split('|')}); return; }
+    const cp=ev.target.closest('.copiar');
+    if(cp){ const c=cp.parentElement.querySelector('code'); if(c) copiarTexto(c.textContent,cp); }
+  });
+  window.addEventListener('resize',ajustarTopo);
+  avisarSistema({tipo:'pronto',versao:VERSAO});
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciar); else iniciar();
+
+</script>
+</body>
+</html>
