@@ -373,7 +373,7 @@ const PASSO_PREPARAR = { t:'Preparar a base de execução', cor:'var(--grafite)'
 const GUIA_COMPLETA = [
   PASSO_PREPARAR,
   { t:'Importar a base', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Visão Geral › Importação',
-    fazer:['Clicar na área **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até ela.','Acionar **Importar e diagnosticar**.'],
+    fazer:['Clicar na área **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até ela: a importação começa sozinha, sem clique adicional.','Se preciso, acionar **Reprocessar** para refazer a leitura do mesmo arquivo.'],
     conferir:['O painel de processamento, com cada fase e o percentual concluído.','O selo no alto, que passa a indicar a base carregada.','A aba de dados localizada automaticamente (em regra, “Base de Dados”).'],
     cautela:['O processamento ocorre na memória do navegador; nada é transmitido a servidor.','Se algum painel falhar, o sistema conclui a composição dos demais e informa qual falhou.'] },
   { t:'Conferir o retrato da importação', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Visão Geral › Importação › Retrato da importação',
@@ -429,7 +429,7 @@ const GUIA_COMPLETA = [
 const GUIA_ESSENCIAL = [
   PASSO_PREPARAR,
   { t:'Importar a planilha', cor:'var(--grafite)', ir:['base'], onde:'1 · Base e regras › Importação',
-    fazer:['Clicar na área **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até ela.','Acionar **Importar e aplicar as regras**.'],
+    fazer:['Clicar na área **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até ela: a importação e as regras são aplicadas sozinhas, sem clique adicional.','Se preciso, acionar **Reprocessar** para refazer a leitura do mesmo arquivo.'],
     conferir:['O painel de processamento, com cada fase e o percentual concluído.','O selo no alto, que passa a indicar a quantidade de MAPPs e de excluídos.'],
     cautela:['O processamento ocorre na memória do navegador; nada é transmitido a servidor.','Sem conexão, as bibliotecas externas não carregam e a importação fica indisponível.'] },
   { t:'Conferir o retrato e as regras aplicadas', cor:'var(--latao)', ir:['base'], onde:'1 · Base e regras',

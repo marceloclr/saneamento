@@ -32,6 +32,10 @@ abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessã
   (colunas `.corrente` e `.novo-programado` passaram a camada sobre `--papel-2`).
 - Boas-vindas de abertura (`modalBV`): passo a passo animado em cinco etapas, só no
   carregamento; a apresentação completa ficou no botão **Apresentação**.
+- Importação automática nas duas versões: escolher ou soltar a planilha dispara a
+  leitura e o painel de processamento, sem clique em “Importar”; o botão passa a
+  **Reprocessar** (refaz a leitura do arquivo carregado), com trava contra
+  importações simultâneas (`importarComTrava`, `E.importando`).
 - Boas-vindas também na versão essencial, em quatro passos (importar, conferir as
   regras, excluir ou retornar, gerar a base saneada), com atalho para o manual.
 - Manual único em `manual.html`, com conteúdo por versão, botão **Manual** nas duas

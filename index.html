@@ -653,12 +653,12 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   <div class="bloco">
     <header><h2>Importação da base de execução</h2><span class="legenda">.xlsx, .xlsm ou .csv · a aba de dados é localizada automaticamente · nada é transmitido</span></header>
     <div class="importacao-linha">
-      <div class="area-solta compacta" id="areaSolta" role="button" tabindex="0" data-tip="Clique para escolher a planilha de execução dos MAPPs, ou arraste-a até aqui. O sistema examina todas as abas e usa a que tem o formato esperado: colunas MAPP, ORGAO e séries financeiras por exercício (VLR_PLANEJADO, VLR_EMPENHO…)." data-tip-t="Arquivo da base">
+      <div class="area-solta compacta" id="areaSolta" role="button" tabindex="0" data-tip="Clique para escolher a planilha de execução dos MAPPs, ou arraste-a até aqui: a importação começa automaticamente, com o painel de processamento. O sistema examina todas as abas e usa a que tem o formato esperado: colunas MAPP, ORGAO e séries financeiras por exercício (VLR_PLANEJADO, VLR_EMPENHO…)." data-tip-t="Arquivo da base">
         <span class="icone-arq" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 18v-6"/><path d="M9 15l3-3 3 3"/></svg></span>
         <span class="texto-arq"><strong id="arquivoNome">Escolha ou arraste a planilha de execução</strong><span class="pequeno tenue" id="arquivoInfo">por exemplo, mapps-regis18-09.xlsx</span></span>
         <input type="file" id="arquivo" accept=".xlsx,.xlsm,.xls,.csv" class="oculto">
       </div>
-      <button class="btn principal" id="btnProcessar" disabled data-tip="Lê o arquivo, localiza a aba de dados, normaliza os campos, consolida por MAPP e aplica as Regras 1 a 4, mostrando cada fase e o percentual concluído. Não altera o arquivo de origem.">Importar e diagnosticar</button>
+      <button class="btn" id="btnProcessar" disabled data-tip="A importação começa sozinha ao escolher ou arrastar a planilha. Este botão processa de novo o arquivo já carregado: lê, localiza a aba de dados, normaliza os campos, consolida por MAPP e aplica as Regras 1 a 4. Não altera o arquivo de origem." data-tip-t="Reprocessar">Reprocessar</button>
     </div>
     <div class="pequeno tenue" id="progressoTexto" style="margin-top:8px"></div>
   </div>
@@ -1911,15 +1911,24 @@ function pintarFluxo(){
 
 /* Seleção do arquivo: apenas registra a escolha; a leitura ocorre ao importar. */
 function tamanhoArquivo(b){ return b>1048576 ? (b/1048576).toFixed(1).replace('.',',')+' MB' : Math.max(1,Math.round(b/1024))+' KB'; }
+/* Escolher ou soltar a planilha já dispara a importação: não há clique
+   intermediário. O botão Reprocessar refaz a leitura do arquivo carregado. */
 function selecionarArquivo(file){
+  if(E.importando){ recado('Aguarde o fim da importação em curso.'); return; }
   if(!/\.(xlsx|xlsm|xls|csv)$/i.test(file.name)){ recado('Formato não aceito: use .xlsx, .xlsm ou .csv.'); return; }
   E.arquivoPendente=file;
   $('#arquivoNome').textContent=file.name;
-  $('#arquivoInfo').textContent=tamanhoArquivo(file.size)+' · pronto para importar';
+  $('#arquivoInfo').textContent=tamanhoArquivo(file.size)+' · importação iniciada automaticamente';
   $('#areaSolta').classList.add('com-arquivo');
   $('#btnProcessar').disabled=false;
   $('#progressoTexto').textContent='';
-  $('#btnProcessar').focus();
+  const campo=$('#arquivo'); if(campo) campo.value='';   /* permite escolher de novo o mesmo arquivo */
+  importarComTrava();
+}
+function importarComTrava(){
+  if(E.importando){ recado('Aguarde o fim da importação em curso.'); return; }
+  E.importando=true;
+  Promise.resolve().then(importar).catch(function(err){ console.error(err); }).then(function(){ E.importando=false; });
 }
 function lerArquivoPromessa(file,texto){
   return new Promise(function(ok,falha){
@@ -5300,7 +5309,7 @@ function ligarEventos(){
   ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
   ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
   area.addEventListener('drop',function(ev){ if(ev.dataTransfer.files[0]) selecionarArquivo(ev.dataTransfer.files[0]); });
-  $('#btnProcessar').addEventListener('click',importar);
+  $('#btnProcessar').addEventListener('click',importarComTrava);
 
   ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte'].forEach(function(s){
     $(s).addEventListener('change',function(){ E.pagina=1; renderDiagnostico(); });
