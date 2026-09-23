@@ -3590,8 +3590,7 @@ function renderSaldo(){
                tip:'Cálculo: VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano), apenas para os exercícios marcados no filtro.\n'+
                    'Exercícios incorporados: '+rotuloAnosNP(anosNovo)+'.\n'+
                    'Apurado MAPP a MAPP e somado no agrupamento. Saldo negativo não é somado (MAPP listado como inconsistente).\n'+
-                   'É sempre valor programado, qualquer que seja a medida exibida, e não entra na coluna Total, que já contém 2027.' },
-             { rot:'Total', num:true, tip:'Soma de todas as colunas de exercício da linha. Não inclui o Novo Programado 2027, que já contém o programado de 2027.' },
+                   'É sempre valor programado, qualquer que seja a medida exibida, e já contém o programado de 2027.' },
              { rot:'MAPPs', num:true, tip:'Quantidade de MAPPs reunidos no agrupamento.' }]);
 
   $('#tabSaldo').querySelector('thead tr').innerHTML=colunas.map(function(c){
@@ -3620,16 +3619,14 @@ function renderSaldo(){
         '\nSaldos incorporados ('+rotuloAnosNP(anosNovo)+'): '+rs(l.g.npInc)+'\nNovo Programado 2027: '+rs(l.g.np)+
         (l.g.npIncons?'\n'+n(l.g.npIncons)+' MAPP(s) com saldo negativo em exercício marcado — não somado.':''),'Novo Programado 2027')+
         (l.g.npIncons?' style="color:var(--risco)"':'')+'><strong>'+rsCurto(l.g.np)+'</strong></td>'+
-      '<td class="num"><strong>'+rsCurto(l.total)+'</strong></td>'+
       '<td class="num">'+n(l.g.mapps)+'</td></tr>';
   }).join('') : '<tr><td colspan="'+colunas.length+'" class="vazio">Nenhum registro corresponde à busca.</td></tr>';
 
-  let totalGeral=0;
-  const celulas=a.per.map(function(p,i){ const v=tot(i); totalGeral+=v; return '<td class="num'+(p.corrente?' corrente':'')+'">'+rsCurto(v)+'</td>'; }).join('');
+  const celulas=a.per.map(function(p,i){ const v=tot(i); return '<td class="num'+(p.corrente?' corrente':'')+'">'+rsCurto(v)+'</td>'; }).join('');
   const novoGeral = a.np.total;
   $('#tabSaldo').querySelector('tfoot').innerHTML='<tr><td>Total geral</td>'+celulas+
     '<td class="num novo-programado"><strong>'+rsCurto(novoGeral)+'</strong></td>'+
-    '<td class="num">'+rsCurto(totalGeral)+'</td><td class="num">'+n(conjuntoSaldo().length)+'</td></tr>';
+    '<td class="num">'+n(conjuntoSaldo().length)+'</td></tr>';
   /* os exercícios recentes, o Novo Programado e o total ficam à vista; os antigos, à esquerda */
   const cx=$('#caixaSaldo'); if(cx) cx.scrollLeft=cx.scrollWidth;
 }
