@@ -34,6 +34,14 @@ abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessã
   filtro e seção na ficha. Sessão em formato 2, versionada no nome
   (`DDMMAAAA-HHMM-Vnn.json`), gravada e retomada no computador, no GitHub ou nos
   dois, à escolha do usuário.
+- Enxugamento das telas (versão completa): abas do alto com número e subtítulo, sem a
+  faixa repetida; Visão Geral na ordem rito → Saldo → inconsistências → Programação →
+  gráficos, demais blocos recolhidos; saíram Regras aplicadas, Parâmetros em vigor e os
+  avisos explicativos (conteúdo no manual); importação vira botão no alto após o
+  processamento (também na essencial); régua de exercícios no bloco do Saldo, valendo
+  para todo o processamento; filtros de ano mostram anos, não quantidade;
+  continuidade por faixa De/Até em anos calendário; bloco do achado só com cartão
+  escolhido; **Concluir e exportar resultado** num botão só, pedindo responsável.
 - Exercícios de execução considerados: régua com duas alças, **De**/**Até** e um botão
   por ano, nas duas versões (gaveta de configurações na completa, com auditoria;
   bloco “Regras aplicadas” na essencial, com recálculo imediato). Empenhado e pago

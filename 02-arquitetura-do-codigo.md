@@ -14,13 +14,14 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    navegação de abas e segmentos, **âncora temporal** (`aplicarAncora`,
    `anoCorrenteEfetivo`), leitura do arquivo, reconhecimento de colunas,
    `montarBase`, `consolidar`, e os somatórios `soma` / `somaAno` / `valorLinha`.
-   **Exercícios de execução** (`E.cfg.execAnos`, `null` = todos): `somaExec` filtra
-   empenhado e pago nas regras e nos totais (`m.empenhado`, `m.pago`, `empHist`,
-   `empPres`); programado e saldo seguem com `soma`, sobre a série inteira.
+   **Exercícios de execução** (`E.cfg.execAnos`, `null` = todos): `soma`, `somaAno`
+   e `somaAnoArray` ignoram os anos fora da seleção, e `anosExec()` dá os anos das
+   colunas, gráficos e exportações; assim a escolha vale para todo o processamento.
+   Só `valorLinha` (reconstrução da base original) e a âncora leem a série inteira.
    `faixaSelecionada` só deixa usar o indicador “Sem Exec” com a faixa inteira
-   escolhida. A régua (`montarReguaExec`: alças de/até, listas e um botão por ano)
-   e `avisosExecAnos` são as mesmas nas duas versões; na completa, fica na gaveta
-   e passa por **Aplicar** (com auditoria); na essencial, recalcula na hora.
+   escolhida. A régua (`montarReguaExec`) e `avisosExecAnos` são as mesmas nas duas
+   versões; na completa, fica no bloco do Saldo e aplica na hora (`aplicarExecAnos`,
+   com auditoria); na essencial, em Regras aplicadas, também na hora.
 2. **Regras** — `executou`, `noUniverso`, `avaliar`, `diagnosticar`,
    `calcularQualidade`, `calcularFase2`, `composicaoUniverso`, e os textos
    explicativos `dicaRegra`, `dicaEstagio`, `dicaAcao`, `dicaConfianca`.
@@ -69,6 +70,14 @@ só com sessão ativa, `sessaoAtiva()`).
 Boas-vindas de abertura `modalBV` (véu `veuBV`), exibidas só no carregamento;
 apresentação completa `modalApres` (véu `veuApres`), aberta pelo botão do alto.
 Configurações em gaveta lateral `gavetaConfig`, aberta pelo botão do alto.
+
+A Visão Geral é uma página única: rito, importação (some depois de processada; fica o
+botão **Importar outra base** no alto), Saldo por exercício, inconsistências do Novo
+Programado, Programação e gráficos; os demais blocos têm a classe `recolhivel` e abrem
+recolhidos (`prepararRecolhiveis`). `irParaSegmento` rola até o bloco `#seg-<id>`.
+As abas do alto trazem número e subtítulo; a antiga faixa `fluxoPrincipal` saiu.
+Na Decisão, `concluirEExportar` pede responsável e observação (`perguntar`), declara a
+conclusão e exporta. Filtros de seleção múltipla com anos mostram os anos (`faixasTexto`).
 
 Rótulo e identificador são coisas distintas: identificadores permanecem, rótulos
 mudam por mapa.

@@ -73,6 +73,7 @@ html[data-tema="escuro"] .brasao{color:#14171b}
 .topo-botoes{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .topo-botoes .btn.discreto{padding:6px 9px}
 .topo-acoes .selo-base{padding:3px 10px;font-size:11.5px}
+#btnTrocarBase{margin-top:2px}
 .selo-base{
   display:flex;align-items:center;gap:8px;padding:5px 11px;border:1px solid var(--linha);
   border-radius:99px;background:var(--carta-2);font-size:12px;color:var(--tinta-2);
@@ -692,6 +693,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. A ficha aberta é redesenhada com as cores do novo tema.">Tema</button>
       </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
+      <button class="btn pequeno discreto oculto" id="btnTrocarBase" data-tip="Escolhe outra planilha de execução e refaz a importação e o processamento." data-tip-t="Importar outra base">Importar outra base</button>
     </div>
   </div>
   <nav class="abas" role="tablist" id="abas" aria-label="Etapas">
@@ -703,7 +705,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
 
 <main>
 <section role="tabpanel" id="p-base" style="--acento:var(--grafite)">
-  <div class="bloco">
+  <div class="bloco" id="blocoImportacao">
     <header><h2>Importação da base de execução</h2><span class="legenda">.xlsx, .xlsm ou .csv · a aba de dados é localizada automaticamente · nada é transmitido</span></header>
     <div class="importacao-linha">
       <div class="area-solta compacta" id="areaSolta" role="button" tabindex="0" data-tip="Clique para escolher a planilha de execução dos MAPPs, ou arraste-a até aqui: a importação começa automaticamente, com o painel de processamento. O sistema examina todas as abas e usa a que tem o formato esperado: colunas MAPP, ORGAO e séries financeiras por exercício (VLR_PLANEJADO, VLR_EMPENHO…)." data-tip-t="Arquivo da base">
@@ -738,7 +740,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
     <div class="aviso nota"><span class="marca">Regras</span><span>As Regras 1 a 4 correspondem aos itens 1.a, 1.b, 1.2 e 1.3 do documento oficial de saneamento. Os parâmetros são os oficiais, com âncora temporal automática. Só os exercícios de execução considerados são escolhidos por você, logo abaixo. Passe o ponteiro sobre cada cartão para o critério completo.</span></div>
     <div style="margin-top:12px">
       <h4 style="margin-bottom:6px">Exercícios de execução considerados</h4>
-      <p class="pequeno tenue" style="margin:0 0 6px">Empenhado e pago contam só nos exercícios escolhidos, nas regras e nos totais. Programado e saldo usam todos. O resultado é recalculado a cada mudança.</p>
+      <p class="pequeno tenue" style="margin:0 0 6px">Só os anos calendário escolhidos entram no processamento: regras, totais, saldo e exportação. O resultado é recalculado a cada mudança.</p>
       <div id="cfgExecAnos"></div>
     </div>
     <div class="cartoes" id="cartoesRegras" style="margin-top:12px"></div>
@@ -1388,7 +1390,13 @@ function rotularMulti(id){
   else if(q===1){
     const par=st.lista.find(function(p){ return p[0]===Array.from(st.escolha)[0]; });
     rot.textContent=par?par[1]:Array.from(st.escolha)[0]; c.textContent='1'; st.bt.classList.add('ativa');
-  } else { rot.textContent=q+' selecionadas'; c.textContent=q; st.bt.classList.add('ativa'); }
+  } else {
+    const vs=Array.from(st.escolha);
+    rot.textContent = vs.every(function(v){ return /^\d{4}$/.test(v); })
+      ? faixasTexto(vs.map(Number).sort(function(a,b){ return a-b; }))
+      : q+' selecionadas';
+    c.textContent=q; st.bt.classList.add('ativa');
+  }
   const escolhidas=st.lista.filter(function(p){ return st.escolha.has(p[0]); }).map(function(p){ return p[1]; });
   st.bt.setAttribute('data-tip', q
     ? 'Seleção em vigor:\n'+escolhidas.slice(0,12).join(', ')+(escolhidas.length>12?'…':'')+
@@ -1923,14 +1931,16 @@ function soma(m,metrica,ini,fim,positivo){
   let t=0;
   for(let i=0;i<E.nAnos;i++){
     const ano=E.anos[i];
-    if((ini==null||ano>=ini) && (fim==null||ano<=fim)) t+=fonte[im*E.nAnos+i];
+    if((ini==null||ano>=ini) && (fim==null||ano<=fim) && anoExecConsiderado(ano)) t+=fonte[im*E.nAnos+i];
   }
   return t;
 }
 /* Exercícios de execução considerados (E.cfg.execAnos; null = todos os da
-   base). Valem para empenhado e pago nas regras e nos totais; programado e
-   saldo continuam apurados sobre a série inteira. */
+   base). Valem para todo o processamento: regras, totais, saldo, gráficos e
+   exportações. Só a reconstrução da base original (valorLinha) e a âncora
+   temporal leem a série inteira. */
 function anoExecConsiderado(ano){ const s=E.cfg.execAnos; return !s || s.indexOf(ano)>=0; }
+function anosExec(){ return E.anos.filter(anoExecConsiderado); }
 function somaExec(m,metrica,ini,fim,positivo){
   const im=E.idxMet[metrica]; if(im==null) return 0;
   const fonte = positivo ? m.vp : m.v;
@@ -2054,7 +2064,7 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
     });
     const norm=s.length===n?null:s;
     q('.regua-resumo').textContent = norm
-      ? 'Considerados: '+faixasTexto(s)+' · '+s.length+' de '+n+' exercícios. Empenhado e pago dos demais anos ficam fora das regras e dos totais.'
+      ? 'Considerados: '+faixasTexto(s)+' · '+s.length+' de '+n+' exercícios. Os demais ficam fora das regras, dos totais e do saldo.'
       : 'Considerados: todos os exercícios da base ('+anos[0]+'–'+anos[ult]+').';
     const av=avisosExecAnos(norm,cfgAvisos&&cfgAvisos());
     q('.regua-avisos').innerHTML=av.map(function(a){
@@ -2080,7 +2090,7 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
 }
 function somaAno(m,metrica,ano){
   const im=E.idxMet[metrica]; if(im==null) return 0;
-  const ia=E.idxAno[ano]; if(ia==null) return 0;
+  const ia=E.idxAno[ano]; if(ia==null || !anoExecConsiderado(ano)) return 0;
   return m.v[im*E.nAnos+ia];
 }
 function valorLinha(L,metrica,ano){
@@ -2092,7 +2102,7 @@ function valorLinha(L,metrica,ano){
    pf.serie, a série por fonte guardada em m.porFonte) em vez do v do MAPP ou da linha. */
 function somaAnoArray(arr,metrica,ano){
   const im=E.idxMet[metrica]; if(im==null) return 0;
-  const ia=E.idxAno[ano]; if(ia==null) return 0;
+  const ia=E.idxAno[ano]; if(ia==null || !anoExecConsiderado(ano)) return 0;
   return arr[im*E.nAnos+ia];
 }
 
@@ -2598,6 +2608,9 @@ function grafico(id,cfg){
 }
 
 function renderResumoImport(){
+  /* processada a base, o bloco de importação dá lugar ao botão no alto */
+  const bi=$('#blocoImportacao'); if(bi) bi.classList.add('oculto');
+  const bt=$('#btnTrocarBase'); if(bt) bt.classList.remove('oculto');
   $('#blocoResumoImport').classList.remove('oculto');
   $('#carimboImport').textContent = 'Aba “'+E.abaEscolhida+'”'+(E.abaDetectada&&E.abas.length>1?' (localizada automaticamente entre '+E.abas.length+' abas)':'')+' · '+E.importadoEm.toLocaleString('pt-BR');
   const anos=E.anos;
@@ -2936,7 +2949,7 @@ function abrirFicha(chave){
   E.fichaAtual=m.chave;
 
   if(typeof Chart!=='undefined'){
-    const labels=E.anos;
+    const labels=anosExec();
     grafico('gFicha',{ type:'bar',
       data:{labels:labels,datasets:tem.map(function(t,i){
         return {label:t,data:labels.map(function(a){ return somaAno(m,t,a); }),backgroundColor:PALETA[i],borderWidth:0};
@@ -3074,7 +3087,7 @@ function linhasExcluidos(){
       'MOTIVO DA EXCLUSÃO':ex.motivo,'RESPONSÁVEL':ex.responsavel,
       'DATA DA EXCLUSÃO':new Date(ex.data).toLocaleString('pt-BR')
     };
-    E.anos.forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
+    anosExec().forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
     return o;
   });
 }
@@ -3134,7 +3147,7 @@ function linhasMapp(lista){
     };
     /* Saldo do programado por exercício: VLR_PLANEJADO − VLR_EMPENHO, ano a ano.
        Exercícios sem empenho na base (futuros) têm saldo igual ao programado. */
-    E.anos.forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
+    anosExec().forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
     const dec=E.decisoes[m.chave];
     o['SITUAÇÃO DA REVISÃO']=dec?(dec.situacao==='acatada'?'ACATADA':'REJEITADA'):'PENDENTE';
     o['RESPONSÁVEL']=dec?dec.responsavel:'';
@@ -3258,7 +3271,7 @@ function renderRegrasEss(){
     ['Âncora temporal',textoAncora(),'Resolve “ano corrente” e “ano anterior” a partir do relógio, limitado à base.'],
     ['Regra 1 — aprovados até',String(c.ano1a),'Aprovados até este ano e sem execução alguma.'],
     ['Regra 2 — aprovados em',String(c.ano1b),'Aprovados neste ano e sem execução alguma.'],
-    ['Exercícios de execução',rotuloExecAnos(c.execAnos),'Empenhado e pago contam só nestes exercícios; programado e saldo usam todos.'],
+    ['Exercícios de execução',rotuloExecAnos(c.execAnos),'Só estes anos entram no processamento: regras, totais, saldo e exportação.'],
     ['Regra 3 — histórico',c.histIni+'–'+c.histFim,'Houve execução neste período.'],
     ['Regra 3 — período atual',c.presenteIni===c.presenteFim?String(c.presenteIni):c.presenteIni+'–'+c.presenteFim,'Nenhuma execução neste período.'],
     ['Regra 4 — evidência','Estágio de execução','Estágio normalizado no grupo “execução física concluída”.'],
@@ -3722,6 +3735,7 @@ function iniciarEss(){
   abrirBoasVindas();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciarEss); else iniciarEss();
+$('#btnTrocarBase').addEventListener('click',function(){ $('#arquivo').click(); });
 
 </script>
 

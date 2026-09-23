@@ -75,6 +75,7 @@ html[data-tema="escuro"] .brasao{color:#14171b}
 .topo-botoes{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .topo-botoes .btn.discreto{padding:6px 9px}
 .topo-acoes .selo-base{padding:3px 10px;font-size:11.5px}
+#btnTrocarBase{margin-top:2px}
 .selo-base{
   display:flex;align-items:center;gap:8px;padding:5px 11px;border:1px solid var(--linha);
   border-radius:99px;background:var(--carta-2);font-size:12px;color:var(--tinta-2);
@@ -95,6 +96,11 @@ html[data-tema="escuro"] .brasao{color:#14171b}
 .aba[aria-selected="true"] .ponto{opacity:1}
 .aba:disabled{opacity:.4;cursor:not-allowed}
 .aba:focus-visible{outline:2px solid var(--ardosia);outline-offset:-2px}
+.aba .n{display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--linha);color:var(--tinta-2);font-weight:700;font-size:11.5px}
+.aba[aria-selected="true"] .n{background:var(--cor);color:var(--carta)}
+.aba .t{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;text-align:left}
+.aba .t small{font-size:10.5px;font-weight:400;color:var(--tinta-3)}
+@media(max-width:760px){.aba .t small{display:none}}
 
 main{padding:20px; max-width:1560px; margin:0 auto}
 
@@ -562,6 +568,15 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 }
 
 .oculto{display:none!important}
+.bloco.recolhivel>header{cursor:pointer;user-select:none}
+.bloco.recolhivel>header>h2::before,.bloco.recolhivel>header>h3::before{content:'';display:inline-block;width:7px;height:7px;
+  border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin:0 11px 3px 2px;transition:transform .15s ease}
+.bloco.recolhivel.recolhido>header>h2::before,.bloco.recolhivel.recolhido>header>h3::before{transform:rotate(-45deg)}
+.bloco.recolhivel.recolhido>:not(header){display:none!important}
+.bloco.recolhivel.recolhido>header{margin-bottom:0}
+.bloco.recolhivel>header:focus-visible{outline:2px solid var(--ardosia);outline-offset:4px;border-radius:4px}
+.saldo-exec{margin-top:14px;padding:12px 14px;border:1px solid var(--linha);border-radius:var(--raio-p);background:var(--carta-2)}
+.saldo-exec h4{margin:0 0 6px}
 
 /* ===== Redesenho de navegação: quatro áreas do fluxo ===== */
 .fluxo-principal{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--carta);border-bottom:1px solid var(--linha);position:sticky;top:0;z-index:8}
@@ -649,28 +664,17 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. Gráficos, cartões e a ficha aberta são redesenhados com as cores do novo tema.">Tema</button>
       </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
+      <button class="btn pequeno discreto oculto" id="btnTrocarBase" data-tip="Escolhe outra planilha de execução e refaz a importação e o processamento." data-tip-t="Importar outra base">Importar outra base</button>
     </div>
   </div>
   <nav class="abas" role="tablist" id="abas" aria-label="Fluxo principal">
-    <button class="aba" role="tab" id="aba-visao" aria-controls="p-panorama" aria-selected="true" style="--cor:var(--grafite)" data-nav="visao" data-tip="Base, indicadores, universo, regras, saldo e programação em uma única visão de entrada." data-tip-t="Visão Geral"><i class="ponto"></i>Visão Geral</button>
-    <button class="aba" role="tab" id="aba-analise" aria-controls="p-diagnostico" aria-selected="false" style="--cor:var(--ardosia)" data-nav="analise" data-tip="Análise dos MAPPs, filtros, qualidade da base e despesas de continuidade." data-tip-t="Análise"><i class="ponto"></i>Análise</button>
-    <button class="aba" role="tab" id="aba-manifestacao" aria-controls="p-manifestacao" aria-selected="false" style="--cor:var(--petroleo)" data-nav="manifestacao" data-tip="Envio de planilhas protegidas aos órgãos e registro das manifestações devolvidas. Exige sessão gravada ou retomada nesta janela." data-tip-t="Manifestação"><i class="ponto"></i>Manifestação</button>
-    <button class="aba" role="tab" id="aba-decisao" aria-controls="p-saneamento" aria-selected="false" style="--cor:var(--sepia)" data-nav="decisao" data-tip="Registro das decisões humanas sobre os MAPPs enquadrados: acatar, rejeitar ou ocultar." data-tip-t="Decisão"><i class="ponto"></i>Decisão</button>
-    <button class="aba" role="tab" id="aba-resultado" aria-controls="p-antesdepois" aria-selected="false" style="--cor:var(--musgo)" data-nav="resultado" data-tip="Antes e depois, auditoria e exportações do resultado final." data-tip-t="Resultado"><i class="ponto"></i>Resultado</button>
+    <button class="aba" role="tab" id="aba-visao" aria-controls="p-panorama" aria-selected="true" style="--cor:var(--grafite)" data-nav="visao" data-tip="Base, indicadores, universo, regras, saldo e programação em uma única visão de entrada." data-tip-t="Visão Geral"><span class="n">1</span><span class="t"><strong>Visão Geral</strong><small>Base e universo</small></span></button>
+    <button class="aba" role="tab" id="aba-analise" aria-controls="p-diagnostico" aria-selected="false" style="--cor:var(--ardosia)" data-nav="analise" data-tip="Análise dos MAPPs, filtros, qualidade da base e despesas de continuidade." data-tip-t="Análise"><span class="n">2</span><span class="t"><strong>Análise</strong><small>Achados e MAPPs</small></span></button>
+    <button class="aba" role="tab" id="aba-manifestacao" aria-controls="p-manifestacao" aria-selected="false" style="--cor:var(--petroleo)" data-nav="manifestacao" data-tip="Envio de planilhas protegidas aos órgãos e registro das manifestações devolvidas. Exige sessão gravada ou retomada nesta janela." data-tip-t="Manifestação"><span class="n">3</span><span class="t"><strong>Manifestação</strong><small>Planilhas dos órgãos</small></span></button>
+    <button class="aba" role="tab" id="aba-decisao" aria-controls="p-saneamento" aria-selected="false" style="--cor:var(--sepia)" data-nav="decisao" data-tip="Registro das decisões humanas sobre os MAPPs enquadrados: acatar, rejeitar ou ocultar." data-tip-t="Decisão"><span class="n">4</span><span class="t"><strong>Decisão</strong><small>Deliberação humana</small></span></button>
+    <button class="aba" role="tab" id="aba-resultado" aria-controls="p-antesdepois" aria-selected="false" style="--cor:var(--musgo)" data-nav="resultado" data-tip="Antes e depois, auditoria e exportações do resultado final." data-tip-t="Resultado"><span class="n">5</span><span class="t"><strong>Resultado</strong><small>Consolidação e exportação</small></span></button>
   </nav>
 </header>
-
-<div class="fluxo-principal" id="fluxoPrincipal" aria-label="Fluxo de trabalho">
-  <div class="fluxo-etapa atual" data-nav-go="visao"><span>1</span><strong>Visão Geral</strong><small>Base e universo</small></div>
-  <div class="fluxo-seta">→</div>
-  <div class="fluxo-etapa" data-nav-go="analise"><span>2</span><strong>Análise</strong><small>Achados e MAPPs</small></div>
-  <div class="fluxo-seta">→</div>
-  <div class="fluxo-etapa" data-nav-go="manifestacao"><span>3</span><strong>Manifestação</strong><small>Planilhas dos órgãos</small></div>
-  <div class="fluxo-seta">→</div>
-  <div class="fluxo-etapa" data-nav-go="decisao"><span>4</span><strong>Decisão</strong><small>Deliberação humana</small></div>
-  <div class="fluxo-seta">→</div>
-  <div class="fluxo-etapa" data-nav-go="resultado"><span>5</span><strong>Resultado</strong><small>Consolidação e exportação</small></div>
-</div>
 
 <main>
 
@@ -684,13 +688,11 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <button class="seg" data-seg="saldo" aria-selected="false" data-tip="Saldo do programado por exercício: corrente, três anteriores, anos anteriores agregados e exercícios futuros." data-tip-t="Saldo por exercício">Saldo por exercício</button>
     <button class="seg" data-seg="programacao" aria-selected="false" data-tip="Concentração no exercício corrente, programação sem execução e ausência de programação futura." data-tip-t="Programação">Programação</button>
   </nav>
-  <div class="segmento" id="seg-importacao" style="--acento:var(--grafite)">
-  <div class="bloco">
+  <div class="bloco" id="seg-importacao" style="--acento:var(--grafite)">
     <header><h2>Rito do saneamento</h2><span class="legenda">A alteração de situação só é admitida ao fim da sequência. Nenhuma etapa se transpõe.</span></header>
     <div class="fluxo" id="fluxoPassos"></div>
   </div>
-
-  <div class="bloco">
+<div class="bloco" id="blocoImportacao" style="--acento:var(--grafite)">
     <header><h2>Importação da base de execução</h2><span class="legenda">.xlsx, .xlsm ou .csv · a aba de dados é localizada automaticamente · nada é transmitido</span></header>
     <div class="importacao-linha">
       <div class="area-solta compacta" id="areaSolta" role="button" tabindex="0" data-tip="Clique para escolher a planilha de execução dos MAPPs, ou arraste-a até aqui: a importação começa automaticamente, com o painel de processamento. O sistema examina todas as abas e usa a que tem o formato esperado: colunas MAPP, ORGAO e séries financeiras por exercício (VLR_PLANEJADO, VLR_EMPENHO…)." data-tip-t="Arquivo da base">
@@ -702,88 +704,8 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     </div>
     <div class="pequeno tenue" id="progressoTexto" style="margin-top:8px"></div>
   </div>
-
-  <div class="bloco oculto" id="blocoResumoImport">
-    <header><h2>Retrato da importação</h2><span class="legenda" id="carimboImport"></span></header>
-    <div class="cartoes" id="cartoesImport"></div>
-    <div style="margin-top:14px" id="avisosImport"></div>
-    <div class="grade g2" style="margin-top:12px">
-      <div>
-        <h4 style="margin-bottom:6px">Colunas reconhecidas</h4>
-        <div id="colunasReconhecidas" class="pequeno tenue"></div>
-      </div>
-      <div>
-        <h4 style="margin-bottom:6px">Normalização dos estágios de execução</h4>
-        <div class="tabela-caixa" style="max-height:220px"><table id="tabEstagios"><thead><tr><th data-tip="Texto do estágio exatamente como consta na planilha, antes da normalização." data-tip-t="Estágio na base">Estágio na base</th><th data-tip="Grupo ao qual o texto do estágio foi reconduzido pela tabela de normalização." data-tip-t="Grupo normalizado">Grupo normalizado</th><th class="num" data-tip="Quantidade de linhas da planilha com esse estágio." data-tip-t="Registros">Registros</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th></tr></thead><tbody></tbody></table></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bloco">
-    <header><h3>As três bases</h3></header>
-    <div class="grade g3">
-      <div class="prova" style="--cor:var(--grafite)"><h5>Base original</h5><div class="pequeno tenue">Todas as linhas importadas, tal como vieram da planilha. Nunca é alterada pelo sistema.</div><div class="pequeno mono" id="qtdBaseOriginal">—</div></div>
-      <div class="prova" style="--cor:var(--ardosia)"><h5>Base de trabalho</h5><div class="pequeno tenue">Consolidação por MAPP, com campos derivados, enquadramentos e recomendações.</div><div class="pequeno mono" id="qtdBaseTrabalho">—</div></div>
-      <div class="prova" style="--cor:var(--musgo)"><h5>Base saneada</h5><div class="pequeno tenue">Apenas o que recebeu decisão humana registrada, com responsável e data na auditoria.</div><div class="pequeno mono" id="qtdBaseSaneada">—</div></div>
-    </div>
-  </div>
-  </div>
-  <div class="segmento oculto" id="seg-indicadores" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
-  <div class="bloco">
-    <header><h2>Indicadores gerais</h2><span class="legenda" id="painelCriterio"></span></header>
-    <div class="cartoes" id="cartoesGerais"></div>
-  </div>
-  <div class="bloco">
-    <header><h2>Populações por regra</h2><span class="legenda">Contagens por MAPP consolidado, não por linha da planilha.</span></header>
-    <div class="cartoes" id="cartoesRegras"></div>
-  </div>
-  <div class="bloco">
-    <header><h2>Saldo do programado por regra</h2><span class="legenda" id="saldoRegraLegenda"></span></header>
-    <div class="aviso nota"><span class="marca">Cálculo</span><span>Saldo do programado = <span class="mono">Programado − Empenhado</span> de cada exercício até o corrente, mais o programado dos exercícios posteriores (sem empenho na base). A dica de cada cartão traz o desdobramento por exercício.</span></div>
-    <div class="cartoes" id="cartoesSaldoRegra" style="margin-top:12px"></div>
-  </div>
-  <div class="grade g2">
-    <div class="grafico-caixa" style="--cor:var(--ardosia)"><header><h4>MAPPs por regra</h4><i class="sigla" tabindex="0" data-tip="Quantidade de MAPPs consolidados enquadrados em cada regra. Um mesmo MAPP pode aparecer em mais de uma barra quando há sobreposição.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="regrasQtd" data-tipo="bar" data-tip="Exibe em barras verticais.">Barras</button><button class="btn pequeno discreto" data-graf="regrasQtd" data-tipo="doughnut" data-tip="Exibe em rosca, útil para comparar proporções.">Rosca</button></div></header><div class="tela"><canvas id="gRegrasQtd"></canvas></div></div>
-    <div class="grafico-caixa" style="--cor:var(--latao)"><header><h4>Saldo do programado por regra</h4><i class="sigla" tabindex="0" data-tip="Saldo do programado dos MAPPs de cada regra: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores. Serve de ordem de grandeza do que está em discussão.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="regrasVal" data-tipo="bar" data-tip="Exibe em barras verticais.">Barras</button><button class="btn pequeno discreto" data-graf="regrasVal" data-tipo="doughnut" data-tip="Exibe em rosca.">Rosca</button></div></header><div class="tela"><canvas id="gRegrasVal"></canvas></div></div>
-    <div class="grafico-caixa" style="--cor:var(--musgo)"><header><h4>Execução por exercício</h4><i class="sigla" tabindex="0" data-tip="Séries anuais de programado, empenhado e pago somadas sobre toda a base consolidada.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="anos" data-tipo="line" data-tip="Exibe em linhas.">Linhas</button><button class="btn pequeno discreto" data-graf="anos" data-tipo="bar" data-tip="Exibe em barras agrupadas.">Barras</button></div></header><div class="tela"><canvas id="gAnos"></canvas></div></div>
-    <div class="grafico-caixa" style="--cor:var(--ameixa)"><header><h4>MAPPs por estágio</h4><i class="sigla" tabindex="0" data-tip="Distribuição dos MAPPs consolidados pelos grupos de estágio normalizados.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="estagios" data-tipo="bar" data-tip="Exibe em barras horizontais.">Barras</button><button class="btn pequeno discreto" data-graf="estagios" data-tipo="doughnut" data-tip="Exibe em rosca.">Rosca</button></div></header><div class="tela"><canvas id="gEstagios"></canvas></div></div>
-    <div class="grafico-caixa" style="--cor:var(--ferrugem)"><header><h4>MAPPs por secretaria</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores secretarias por quantidade de MAPPs. Alterne para ver por saldo do programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="valor" data-tip="Ordena pelo saldo do programado.">Saldo</button></div></header><div class="tela"><canvas id="gSecretarias"></canvas></div></div>
-    <div class="grafico-caixa" style="--cor:var(--grafite)"><header><h4>MAPPs por órgão</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores órgãos por quantidade de MAPPs. Alterne para ver por saldo do programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="valor" data-tip="Ordena pelo saldo do programado.">Saldo</button></div></header><div class="tela"><canvas id="gOrgaos"></canvas></div></div>
-  </div>
-  </div>
-  <div class="segmento oculto" id="seg-universo" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
-  <div class="bloco">
-    <header><h2>Composição do universo</h2><span class="legenda">Demonstração aritmética de como cada população se formou.</span></header>
-    <div class="aviso nota"><span class="marca">Advertência</span><span>As populações das quatro regras <strong>não são partições</strong> do total: um mesmo MAPP pode satisfazer mais de uma regra. A soma simples das quatro populações não corresponde ao conjunto de MAPPs a sanear.</span></div>
-    <div class="escada" id="escadaUniverso"></div>
-  </div>
-  <div class="bloco">
-    <header><h2>Conjuntos e interseções</h2><span class="legenda">Quantidade de MAPPs comuns a cada par de regras.</span></header>
-    <div class="grade g2">
-      <div class="tabela-caixa" style="max-height:none"><table id="tabIntersecoes"><thead><tr><th data-tip="Regra isolada ou interseção entre regras." data-tip-t="Conjunto">Conjunto</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th><th class="num" data-tip="Σ (programado − empenhado) dos exercícios até o corrente." data-tip-t="Saldo até o corrente">Saldo até o corrente</th><th class="num" data-tip="Programado dos exercícios posteriores ao corrente, que não têm empenho na base e entram no saldo pelo próprio programado." data-tip-t="Programado futuro">Programado futuro</th><th class="num" data-tip="Saldo do programado: soma das duas colunas anteriores." data-tip-t="Saldo do programado">Saldo do programado</th></tr></thead><tbody></tbody></table></div>
-      <div class="tabela-caixa" style="max-height:none"><table id="tabClassificacao"><thead><tr><th data-tip="Regra única, múltiplas regras, sem regra ou dados insuficientes." data-tip-t="Classificação">Classificação</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th><th class="num" data-tip="Participação percentual no total do universo." data-tip-t="%">%</th><th data-tip="O que a classificação implica para a tramitação." data-tip-t="Significado">Significado</th></tr></thead><tbody></tbody></table></div>
-    </div>
-  </div>
-  <div class="bloco">
-    <header><h2>Situações à margem das regras automáticas</h2></header>
-    <div class="grade g3" id="cartoesMargem"></div>
-  </div>
-  </div>
-  <div class="segmento oculto" id="seg-regras" style="--acento:var(--ferrugem);--acento-tenue:rgba(138,82,64,.10);--acento-medio:rgba(138,82,64,.3)">
-  <div class="bloco">
-    <header><h2>Regras aplicadas</h2><span class="legenda" id="regrasLegenda"></span></header>
-    <div class="aviso nota"><span class="marca">Alcance</span><span>Reprodução das quatro regras da primeira fase tal como o sistema as aplica, já compostas com os parâmetros em vigor. As quantidades são apuradas sobre a base importada; nenhum número provém de fonte externa.</span></div>
-    <div class="grade g2" id="quadroRegras" style="margin-top:12px"></div>
-  </div>
-  <div class="bloco">
-    <header><h2>Parâmetros em vigor</h2><span class="legenda">Alteráveis na gaveta de configurações; toda alteração reprocessa o enquadramento.</span></header>
-    <div class="tabela-caixa" style="max-height:none"><table id="tabParametros"><thead><tr><th data-tip="Parâmetro de configuração que governa o enquadramento." data-tip-t="Parâmetro">Parâmetro</th><th data-tip="Valor atualmente em vigor, já resolvido pela âncora temporal quando for o caso." data-tip-t="Em vigor">Em vigor</th><th data-tip="O que o parâmetro determina no cálculo das regras." data-tip-t="O que governa">O que governa</th></tr></thead><tbody></tbody></table></div>
-  </div>
-  </div>
-  <div class="segmento oculto" id="seg-saldo" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
-  <div class="bloco">
+<div class="bloco" id="seg-saldo" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
     <header><h2>Saldo do programado por exercício</h2><span class="legenda" id="saldoLegenda"></span></header>
-    <div class="aviso nota"><span class="marca">Cálculo</span><span>Saldo de cada exercício = <span class="mono">Programado − Empenhado</span>. Saldo positivo indica programação ainda não empenhada; saldo negativo indica empenho acima do programado no exercício. <strong>Novo Programado 2027</strong> = <span class="mono">Programado 2027 + Σ (Programado − Empenhado)</span> dos exercícios marcados no filtro; saldo negativo não é somado e o MAPP é listado como inconsistente.</span></div>
     <div class="grade g4">
       <label class="campo"><span>Agrupamento <i class="sigla" tabindex="0" data-tip="Dimensão pela qual as linhas da grade são agregadas. Em “MAPP”, cada linha é um projeto." data-tip-t="Agrupamento">?</i></span>
         <select id="saldoAgrupamento">
@@ -808,6 +730,10 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no nome do agrupamento — órgão, secretaria, programa ou código e título do MAPP." data-tip-t="Busca">?</i></span><input type="text" id="saldoBusca" placeholder="órgão, código, título…"></label>
       <label class="campo"><span>Anos do saldo para o Novo Programado 2027 <i class="sigla" tabindex="0" data-tip="Seleciona um ou mais exercícios anteriores a 2027. O Novo Programado 2027 = Programado 2027 + soma dos saldos (Programado − Empenhado) dos anos selecionados. Sem seleção, considera apenas o Programado 2027." data-tip-t="Novo Programado 2027">?</i></span><select id="saldoNovoAnos"></select></label>
     </div>
+    <div class="saldo-exec">
+      <h4>Exercícios de execução considerados <i class="sigla" tabindex="0" data-tip="Escolha os anos calendário que o sistema considera em todo o processamento: regras, totais, saldo, gráficos e exportações. Arraste as bolinhas, use De/Até ou clique num ano para tirá-lo ou incluí-lo. A mudança recalcula tudo e vai à auditoria." data-tip-t="Exercícios de execução">?</i></h4>
+      <div id="saldoExecAnos"><p class="pequeno tenue">Importe a base para escolher os exercícios.</p></div>
+    </div>
     <div class="cartoes" id="cartoesSaldo" style="margin-top:12px"></div>
     <div class="tabela-caixa" style="margin-top:12px"><table id="tabSaldo"><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     <div class="barra-acoes" style="margin-top:10px">
@@ -815,14 +741,11 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <button class="btn" id="btnExportarSaldo" style="margin-left:auto" data-tip="Exporta a grade de saldos por exercício, no agrupamento e no conjunto em vigor, com o Novo Programado 2027 e, em aba própria, as inconsistências apuradas.">Exportar saldos</button>
     </div>
   </div>
-  <div class="bloco oculto" id="blocoInconsNP" style="--acento:var(--carmim);--acento-tenue:rgba(139,58,58,.08);--acento-medio:rgba(139,58,58,.3)">
+<div class="bloco oculto" id="blocoInconsNP" style="--acento:var(--carmim);--acento-tenue:rgba(139,58,58,.08);--acento-medio:rgba(139,58,58,.3)">
     <header><h2>Inconsistências no Novo Programado 2027</h2><span class="legenda" id="inconsNPLegenda"></span></header>
-    <div class="aviso alerta"><span class="marca">Regra</span><span>Exercício marcado em que o empenhado supera o programado. Por definição isso não deveria ocorrer: o saldo negativo <strong>não é somado</strong> ao Novo Programado 2027 e o caso fica aqui relacionado para verificação.</span></div>
-    <div class="tabela-caixa" style="margin-top:10px"><table id="tabInconsNP"><thead><tr></tr></thead><tbody></tbody></table></div>
+    <div class="tabela-caixa"><table id="tabInconsNP"><thead><tr></tr></thead><tbody></tbody></table></div>
   </div>
-  </div>
-  <div class="segmento oculto" id="seg-programacao" style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">
-  <div class="bloco">
+<div class="bloco" id="seg-programacao" style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">
     <header><h2>Programação</h2><span class="legenda">Concentração, programação sem execução e ausência de programação futura.</span></header>
     <div class="cartoes" id="cartoesProgramacao"></div>
     <div class="grade g4" style="margin-top:12px">
@@ -831,6 +754,65 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
     <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Data de aprovação do MAPP. Referência para avaliar a urgência dos indícios apontados: quanto mais antiga a aprovação, maior o tempo decorrido sem execução." data-tip-t="Aprovação">Aprovação</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th class="num" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028 — coluna totalizadora das duas colunas de Programado anteriores." data-tip-t="Programado total">Programado total</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
+  <div id="seg-graficos" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
+  <div class="grade g2">
+    <div class="grafico-caixa" style="--cor:var(--ardosia)"><header><h4>MAPPs por regra</h4><i class="sigla" tabindex="0" data-tip="Quantidade de MAPPs consolidados enquadrados em cada regra. Um mesmo MAPP pode aparecer em mais de uma barra quando há sobreposição.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="regrasQtd" data-tipo="bar" data-tip="Exibe em barras verticais.">Barras</button><button class="btn pequeno discreto" data-graf="regrasQtd" data-tipo="doughnut" data-tip="Exibe em rosca, útil para comparar proporções.">Rosca</button></div></header><div class="tela"><canvas id="gRegrasQtd"></canvas></div></div>
+    <div class="grafico-caixa" style="--cor:var(--latao)"><header><h4>Saldo do programado por regra</h4><i class="sigla" tabindex="0" data-tip="Saldo do programado dos MAPPs de cada regra: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores. Serve de ordem de grandeza do que está em discussão.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="regrasVal" data-tipo="bar" data-tip="Exibe em barras verticais.">Barras</button><button class="btn pequeno discreto" data-graf="regrasVal" data-tipo="doughnut" data-tip="Exibe em rosca.">Rosca</button></div></header><div class="tela"><canvas id="gRegrasVal"></canvas></div></div>
+    <div class="grafico-caixa" style="--cor:var(--musgo)"><header><h4>Execução por exercício</h4><i class="sigla" tabindex="0" data-tip="Séries anuais de programado, empenhado e pago somadas sobre toda a base consolidada.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="anos" data-tipo="line" data-tip="Exibe em linhas.">Linhas</button><button class="btn pequeno discreto" data-graf="anos" data-tipo="bar" data-tip="Exibe em barras agrupadas.">Barras</button></div></header><div class="tela"><canvas id="gAnos"></canvas></div></div>
+    <div class="grafico-caixa" style="--cor:var(--ameixa)"><header><h4>MAPPs por estágio</h4><i class="sigla" tabindex="0" data-tip="Distribuição dos MAPPs consolidados pelos grupos de estágio normalizados.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="estagios" data-tipo="bar" data-tip="Exibe em barras horizontais.">Barras</button><button class="btn pequeno discreto" data-graf="estagios" data-tipo="doughnut" data-tip="Exibe em rosca.">Rosca</button></div></header><div class="tela"><canvas id="gEstagios"></canvas></div></div>
+    <div class="grafico-caixa" style="--cor:var(--ferrugem)"><header><h4>MAPPs por secretaria</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores secretarias por quantidade de MAPPs. Alterne para ver por saldo do programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="valor" data-tip="Ordena pelo saldo do programado.">Saldo</button></div></header><div class="tela"><canvas id="gSecretarias"></canvas></div></div>
+    <div class="grafico-caixa" style="--cor:var(--grafite)"><header><h4>MAPPs por órgão</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores órgãos por quantidade de MAPPs. Alterne para ver por saldo do programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="valor" data-tip="Ordena pelo saldo do programado.">Saldo</button></div></header><div class="tela"><canvas id="gOrgaos"></canvas></div></div>
+  </div>
+  </div>
+<div class="bloco oculto recolhivel" id="blocoResumoImport" style="--acento:var(--grafite)">
+    <header><h2>Retrato da importação</h2><span class="legenda" id="carimboImport"></span></header>
+    <div class="cartoes" id="cartoesImport"></div>
+    <div style="margin-top:14px" id="avisosImport"></div>
+    <div class="grade g2" style="margin-top:12px">
+      <div>
+        <h4 style="margin-bottom:6px">Colunas reconhecidas</h4>
+        <div id="colunasReconhecidas" class="pequeno tenue"></div>
+      </div>
+      <div>
+        <h4 style="margin-bottom:6px">Normalização dos estágios de execução</h4>
+        <div class="tabela-caixa" style="max-height:220px"><table id="tabEstagios"><thead><tr><th data-tip="Texto do estágio exatamente como consta na planilha, antes da normalização." data-tip-t="Estágio na base">Estágio na base</th><th data-tip="Grupo ao qual o texto do estágio foi reconduzido pela tabela de normalização." data-tip-t="Grupo normalizado">Grupo normalizado</th><th class="num" data-tip="Quantidade de linhas da planilha com esse estágio." data-tip-t="Registros">Registros</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+  </div>
+<div class="bloco recolhivel" style="--acento:var(--grafite)">
+    <header><h3>As três bases</h3></header>
+    <div class="grade g3">
+      <div class="prova" style="--cor:var(--grafite)"><h5>Base original</h5><div class="pequeno tenue">Todas as linhas importadas, tal como vieram da planilha. Nunca é alterada pelo sistema.</div><div class="pequeno mono" id="qtdBaseOriginal">—</div></div>
+      <div class="prova" style="--cor:var(--ardosia)"><h5>Base de trabalho</h5><div class="pequeno tenue">Consolidação por MAPP, com campos derivados, enquadramentos e recomendações.</div><div class="pequeno mono" id="qtdBaseTrabalho">—</div></div>
+      <div class="prova" style="--cor:var(--musgo)"><h5>Base saneada</h5><div class="pequeno tenue">Apenas o que recebeu decisão humana registrada, com responsável e data na auditoria.</div><div class="pequeno mono" id="qtdBaseSaneada">—</div></div>
+    </div>
+  </div>
+<div class="bloco recolhivel" id="seg-indicadores" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
+    <header><h2>Indicadores gerais</h2><span class="legenda" id="painelCriterio"></span></header>
+    <div class="cartoes" id="cartoesGerais"></div>
+  </div>
+<div class="bloco recolhivel" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
+    <header><h2>Populações por regra</h2><span class="legenda">Contagens por MAPP consolidado, não por linha da planilha.</span></header>
+    <div class="cartoes" id="cartoesRegras"></div>
+  </div>
+<div class="bloco recolhivel" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
+    <header><h2>Saldo do programado por regra</h2><span class="legenda" id="saldoRegraLegenda"></span></header>
+    <div class="cartoes" id="cartoesSaldoRegra"></div>
+  </div>
+<div class="bloco recolhivel" id="seg-universo" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
+    <header><h2>Composição do universo</h2><span class="legenda">Demonstração aritmética de como cada população se formou.</span></header>
+    <div class="escada" id="escadaUniverso"></div>
+  </div>
+<div class="bloco recolhivel" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
+    <header><h2>Conjuntos e interseções</h2><span class="legenda">Quantidade de MAPPs comuns a cada par de regras.</span></header>
+    <div class="grade g2">
+      <div class="tabela-caixa" style="max-height:none"><table id="tabIntersecoes"><thead><tr><th data-tip="Regra isolada ou interseção entre regras." data-tip-t="Conjunto">Conjunto</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th><th class="num" data-tip="Σ (programado − empenhado) dos exercícios até o corrente." data-tip-t="Saldo até o corrente">Saldo até o corrente</th><th class="num" data-tip="Programado dos exercícios posteriores ao corrente, que não têm empenho na base e entram no saldo pelo próprio programado." data-tip-t="Programado futuro">Programado futuro</th><th class="num" data-tip="Saldo do programado: soma das duas colunas anteriores." data-tip-t="Saldo do programado">Saldo do programado</th></tr></thead><tbody></tbody></table></div>
+      <div class="tabela-caixa" style="max-height:none"><table id="tabClassificacao"><thead><tr><th data-tip="Regra única, múltiplas regras, sem regra ou dados insuficientes." data-tip-t="Classificação">Classificação</th><th class="num" data-tip="Quantidade de MAPPs consolidados, contados uma única vez." data-tip-t="MAPPs">MAPPs</th><th class="num" data-tip="Participação percentual no total do universo." data-tip-t="%">%</th><th data-tip="O que a classificação implica para a tramitação." data-tip-t="Significado">Significado</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+<div class="bloco recolhivel" style="--acento:var(--musgo);--acento-tenue:rgba(76,104,71,.10);--acento-medio:rgba(76,104,71,.3)">
+    <header><h2>Situações à margem das regras automáticas</h2></header>
+    <div class="grade g3" id="cartoesMargem"></div>
   </div>
 </section>
 
@@ -908,8 +890,8 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <header><h2>Revisão da base</h2><span class="legenda">Exames de consistência. Achados são apontados, jamais corrigidos automaticamente.</span></header>
     <div class="cartoes" id="cartoesQualidade"></div>
   </div>
-  <div class="bloco" id="blocoAchado">
-    <header><h3 id="tituloAchado">Selecione um achado</h3><span class="legenda" id="legendaAchado"></span></header>
+  <div class="bloco oculto" id="blocoAchado">
+    <header><h3 id="tituloAchado">Achado</h3><span class="legenda" id="legendaAchado"></span><button class="btn pequeno discreto" id="btnFecharAchado" data-tip="Fecha a lista deste achado.">Fechar</button></header>
     <div class="tabela-caixa"><table id="tabAchado"><thead></thead><tbody></tbody></table></div>
     <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportarAchado" data-tip="Exporta os registros do achado selecionado em planilha.">Exportar achado</button></div>
   </div>
@@ -922,8 +904,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 
 <!-- ============================ SANEAMENTO FINAL ============================ -->
 <section role="tabpanel" id="p-saneamento" class="oculto" aria-labelledby="aba-saneamento" style="--acento:var(--sepia);--acento-tenue:rgba(111,90,67,.10);--acento-medio:rgba(111,90,67,.3)">
-  <div class="aviso nota"><span class="marca">Alcance desta aba</span><span>Aqui trabalha-se sobre o conjunto <strong>já filtrado pelas regras</strong>. Ocultar um MAPP significa retirá-lo do resultado do saneamento — a base original permanece intocada, o enquadramento continua registrado e a providência é lançada na auditoria.</span></div>
-  <div class="aviso nota"><span class="marca">Providência</span><span>A remoção é <strong>individual, reversível e auditada</strong>: use a coluna <strong>Providência</strong>, a segunda de cada grade, ou o botão correspondente na ficha do MAPP.</span></div>
 
   <div class="bloco">
     <header><h2>Resultado em formação</h2><span class="legenda" id="saneamentoCriterio"></span></header>
@@ -1001,20 +981,9 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 
   <div class="bloco">
     <header><h2>Encerramento do saneamento</h2><span class="legenda" id="estadoEncerramento">Saneamento em curso</span></header>
-    <div class="grade g2">
-      <div class="prova" style="--cor:var(--sepia)"><h5>Declaração de conclusão</h5>
-        <div class="pequeno tenue">Registra responsável, data e observação final. A declaração não impede ajustes posteriores: qualquer alteração depois dela é igualmente auditada.</div>
-        <div class="barra-acoes" style="margin-top:10px">
-          <button class="btn" id="btnFinalizarSaneamento" data-tip="Declara concluído o saneamento, de imediato, registrando responsável e data na auditoria.">Declarar saneamento concluído</button>
-          <button class="btn discreto" id="btnReabrirSaneamento" data-tip="Reabre o saneamento de imediato, revogando a declaração de conclusão; o ato vai à auditoria.">Reabrir</button>
-        </div>
-      </div>
-      <div class="prova" style="--cor:var(--musgo)"><h5>Exportação do resultado</h5>
-        <div class="pequeno tenue">Arquivo único em .xlsx com duas abas: <span class="mono">RESULTADO DO SANEAMENTO</span>, com os MAPPs mantidos após a aplicação das regras, e <span class="mono">EXCLUIDOS</span>, com os MAPPs ocultados individualmente, seus motivos, responsáveis e datas.</div>
-        <div class="barra-acoes" style="margin-top:10px">
-          <button class="btn principal" id="btnExportarFinal" data-tip="Gera um único arquivo .xlsx com duas abas: o resultado da aplicação das regras e a relação dos MAPPs excluídos individualmente.">Exportar resultado do saneamento</button>
-        </div>
-      </div>
+    <div class="barra-acoes">
+      <button class="btn principal" id="btnConcluirExportar" data-tip="Pede o responsável e a observação final, declara concluído o saneamento (registrado na auditoria) e gera o .xlsx com as abas RESULTADO DO SANEAMENTO e EXCLUIDOS." data-tip-t="Concluir e exportar">Concluir e exportar resultado</button>
+      <button class="btn discreto oculto" id="btnReabrirSaneamento" data-tip="Revoga a declaração de conclusão; o ato vai à auditoria.">Reabrir</button>
     </div>
   </div>
 </section>
@@ -1051,7 +1020,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 
 <!-- ============================ ANTES E DEPOIS ============================ -->
 <section role="tabpanel" id="p-antesdepois" class="oculto" aria-labelledby="aba-antesdepois" style="--acento:var(--ardosia);--acento-tenue:rgba(63,92,120,.10);--acento-medio:rgba(63,92,120,.3)">
-  <div class="aviso nota"><span class="marca">Leitura</span><span>“Antes” é a situação registrada na base importada. “Depois” projeta o efeito das ações recomendadas sobre os MAPPs que permanecem no resultado do saneamento — os ocultados individualmente seguem inalterados. É <strong>projeção</strong>, não alteração: nada é gravado na base.</span></div>
 
   <div class="bloco">
     <header><h2>Cenário projetado</h2><span class="legenda" id="cenarioLegenda"></span></header>
@@ -1106,12 +1074,11 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 
 <!-- ============================ DESPESAS DE CONTINUIDADE ============================ -->
 <section role="tabpanel" id="p-fase2" class="oculto" aria-labelledby="aba-fase2" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
-  <div class="aviso nota"><span class="marca">Alcance</span><span>Ação de médio prazo prevista no documento. São <strong>indícios para exame</strong>: nada aqui altera a base de trabalho nem gera recomendação automática.</span></div>
   <div class="bloco">
     <header><h2>Despesas de continuidade</h2><span class="legenda">Candidatos à migração de MAPP investimento para custeio finalístico.</span></header>
     <div class="cartoes" id="cartoesContinuidade" style="margin-bottom:12px"></div>
     <div class="barra-acoes" style="margin-bottom:10px">
-      <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Exercícios consecutivos com empenho <i class="sigla" tabindex="0" data-tip="Número mínimo de anos seguidos com empenho para que o MAPP seja sinalizado como possível despesa de continuidade.">?</i></span><select id="limContinuidade"><option value="2">2 exercícios</option><option value="3">3 exercícios</option><option value="4">4 exercícios</option><option value="5" selected>5 exercícios</option><option value="6">6 exercícios</option><option value="7">7 exercícios</option><option value="8">8 exercícios</option><option value="9">9 exercícios</option><option value="10">10 exercícios</option><option value="11">11 exercícios</option><option value="12">12 exercícios</option></select></label>
+      <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Com empenho em todos os anos de <i class="sigla" tabindex="0" data-tip="O MAPP é sinalizado quando tem empenho em cada um dos anos calendário da faixa escolhida — indício de despesa de natureza continuada." data-tip-t="Faixa de continuidade">?</i></span><select id="continIni"></select></label><label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>até</span><select id="continFim"></select></label>
       <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada.">?</i></span><select id="continFonte"></select></label>
       <button class="btn" id="btnRecalcFase2" data-tip="Recalcula os indícios da segunda fase com os limiares informados.">Recalcular indícios</button>
       <button class="btn" id="btnExportContinuidade" data-tip="Exporta os candidatos a despesa de continuidade.">Exportar</button>
@@ -1195,10 +1162,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span>Prazo de manifestação (dias) <i class="sigla" tabindex="0" data-tip="Prazo concedido ao órgão para se posicionar. Valor oficial: 30 dias.">?</i></span><select id="cfgPrazo30"><option value="15">15 dias</option><option value="30" selected>30 dias</option><option value="45">45 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="120">120 dias</option><option value="150">150 dias</option><option value="180">180 dias</option></select></label>
       <label class="campo"><span>Prazo de permanência em pendente (dias) <i class="sigla" tabindex="0" data-tip="Período em que o MAPP permanece pendente antes da exclusão definitiva. Valor oficial: 120 dias.">?</i></span><select id="cfgPrazo120"><option value="15">15 dias</option><option value="30">30 dias</option><option value="45">45 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="120" selected>120 dias</option><option value="150">150 dias</option><option value="180">180 dias</option></select></label>
     </div>
-  </div>
-  <div class="bloco">
-    <header><h2>Exercícios de execução considerados</h2><span class="legenda">Empenhado e pago contam só nos exercícios escolhidos, nas regras e nos totais. Programado e saldo usam todos.</span></header>
-    <div id="cfgExecAnos"><p class="pequeno tenue">Importe a base para escolher os exercícios.</p></div>
   </div>
   <div class="bloco">
     <header><h2>Universo de análise</h2><span class="legenda">Recorte aplicado antes do enquadramento.</span></header>
@@ -1801,7 +1764,13 @@ function rotularMulti(id){
   else if(q===1){
     const par=st.lista.find(function(p){ return p[0]===Array.from(st.escolha)[0]; });
     rot.textContent=par?par[1]:Array.from(st.escolha)[0]; c.textContent='1'; st.bt.classList.add('ativa');
-  } else { rot.textContent=q+' selecionadas'; c.textContent=q; st.bt.classList.add('ativa'); }
+  } else {
+    const vs=Array.from(st.escolha);
+    rot.textContent = vs.every(function(v){ return /^\d{4}$/.test(v); })
+      ? faixasTexto(vs.map(Number).sort(function(a,b){ return a-b; }))
+      : q+' selecionadas';
+    c.textContent=q; st.bt.classList.add('ativa');
+  }
   const escolhidas=st.lista.filter(function(p){ return st.escolha.has(p[0]); }).map(function(p){ return p[1]; });
   st.bt.setAttribute('data-tip', q
     ? 'Seleção em vigor:\n'+escolhidas.slice(0,12).join(', ')+(escolhidas.length>12?'…':'')+
@@ -1982,11 +1951,34 @@ function irParaAba(id){
 }
 
 function irParaSegmento(id){
-  $$('#segPanorama .seg').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-seg')===id?'true':'false'); });
-  $$('#p-panorama .segmento').forEach(function(d){ d.classList.toggle('oculto', d.id!=='seg-'+id); });
   E.segmento=id;
-  if(id==='indicadores' && E.diag) desenharGraficos();
+  const alvo=$('#seg-'+id);
+  if(!alvo || id==='importacao') return;
+  if(alvo.classList.contains('recolhido')) abrirRecolhivel(alvo);
   if(id==='saldo' && E.diag) renderSaldo();
+  setTimeout(function(){ alvo.scrollIntoView({behavior:'smooth',block:'start'}); },40);
+}
+
+/* Blocos secundários da Visão Geral abrem recolhidos; o cabeçalho alterna. */
+function abrirRecolhivel(b){
+  b.classList.remove('recolhido');
+  const h=b.querySelector(':scope>header'); if(h) h.setAttribute('aria-expanded','true');
+}
+function prepararRecolhiveis(){
+  $$('.bloco.recolhivel').forEach(function(b){
+    if(b._recolhivel) return;
+    b._recolhivel=true;
+    b.classList.add('recolhido');
+    const h=b.querySelector(':scope>header'); if(!h) return;
+    h.setAttribute('role','button'); h.tabIndex=0; h.setAttribute('aria-expanded','false');
+    const alternar=function(ev){
+      if(ev.target.closest('.sigla')) return;
+      const r=b.classList.toggle('recolhido');
+      h.setAttribute('aria-expanded',r?'false':'true');
+    };
+    h.addEventListener('click',alternar);
+    h.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); alternar(ev); } });
+  });
 }
 
 /* ---------------------------- 5. Passos do rito -------------------------- */
@@ -2395,14 +2387,16 @@ function soma(m,metrica,ini,fim,positivo){
   let t=0;
   for(let i=0;i<E.nAnos;i++){
     const ano=E.anos[i];
-    if((ini==null||ano>=ini) && (fim==null||ano<=fim)) t+=fonte[im*E.nAnos+i];
+    if((ini==null||ano>=ini) && (fim==null||ano<=fim) && anoExecConsiderado(ano)) t+=fonte[im*E.nAnos+i];
   }
   return t;
 }
 /* Exercícios de execução considerados (E.cfg.execAnos; null = todos os da
-   base). Valem para empenhado e pago nas regras e nos totais; programado e
-   saldo continuam apurados sobre a série inteira. */
+   base). Valem para todo o processamento: regras, totais, saldo, gráficos e
+   exportações. Só a reconstrução da base original (valorLinha) e a âncora
+   temporal leem a série inteira. */
 function anoExecConsiderado(ano){ const s=E.cfg.execAnos; return !s || s.indexOf(ano)>=0; }
+function anosExec(){ return E.anos.filter(anoExecConsiderado); }
 function somaExec(m,metrica,ini,fim,positivo){
   const im=E.idxMet[metrica]; if(im==null) return 0;
   const fonte = positivo ? m.vp : m.v;
@@ -2526,7 +2520,7 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
     });
     const norm=s.length===n?null:s;
     q('.regua-resumo').textContent = norm
-      ? 'Considerados: '+faixasTexto(s)+' · '+s.length+' de '+n+' exercícios. Empenhado e pago dos demais anos ficam fora das regras e dos totais.'
+      ? 'Considerados: '+faixasTexto(s)+' · '+s.length+' de '+n+' exercícios. Os demais ficam fora das regras, dos totais e do saldo.'
       : 'Considerados: todos os exercícios da base ('+anos[0]+'–'+anos[ult]+').';
     const av=avisosExecAnos(norm,cfgAvisos&&cfgAvisos());
     q('.regua-avisos').innerHTML=av.map(function(a){
@@ -2552,7 +2546,7 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
 }
 function somaAno(m,metrica,ano){
   const im=E.idxMet[metrica]; if(im==null) return 0;
-  const ia=E.idxAno[ano]; if(ia==null) return 0;
+  const ia=E.idxAno[ano]; if(ia==null || !anoExecConsiderado(ano)) return 0;
   return m.v[im*E.nAnos+ia];
 }
 function valorLinha(L,metrica,ano){
@@ -2564,7 +2558,7 @@ function valorLinha(L,metrica,ano){
    pf.serie, a série por fonte guardada em m.porFonte) em vez do v do MAPP ou da linha. */
 function somaAnoArray(arr,metrica,ano){
   const im=E.idxMet[metrica]; if(im==null) return 0;
-  const ia=E.idxAno[ano]; if(ia==null) return 0;
+  const ia=E.idxAno[ano]; if(ia==null || !anoExecConsiderado(ano)) return 0;
   return arr[im*E.nAnos+ia];
 }
 </script>
@@ -2937,9 +2931,28 @@ function calcularQualidade(){
 
 /* ------------------------------ Segunda fase ----------------------------- */
 
+/* Faixa da continuidade em anos calendário (padrão: os cinco exercícios até o corrente). */
+function faixaContinuidade(){
+  const ini=$('#continIni'), fim=$('#continFim'), anos=anosExec();
+  let a0, a1;
+  if(ini && fim && anos.length){
+    const chave=anos.join(',');
+    if(ini.dataset.anos!==chave){
+      const vi=+ini.value, vf=+fim.value;
+      const op=anos.map(function(a){ return '<option value="'+a+'">'+a+'</option>'; }).join('');
+      ini.innerHTML=op; fim.innerHTML=op; ini.dataset.anos=chave;
+      const pf=anos.filter(function(a){ return a<=(E.cfg.presenteFim||a); }).pop() || anos[anos.length-1];
+      ini.value = anos.indexOf(vi)>=0 ? vi : (anos.find(function(a){ return a>=pf-4; }) || anos[0]);
+      fim.value = anos.indexOf(vf)>=0 ? vf : pf;
+    }
+    if(+ini.value>+fim.value) fim.value=ini.value;
+    a0=+ini.value; a1=+fim.value;
+  } else { a1=E.cfg.presenteFim; a0=a1-4; }
+  return { ini:a0, fim:a1, anos:anos.filter(function(a){ return a>=a0 && a<=a1; }) };
+}
 function calcularFase2(){
   const cfg=E.cfg;
-  const limSeq = Math.max(2, parseInt($('#limContinuidade')?$('#limContinuidade').value:5,10)||5);
+  const faixaC=faixaContinuidade();
   const im=E.idxMet['Empenhado'];
   const continuidade=[], programacao=[], titulos=[];
 
@@ -2947,10 +2960,12 @@ function calcularFase2(){
     if(im!=null){
       let anosComEmpenho=0, seq=0, maxSeq=0;
       for(let i=0;i<E.nAnos;i++){
+        if(!anoExecConsiderado(E.anos[i])) continue;
         const v=m.v[im*E.nAnos+i];
         if(v>0){ anosComEmpenho++; seq++; if(seq>maxSeq) maxSeq=seq; } else seq=0;
       }
-      if(maxSeq>=limSeq){ continuidade.push({m:m,anos:anosComEmpenho,seq:maxSeq}); }
+      const todos=faixaC.anos.length>0 && faixaC.anos.every(function(a){ return m.v[im*E.nAnos+E.idxAno[a]]>0; });
+      if(todos){ continuidade.push({m:m,anos:anosComEmpenho,seq:maxSeq}); }
       m._anosEmpenho=anosComEmpenho; m._seqEmpenho=maxSeq;
     }
     const progAtual=somaAno(m,'Programado',cfg.presenteFim);
@@ -2990,7 +3005,7 @@ function calcularFase2(){
   programacao.sort(function(a,b){ return b.m.programado-a.m.programado; });
   titulos.sort(function(a,b){ return a.palavras-b.palavras; });
 
-  E.fase2={ continuidade:continuidade, programacao:programacao, titulos:titulos, limSeq:limSeq };
+  E.fase2={ continuidade:continuidade, programacao:programacao, titulos:titulos, contIni:faixaC.ini, contFim:faixaC.fim };
 }
 
 /* --------------------------- Composição do universo ---------------------- */
@@ -3069,6 +3084,9 @@ function atualizarSelo(){
 }
 
 function renderResumoImport(){
+  /* processada a base, o bloco de importação dá lugar ao botão no alto */
+  const bi=$('#blocoImportacao'); if(bi) bi.classList.add('oculto');
+  const bt=$('#btnTrocarBase'); if(bt) bt.classList.remove('oculto');
   $('#blocoResumoImport').classList.remove('oculto');
   $('#carimboImport').textContent = 'Aba “'+E.abaEscolhida+'”'+(E.abaDetectada&&E.abas.length>1?' (localizada automaticamente entre '+E.abas.length+' abas)':'')+' · '+E.importadoEm.toLocaleString('pt-BR');
   const anos=E.anos;
@@ -3269,13 +3287,14 @@ function desenharGraficos(){
       scales:tiposGrafico.regrasVal==='bar'?{y:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:function(v){return rsCurto(v);}}},x:{grid:{display:false}}}:{}}});
 
   const serieProg=[],serieEmp=[],seriePago=[];
-  E.anos.forEach(function(a){
+  const anosGraf=anosExec();
+  anosGraf.forEach(function(a){
     let p=0,e=0,g=0;
     d.noUniverso.forEach(function(m){ p+=somaAno(m,'Programado',a); e+=somaAno(m,'Empenhado',a); g+=somaAno(m,'Pago',a); });
     serieProg.push(p); serieEmp.push(e); seriePago.push(g);
   });
   grafico('gAnos',{ type:tiposGrafico.anos,
-    data:{labels:E.anos,datasets:[
+    data:{labels:anosGraf,datasets:[
       {label:'Programado',data:serieProg,borderColor:PALETA[1],backgroundColor:PALETA[1],tension:.25,borderWidth:2,pointRadius:2},
       {label:'Empenhado',data:serieEmp,borderColor:PALETA[2],backgroundColor:PALETA[2],tension:.25,borderWidth:2,pointRadius:2},
       {label:'Pago',data:seriePago,borderColor:PALETA[0],backgroundColor:PALETA[0],tension:.25,borderWidth:2,pointRadius:2}]},
@@ -3333,11 +3352,11 @@ function desenharAgregado(id,campo,modo){
 function periodosSaldo(){
   const c=E.anoCorrente||anoCorrenteEfetivo();
   const per=[];
-  const ant=E.anos.filter(function(a){ return a<=c-4; });
-  per.push({ id:'ant', rot:'Anos anteriores', nota: ant.length?('exercícios de '+ant[0]+' a '+ant[ant.length-1]+', agregados'):'sem exercícios', anos:ant });
-  [3,2,1].forEach(function(k){ per.push({ id:'c'+k, rot:String(c-k), nota:'exercício anterior ao corrente em '+k+' ano'+(k>1?'s':''), anos:[c-k] }); });
-  per.push({ id:'c', rot:String(c), nota:'exercício corrente', anos:[c], corrente:true });
-  E.anos.filter(function(a){ return a>c; }).forEach(function(a){
+  const ant=anosExec().filter(function(a){ return a<=c-4; });
+  if(ant.length) per.push({ id:'ant', rot:ant.length>1?ant[0]+'–'+ant[ant.length-1]:String(ant[0]), nota:'exercícios de '+faixasTexto(ant)+', agregados', anos:ant });
+  [3,2,1].forEach(function(k){ if(anoExecConsiderado(c-k)) per.push({ id:'c'+k, rot:String(c-k), nota:'exercício anterior ao corrente em '+k+' ano'+(k>1?'s':''), anos:[c-k] }); });
+  if(anoExecConsiderado(c)) per.push({ id:'c', rot:String(c), nota:'exercício corrente', anos:[c], corrente:true });
+  anosExec().filter(function(a){ return a>c; }).forEach(function(a){
     per.push({ id:'f'+a, rot:String(a), nota:'exercício futuro', anos:[a], futuro:true });
   });
   return per;
@@ -3419,7 +3438,7 @@ function anosDaMetrica(met){
    e empenho presentes na base. Ordem decrescente, como exibida no filtro. */
 function anosElegiveisNP(){
   const p=anosDaMetrica('Programado'), e=anosDaMetrica('Empenhado');
-  return (E.anos||[]).filter(function(a){ return a<NP_ANO && p.has(a) && e.has(a); })
+  return (E.anos||[]).filter(function(a){ return a<NP_ANO && p.has(a) && e.has(a) && anoExecConsiderado(a); })
     .sort(function(a,b){ return b-a; });
 }
 function anosNovoProgramado(sel){
@@ -3513,20 +3532,22 @@ function renderSaldo(){
   const iAnt=ind('ant'), iC=ind('c');
   const futuros=a.per.filter(function(p){ return p.futuro; });
   const somaFuturo=a.per.reduce(function(acc,p,i){ return p.futuro?acc+tot(i):acc; },0);
+  const anosTres=[3,2,1].map(function(k){ const i=ind('c'+k); return i>=0?+a.per[i].rot:null; }).filter(function(x){ return x!=null; });
+  const rotTres=anosTres.length?faixasTexto(anosTres):'';
   const somaTres=[1,2,3].reduce(function(acc,k){
     const i=a.per.findIndex(function(p){ return p.id==='c'+k; });
     return i>=0?acc+tot(i):acc;
   },0);
 
   $('#cartoesSaldo').innerHTML=
-    cartao('Exercício corrente ('+a.per[iC].rot+')',rsCurto(tot(iC)),rotMedida,'var(--petroleo)',
+    cartao(iC>=0?a.per[iC].rot+' (corrente)':'Exercício corrente',iC>=0?rsCurto(tot(iC)):'—',iC>=0?rotMedida:'fora dos exercícios escolhidos','var(--petroleo)',
       'Cálculo: soma do programado do exercício menos a soma do empenhado do mesmo exercício, em todos os MAPPs do conjunto.\nSaldo elevado no exercício corrente indica programação ainda não empenhada.',true)+
-    cartao('Três exercícios anteriores',rsCurto(somaTres),
-      (ind('c3')>=0?a.per[ind('c3')].rot:'—')+' a '+(ind('c1')>=0?a.per[ind('c1')].rot:'—'),'var(--ardosia)',
+    cartao(rotTres||'Anteriores ao corrente',rsCurto(somaTres),
+      'até três exercícios antes do corrente','var(--ardosia)',
       'Soma dos saldos dos três exercícios imediatamente anteriores ao corrente.',true)+
-    cartao('Anos anteriores',rsCurto(iAnt>=0?tot(iAnt):0),a.per[iAnt]?a.per[iAnt].nota:'—','var(--neutro)',
+    cartao(iAnt>=0?'Até '+a.per[iAnt].anos[a.per[iAnt].anos.length-1]:'Exercícios mais antigos',rsCurto(iAnt>=0?tot(iAnt):0),a.per[iAnt]?a.per[iAnt].nota:'nenhum exercício escolhido','var(--neutro)',
       'Exercícios anteriores ao terceiro ano retroativo, agregados em uma única coluna.',true)+
-    cartao('Exercícios futuros',rsCurto(somaFuturo),
+    cartao(futuros.length?(futuros.length>1?futuros[0].rot+'–'+futuros[futuros.length-1].rot:futuros[0].rot)+' (futuros)':'Exercícios futuros',rsCurto(somaFuturo),
       futuros.length?futuros.map(function(p){ return p.rot; }).join(' · '):'sem programação futura','var(--latao)',
       'Exercícios posteriores ao corrente. Por definição não há empenho neles: o saldo equivale ao próprio programado.',true)+
     cartao('Novo Programado 2027',rsCurto(a.np.total),
@@ -3992,7 +4013,7 @@ function abrirFicha(chave){
     '<div class="tabela-caixa" style="max-height:220px"><table><thead><tr><th>Exercício</th>'+
     tem.map(function(t){ return '<th class="num">'+t+'</th>'; }).join('')+
     '<th class="num"'+tip('Até '+E.cfg.presenteFim+': programado − empenhado do exercício (negativo quando o empenho supera o programado). Depois de '+E.cfg.presenteFim+': o próprio programado.','Saldo do programado')+'>Saldo</th></tr></thead><tbody>'+
-    E.anos.map(function(a){
+    anosExec().map(function(a){
       const vals=tem.map(function(t){ return somaAno(m,t,a); });
       if(vals.every(function(v){ return !v; })) return '';
       const sd=saldoDoAno(m,a);
@@ -4064,7 +4085,7 @@ function abrirFicha(chave){
   E.fichaAtual=m.chave;
 
   if(typeof Chart!=='undefined'){
-    const labels=E.anos;
+    const labels=anosExec();
     grafico('gFicha',{ type:'bar',
       data:{labels:labels,datasets:tem.map(function(t,i){
         return {label:t,data:labels.map(function(a){ return somaAno(m,t,a); }),backgroundColor:PALETA[i],borderWidth:0};
@@ -4178,6 +4199,7 @@ function renderUniverso(){
 /* ---------------------------- Regras aplicadas --------------------------- */
 
 function renderRegrasAplicadas(){
+  if(!$('#quadroRegras')) return;   /* regras e parâmetros ficam no manual */
   const d=E.diag, c=E.cfg;
   $('#regrasLegenda').textContent='Critério de execução: '+CRITERIO_ROTULO[c.criterio]+' · universo: '+rotuloUniverso()+' · '+textoAncora();
 
@@ -4219,7 +4241,8 @@ function renderQualidade(){
       '<div class="nota">'+(a.itens.length?'clique para examinar':'nenhuma ocorrência')+'</div></div>';
   }).join('');
   if(E.achadoAtual) mostrarAchado(E.achadoAtual); else {
-    $('#tituloAchado').textContent='Selecione um achado';
+    $('#blocoAchado').classList.add('oculto');
+    $('#tituloAchado').textContent='Achado';
     $('#legendaAchado').textContent='';
     $('#tabAchado').querySelector('thead').innerHTML='';
     $('#tabAchado').querySelector('tbody').innerHTML='<tr><td class="vazio">Escolha um dos cartões acima para examinar os registros.</td></tr>';
@@ -4230,6 +4253,7 @@ function mostrarAchado(id){
   const a=E.qualidade.find(function(x){ return x.id===id; });
   if(!a) return;
   E.achadoAtual=id;
+  $('#blocoAchado').classList.remove('oculto');
   $('#tituloAchado').textContent=a.titulo;
   $('#legendaAchado').textContent=n(a.itens.length)+' ocorrência(s) · '+a.descricao;
   $('#tabAchado').querySelector('thead').innerHTML=
@@ -4256,7 +4280,7 @@ function renderFase2(){
   const f={
     continuidade: contFiltro.length ? fAll.continuidade.filter(function(c){ return casaFonte(contFiltro,c.m); }) : fAll.continuidade,
     programacao: progFiltro.length ? fAll.programacao.filter(function(p){ return casaFonte(progFiltro,p.m); }) : fAll.programacao,
-    titulos: fAll.titulos, limSeq: fAll.limSeq
+    titulos: fAll.titulos, contIni: fAll.contIni, contFim: fAll.contFim
   };
   const orgaosContinuidade=new Set(f.continuidade.map(function(c){ return c.m.orgao; }));
   const empenhadoContinuidade=f.continuidade.reduce(function(t,c){ return t+c.m.empenhado; },0);
@@ -4264,8 +4288,8 @@ function renderFase2(){
   const seqMedia=f.continuidade.length ? f.continuidade.reduce(function(t,c){ return t+c.seq; },0)/f.continuidade.length : 0;
   const seqMax=f.continuidade.length ? Math.max.apply(null,f.continuidade.map(function(c){ return c.seq; })) : 0;
   $('#cartoesContinuidade').innerHTML=
-    cartao('MAPPs identificados',n(f.continuidade.length),'≥ '+f.limSeq+' exercícios seguidos','var(--petroleo)',
-      'Quantidade de MAPPs com empenho em ao menos '+f.limSeq+' exercícios consecutivos — indício de despesa de natureza continuada.')+
+    cartao('MAPPs identificados',n(f.continuidade.length),'empenho em todos os anos de '+f.contIni+' a '+f.contFim,'var(--petroleo)',
+      'MAPPs com empenho em cada um dos anos de '+f.contIni+' a '+f.contFim+' — indício de despesa de natureza continuada.')+
     cartao('Órgãos envolvidos',n(orgaosContinuidade.size),'entre os MAPPs identificados','var(--ardosia)',
       'Quantidade de órgãos distintos com ao menos um MAPP candidato à migração para custeio finalístico.')+
     cartao('Empenhado total',rsCurto(empenhadoContinuidade),'todos os exercícios','var(--musgo)',
@@ -4280,7 +4304,7 @@ function renderFase2(){
     return '<tr class="linha-clicavel" data-chave="'+esc(m.chave)+'"><td class="mono">'+esc(m.codigo)+'</td><td>'+esc(m.orgao)+
       '</td><td class="titulo-mapp">'+esc(m.titulo)+seloFontes(m)+'</td><td class="num">'+n(c.anos)+'/'+n(c.seq)+
       '</td><td class="num">'+rsCurto(m.empenhado)+'</td><td class="num">'+n(m.qd)+'</td></tr>';
-  }).join('') : '<tr><td colspan="6" class="vazio">Nenhum MAPP atinge o limiar de exercícios consecutivos informado.</td></tr>';
+  }).join('') : '<tr><td colspan="6" class="vazio">Nenhum MAPP tem empenho em todos os anos da faixa escolhida.</td></tr>';
   $('#tabContinuidade').querySelector('tfoot').innerHTML = f.continuidade.length
     ? '<tr><td colspan="4">Total ('+n(f.continuidade.length)+' MAPPs)</td><td class="num">'+rsCurto(empenhadoContinuidade)+'</td><td></td></tr>'
     : '';
@@ -4295,8 +4319,8 @@ function renderFase2(){
       'Há valor programado no exercício corrente e em ao menos um exercício futuro, e nenhum empenho em toda a série histórica. Consulte a data de aprovação para avaliar a urgência.')+
     cartao('Sem programação futura',n(semFuturo.length),'nada após '+E.cfg.presenteFim,'var(--ameixa)',
       'Programação encerrada no exercício corrente, sem previsão para os anos seguintes.')+
-    cartao('Despesas de continuidade',n(f.continuidade.length),'≥ '+f.limSeq+' exercícios seguidos','var(--petroleo)',
-      'Empenho em exercícios consecutivos, indício de despesa de natureza continuada.');
+    cartao('Despesas de continuidade',n(f.continuidade.length),'empenho em todos os anos de '+f.contIni+' a '+f.contFim,'var(--petroleo)',
+      'Empenho em cada um dos anos da faixa escolhida em Análise, indício de despesa de natureza continuada.');
 
   $('#programacaoLegenda').textContent = f.programacao.length
     ? n(f.programacao.length)+' MAPPs apontados — a grade exibe as 500 primeiras linhas; a exportação contempla a totalidade.'
@@ -4564,6 +4588,7 @@ function atualizarSelecaoSan(){
 
 function pintarEncerramento(){
   const el=$('#estadoEncerramento');
+  const rb=$('#btnReabrirSaneamento'); if(rb) rb.classList.toggle('oculto',!E.encerramento);
   if(E.encerramento){
     el.innerHTML='<span class="etq alta">Saneamento concluído</span> '+
       esc(E.encerramento.responsavel)+' · '+new Date(E.encerramento.data).toLocaleString('pt-BR')+
@@ -4662,6 +4687,34 @@ async function finalizarSaneamento(){
   recado('Saneamento declarado concluído.');
 }
 
+/* Um só ato: pede responsável e observação, declara concluído e exporta. */
+async function concluirEExportar(){
+  if(!E.diag){ recado('Importe a base primeiro.'); return; }
+  const fica=mantidos(), sai=ocultados();
+  if(!fica.length && !sai.length){ recado('Não há resultado a exportar.'); return; }
+  let resp = E.responsavel && E.responsavel!=='(não identificado)' ? E.responsavel : '', obs='';
+  for(;;){
+    const r=await perguntar({ titulo: E.encerramento?'Atualizar a conclusão e exportar':'Concluir e exportar o resultado',
+      texto: n(fica.length)+' MAPP(s) mantidos ('+rs(somaSaldo(fica))+' de saldo do programado) e '+n(sai.length)+
+        ' ocultados. A conclusão vai à auditoria e acompanha o arquivo exportado.',
+      corpo: campoTexto('responsavel','Responsável pelo encerramento',resp,'Autoridade que declara concluído o saneamento. Obrigatório.')+
+        campoArea('observacao','Observação final',obs,'Contexto do encerramento, remissão a processo ou expediente.'),
+      confirmar:'Concluir e exportar' });
+    if(!r) return;
+    resp=limpo(r.dados.responsavel); obs=limpo(r.dados.observacao);
+    if(resp) break;
+    recado('Informe o responsável pelo encerramento.');
+  }
+  const antes=E.encerramento?'Concluído':'Em curso';
+  E.responsavel=resp;
+  E.encerramento={ responsavel:resp, observacao:obs, data:new Date().toISOString(),
+    mantidos:fica.length, ocultados:sai.length, saldoMantido:somaSaldo(fica) };
+  auditar(null,'Saneamento',antes,'Concluído',obs||'Encerramento declarado.','encerramento');
+  marcarPasso(8);
+  pintarEncerramento(); renderAuditoria();
+  await exportarResultadoFinal();
+}
+
 async function reabrirSaneamento(){
   if(!E.encerramento){ recado('O saneamento não está declarado como concluído.'); return; }
   const r=await dialogo({ titulo:'Reabrir o saneamento',
@@ -4726,7 +4779,7 @@ function linhasExcluidos(){
       'MOTIVO DA EXCLUSÃO':ex.motivo,'RESPONSÁVEL':ex.responsavel,
       'DATA DA EXCLUSÃO':new Date(ex.data).toLocaleString('pt-BR')
     };
-    E.anos.forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
+    anosExec().forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
     return o;
   });
 }
@@ -4804,9 +4857,8 @@ function ligarEventosSaneamento(){
     restabelecerMapps(Array.from(E.selecionadosSan));
   });
   $('#btnRestabelecerTudo').addEventListener('click',restabelecerTudo);
-  $('#btnFinalizarSaneamento').addEventListener('click',finalizarSaneamento);
+  $('#btnConcluirExportar').addEventListener('click',concluirEExportar);
   $('#btnReabrirSaneamento').addEventListener('click',reabrirSaneamento);
-  $('#btnExportarFinal').addEventListener('click',exportarResultadoFinal);
 }
 </script>
 <script>
@@ -5294,7 +5346,7 @@ function linhasMapp(lista){
     };
     /* Saldo do programado por exercício: VLR_PLANEJADO − VLR_EMPENHO, ano a ano.
        Exercícios sem empenho na base (futuros) têm saldo igual ao programado. */
-    E.anos.forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
+    anosExec().forEach(function(a){ o[a>E.cfg.presenteFim?'SALDO '+a+' (= PROGRAMADO)':'SALDO '+a]=saldoAno(m,a); });
     const dec=E.decisoes[m.chave];
     o['SITUAÇÃO DA REVISÃO']=dec?(dec.situacao==='acatada'?'ACATADA':'REJEITADA'):'PENDENTE';
     o['RESPONSÁVEL']=dec?dec.responsavel:'';
@@ -5454,9 +5506,10 @@ function cfgParaTela(){
         '. Para não dar por “sem execução” toda a base, o ano corrente foi fixado em '+E.ultimoExec+'.</span></div>'
       : '<div class="aviso bom"><span class="marca">Automática</span><span>Os anos das regras são derivados do ano corrente do relógio ('+
         anoRelogio()+') a cada abertura do sistema. Nenhum ajuste anual é necessário.</span></div>');
-  E.execAnosTela=E.cfg.execAnos;
-  montarReguaExec($('#cfgExecAnos'),E.anos,E.cfg.execAnos,function(sel){ E.execAnosTela=sel; },
-    function(){ return Object.assign({},E.cfg,telaParaCfg()); });
+  montarReguaExec($('#saldoExecAnos'),E.anos,E.cfg.execAnos,function(sel){
+    clearTimeout(E._recalcExec);
+    E._recalcExec=setTimeout(function(){ aplicarExecAnos(sel); },450);
+  });
   $('#estadoConfig').textContent='Em vigor: '+CRITERIO_ROTULO[E.cfg.criterio]+' · universo: '+rotuloUniverso()+' · '+textoAncora();
   $('#notaUniverso').textContent = {
     saneamento:'MAPPs já concluídos físico-financeiramente e cancelados ficam fora do enquadramento: nada há neles a sanear. Permanecem contáveis e exportáveis no bloco “fora do universo”.',
@@ -5472,8 +5525,20 @@ function telaParaCfg(){
     const el=$(CAMPOS_CFG[k]); if(!el) return;
     novo[k] = CFG_NUMERICOS.indexOf(k)>=0 ? (parseFloat(el.value)||0) : el.value;
   });
-  novo.execAnos = E.execAnosTela===undefined ? E.cfg.execAnos : E.execAnosTela;
+  novo.execAnos = E.cfg.execAnos;   /* alterado na régua do Saldo, fora da gaveta */
   return novo;
+}
+
+/* Régua do Saldo: vale na hora, com recálculo integral e lançamento na auditoria. */
+async function aplicarExecAnos(sel){
+  if(String(sel)===String(E.cfg.execAnos)) return;
+  const antes=E.cfg.execAnos;
+  E.cfg.execAnos=sel;
+  auditar(null,'Parâmetro · execAnos',rotuloExecAnos(antes),rotuloExecAnos(sel),'Exercícios de execução ajustados na régua do Saldo.','configuração');
+  if(!E.mapps.length) return;
+  await veuCarga('Recalculando com os exercícios escolhidos…');
+  try{ diagnosticar(); renderTudo(); } finally { veuCarga(false); }
+  recado('Exercícios considerados: '+rotuloExecAnos(sel)+'.');
 }
 
 function valorCfgTexto(k,v){ return k==='execAnos' ? rotuloExecAnos(v) : String(v); }
@@ -5626,7 +5691,7 @@ function ligarEventos(){
   });
 
   $('#cartoesQualidade').addEventListener('click',function(ev){
-    const c=ev.target.closest('[data-achado]'); if(c) mostrarAchado(c.getAttribute('data-achado'));
+    const c=ev.target.closest('[data-achado]'); if(c){ mostrarAchado(c.getAttribute('data-achado')); $('#blocoAchado').scrollIntoView({behavior:'smooth',block:'start'}); }
   });
   $('#tabAchado').addEventListener('click',function(ev){
     const tr=ev.target.closest('tr[data-chave]'); if(tr) abrirFicha(tr.getAttribute('data-chave'));
@@ -5725,7 +5790,10 @@ function iniciar(){
   ligarEventos();
   renderAuditoria();
   pintarEncerramento();
-  $('#tabAchado').querySelector('tbody').innerHTML='<tr><td class="vazio">Importe a base para executar os exames de consistência.</td></tr>';
+  prepararRecolhiveis();
+  $('#btnTrocarBase').addEventListener('click',function(){ $('#arquivo').click(); });
+  $('#btnFecharAchado').addEventListener('click',function(){ E.achadoAtual=null; $('#blocoAchado').classList.add('oculto'); });
+  ['#continIni','#continFim'].forEach(function(s){ $(s).addEventListener('change',function(){ if(E.diag){ calcularFase2(); renderFase2(); } }); });
   if(typeof XLSX==='undefined'){
     $('#progressoTexto').textContent='As bibliotecas externas não foram carregadas. Verifique a conexão e recarregue a página.';
   }
