@@ -517,6 +517,94 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   body.imprimindo-manual .bloco, body.imprimindo-manual .man-quad{box-shadow:none;break-inside:avoid-page}
   body.imprimindo-manual pre.codigo{white-space:pre-wrap}
 }
+/* ---------- Boas-vindas: passo a passo resumido exibido só no carregamento ---------- */
+#veuBV{z-index:73}
+.modal.boasvindas{z-index:74;width:min(780px,95vw);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;--cor-bv:var(--ardosia)}
+.modal.boasvindas > header.bv-topo{padding:20px 24px 4px;display:flex;gap:14px;align-items:center}
+.bv-topo h2{font-size:21px}
+.bv-topo p{font-size:12.5px;color:var(--tinta-3);margin:3px 0 0}
+.bv-topo .apr-marca{transition:color .3s,background .3s,border-color .3s;color:var(--cor-bv);
+  background:color-mix(in srgb,var(--cor-bv) 13%,var(--carta));border-color:color-mix(in srgb,var(--cor-bv) 30%,var(--linha))}
+.bv-trilha{--bv-n:5;position:relative;display:grid;grid-template-columns:repeat(var(--bv-n),1fr);padding:14px 16px 4px}
+.bv-trilho{position:absolute;top:31px;left:calc(16px + (100% - 32px)/(2*var(--bv-n)));right:calc(16px + (100% - 32px)/(2*var(--bv-n)));height:2px;background:var(--linha);border-radius:2px}
+.bv-trilho > i{display:block;height:100%;width:0;background:var(--cor-bv);border-radius:2px;transition:width .55s cubic-bezier(.4,0,.2,1),background .3s}
+.bv-no{appearance:none;background:none;border:0;padding:0;font:inherit;font-size:11.5px;color:var(--tinta-3);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1}
+.bv-no .c{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--carta);border:2px solid var(--linha-forte);
+  font-family:"IBM Plex Mono",monospace;font-size:12px;transition:background .3s,border-color .3s,color .3s,box-shadow .3s,transform .3s}
+.bv-no:hover .c{border-color:var(--cor)}
+.bv-no.feito .c{background:var(--cor);border-color:var(--cor);color:var(--carta)}
+.bv-no.atual{color:var(--tinta);font-weight:600}
+.bv-no.atual .c{border-color:var(--cor);color:var(--cor);transform:scale(1.1);box-shadow:0 0 0 5px color-mix(in srgb,var(--cor) 18%,transparent)}
+.bv-no:focus-visible{outline:none}
+.bv-no:focus-visible .c{outline:2px solid var(--cor);outline-offset:3px}
+.bv-palco{display:grid;overflow:hidden;padding:8px 0 4px}
+.bv-quadro{grid-area:1/1;display:grid;grid-template-columns:230px 1fr;gap:26px;align-items:center;padding:14px 28px 16px;
+  opacity:0;transform:translateX(48px);transition:opacity .35s ease,transform .5s cubic-bezier(.4,0,.2,1);visibility:hidden}
+.bv-quadro.antes{transform:translateX(-48px)}
+.bv-quadro.ativo{opacity:1;transform:none;visibility:visible}
+.bv-cena{height:180px;border-radius:14px;display:grid;place-items:center;color:var(--cor);position:relative;overflow:hidden;
+  background:color-mix(in srgb,var(--cor) 9%,var(--carta));border:1px solid color-mix(in srgb,var(--cor) 28%,var(--linha))}
+.bv-passo{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cor)}
+.bv-texto h3{font-size:20px;margin:6px 0 8px;display:flex;align-items:center;gap:9px}
+.bv-texto h3 svg{color:var(--cor)}
+.bv-texto p{font-size:13.5px;line-height:1.6;color:var(--tinta-2);margin:0}
+.bv-texto .bv-dica{margin-top:10px;font-size:12px;color:var(--tinta-3);padding-left:10px;border-left:2px solid color-mix(in srgb,var(--cor) 45%,var(--linha))}
+.bv-link{appearance:none;background:none;border:0;padding:0;font:inherit;color:var(--cor,var(--acento));font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.bv-texto .bv-link{margin-top:12px;font-size:12.5px}
+.bv-tempo{height:2px;background:var(--linha);margin:0 24px}
+.bv-tempo > i{display:block;height:100%;width:0;background:var(--cor-bv)}
+.bv-tempo > i.corre{animation:bv-tempo 7s linear forwards}
+.modal.boasvindas:hover .bv-tempo > i{animation-play-state:paused}
+@keyframes bv-tempo{from{width:0}to{width:100%}}
+.modal.boasvindas > footer{align-items:center;margin-top:0;background:var(--carta-2);flex-wrap:wrap}
+.modal.boasvindas > footer .rodape-nota{margin-right:auto;font-size:11.5px;color:var(--tinta-3);max-width:360px}
+.modal.boasvindas > footer .bv-link{--cor:var(--ferrugem)}
+/* Cenas animadas: só a do quadro ativo se move */
+.cn{position:relative;width:190px;height:150px}
+.cn-importar .bandeja{position:absolute;left:35px;bottom:34px;width:120px;height:40px;border:2px dashed currentColor;border-radius:10px;opacity:.45}
+.cn-importar .arq{position:absolute;left:50%;top:18px;width:52px;height:60px;display:grid;place-items:center;background:var(--carta);
+  border:1.5px solid currentColor;border-radius:8px;animation:bv-cair 2.8s ease-in-out infinite}
+.cn-importar .barra{position:absolute;left:35px;bottom:12px;width:120px;height:6px;border-radius:3px;background:color-mix(in srgb,currentColor 18%,transparent);overflow:hidden}
+.cn-importar .barra i{display:block;height:100%;background:currentColor;animation:bv-encher 2.8s ease-in-out infinite}
+@keyframes bv-cair{0%{transform:translate(-50%,-44px);opacity:0}25%{opacity:1}45%,82%{transform:translate(-50%,38px);opacity:1}100%{transform:translate(-50%,38px);opacity:0}}
+@keyframes bv-encher{0%,45%{width:0}82%,100%{width:100%}}
+.cn-panorama{display:flex;align-items:flex-end;justify-content:center;gap:11px;padding-bottom:22px;border-bottom:0}
+.cn-panorama::after{content:"";position:absolute;left:20px;right:20px;bottom:20px;height:2px;background:currentColor;opacity:.4}
+.cn-panorama i{width:20px;background:currentColor;border-radius:4px 4px 0 0;transform-origin:bottom;animation:bv-crescer 3s ease-in-out infinite alternate}
+.cn-panorama i:nth-child(1){height:42%}.cn-panorama i:nth-child(2){height:76%;animation-delay:.15s}
+.cn-panorama i:nth-child(3){height:56%;animation-delay:.3s}.cn-panorama i:nth-child(4){height:90%;animation-delay:.45s}
+.cn-panorama i:nth-child(5){height:64%;animation-delay:.6s;opacity:.55}
+@keyframes bv-crescer{0%{transform:scaleY(.12)}60%,100%{transform:scaleY(1)}}
+.cn-analise .l{position:absolute;left:20px;width:150px;height:12px;border-radius:3px;background:color-mix(in srgb,currentColor 20%,transparent)}
+.cn-analise .l:nth-child(1){top:30px}.cn-analise .l:nth-child(2){top:50px}.cn-analise .l:nth-child(3){top:70px}
+.cn-analise .l:nth-child(4){top:90px}.cn-analise .l:nth-child(5){top:110px}
+.cn-analise .foco{position:absolute;left:12px;top:25px;width:166px;height:22px;border:1.5px solid currentColor;border-radius:6px;
+  background:color-mix(in srgb,currentColor 12%,transparent);animation:bv-varrer 3.6s ease-in-out infinite}
+.cn-analise .foco svg{position:absolute;right:-16px;top:-14px;background:var(--carta);border-radius:50%;padding:3px;box-sizing:content-box}
+@keyframes bv-varrer{0%,14%{transform:translateY(0)}28%,42%{transform:translateY(20px)}56%,72%{transform:translateY(60px)}88%,100%{transform:translateY(0)}}
+.cn-decisao{display:flex;flex-direction:column;justify-content:center;gap:12px;padding-left:18px}
+.cn-decisao .op{width:118px;padding:7px 12px;border-radius:99px;border:1.5px solid currentColor;font-size:12px;font-weight:600;background:var(--carta)}
+.cn-decisao .op.sim{animation:bv-marcar 2.8s ease-in-out infinite}
+.cn-decisao .op.nao{opacity:.5}
+.cn-decisao .carimbo{position:absolute;left:114px;top:20px;animation:bv-carimbar 2.8s ease-in-out infinite}
+@keyframes bv-carimbar{0%{transform:translate(40px,-50px) rotate(-22deg) scale(1.35);opacity:0}30%{opacity:1}
+  48%,86%{transform:none;transform:rotate(-8deg);opacity:1}100%{transform:rotate(-8deg);opacity:0}}
+@keyframes bv-marcar{0%,46%{background:var(--carta);color:inherit}54%,100%{background:var(--cor);color:var(--carta)}}
+.cn-resultado .doc{position:absolute;left:24px;top:30px;width:58px;height:72px;display:grid;place-items:center;background:var(--carta);
+  border:1.5px solid currentColor;border-radius:8px;animation:bv-saltar 1.8s ease-in-out infinite}
+.cn-resultado .ad{position:absolute;left:100px;top:38px;display:flex;flex-direction:column;gap:9px;font-family:"IBM Plex Mono",monospace;font-size:9.5px}
+.cn-resultado .ad i{display:block;height:12px;border-radius:3px;background:currentColor;margin-top:3px}
+.cn-resultado .ad .a i{width:72px;opacity:.35}
+.cn-resultado .ad .d i{width:72px;animation:bv-reduzir 3s ease-in-out infinite}
+@keyframes bv-saltar{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@keyframes bv-reduzir{0%,20%{width:72px}60%,100%{width:40px}}
+@media(max-width:700px){
+  .bv-quadro{grid-template-columns:1fr;gap:14px;padding:10px 18px}
+  .bv-cena{height:150px}
+  .bv-trilha .bv-no .r{display:none}
+  .bv-trilho{top:31px}
+}
 .oculto{display:none!important}
 
 /* ===== Redesenho de navegação: quatro áreas do fluxo ===== */
@@ -728,6 +816,24 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
 </section>
 </main>
 
+<!-- ============================ BOAS-VINDAS ============================= -->
+<div class="veu" id="veuBV"></div>
+<div class="modal boasvindas" id="modalBV" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="bvTitulo" aria-hidden="true">
+  <header class="bv-topo">
+    <span class="apr-marca" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
+    <div><h2 id="bvTitulo">Boas-vindas ao Módulo de Saneamento da base de Projetos MAPP</h2>
+      <p>O saneamento de MAPPs em quatro passos · use as setas do teclado ou clique nos números</p></div>
+  </header>
+  <div class="bv-trilha" id="bvTrilha"></div>
+  <div class="bv-palco" id="bvPalco" aria-live="polite"></div>
+  <div class="bv-tempo" aria-hidden="true"><i id="bvTempo"></i></div>
+  <footer>
+    <span class="rodape-nota">Guia de operação passo a passo, conceitos e regras estão no manual, pelo botão <b>Manual</b> do alto. <button type="button" class="bv-link" id="bvCompleta">Abrir agora</button></span>
+    <button class="btn discreto" id="bvPular" data-tip="Fecha o passo a passo. Atalho: tecla Esc.">Pular</button>
+    <button class="btn" id="bvAnterior">Anterior</button>
+    <button class="btn principal" id="bvProximo" style="--acento:var(--ferrugem)">Próximo</button>
+  </footer>
+</div>
 <div class="veu" id="veu"></div>
 <aside class="gaveta" id="gaveta" aria-hidden="true" role="dialog" aria-label="Ficha do MAPP">
   <header>
@@ -3161,8 +3267,134 @@ window.addEventListener('message',function(ev){
   }
 });
 
+/* Ícones da tela de boas-vindas (subconjunto dos de index.html). */
+const ICONES = {
+  planilha:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14h17M9 4v16M15 4v16"/>',
+  carimbo:'<path d="M9 3.5h6v4.5l-1.5 3h-3L9 8z"/><path d="M5 14.5h14v3H5z"/><path d="M6.5 20.5h11"/>',
+  entrada:'<path d="M6 3.5h8l4 4V20.5H6z"/><path d="M14 3.5V8h4"/><path d="M12 17.5v-6M9.5 14L12 11.5 14.5 14"/>',
+  camadas:'<path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5"/><path d="M3.5 16.5L12 21l8.5-4.5"/>',
+  saida:'<path d="M6 3.5h8l4 4V20.5H6z"/><path d="M14 3.5V8h4"/><path d="M12 11.5v6M9.5 15L12 17.5 14.5 15"/>'
+};
+function icone(nome,tam){
+  const t=tam||18;
+  return '<svg width="'+t+'" height="'+t+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '+
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONES[nome]||'')+'</svg>';
+}
+
+/* ------------------------------ Boas-vindas -------------------------------
+   Passo a passo resumido, exibido apenas no carregamento. Avança sozinho a
+   cada 7 s (pausa com o cursor sobre o quadro; sem avanço automático quando o
+   sistema pede movimento reduzido). O manual fica no botão Manual, no alto. */
+
+const BV_PASSOS = [
+  { rot:'Importar', t:'Importe a planilha', onde:'1 · Base e regras', cor:'var(--ardosia)', icone:'entrada', cena:'importar', ir:['base'],
+    txt:'Selecione ou arraste a extração de execução dos MAPPs (.xlsx) e acione Importar e aplicar as regras. A leitura acontece no próprio navegador: nada é enviado a servidor.',
+    dica:'A aba de dados é localizada automaticamente.' },
+  { rot:'Regras', t:'Confira as regras aplicadas', onde:'1 · Base e regras', cor:'var(--latao)', icone:'camadas', cena:'panorama', ir:['base'],
+    txt:'A base é consolidada por MAPP e recebe as Regras 1 a 4 com os parâmetros oficiais. Os cartões mostram quantos MAPPs cada regra alcança.',
+    dica:'Passe o ponteiro sobre cada cartão para ler o critério completo.' },
+  { rot:'Excluir', t:'Exclua ou retorne MAPPs', onde:'2 · Exclusão e retorno', cor:'var(--carmim)', icone:'carimbo', cena:'decisao', ir:['saneamento'],
+    txt:'Filtre, abra a ficha de cada MAPP e use a coluna Providência para excluir do saneamento o que não deve entrar. O excluído permanece na base como está.',
+    dica:'Excluir e retornar são imediatos e reversíveis.' },
+  { rot:'Base saneada', t:'Gere a base saneada', onde:'3 · Base saneada', cor:'var(--musgo)', icone:'saida', cena:'resultado', ir:['saneada'],
+    txt:'Confira o resultado, com o saldo do programado por exercício, e exporte a base saneada em .xlsx, com os excluídos em aba própria.',
+    dica:'Esta versão não guarda sessão: exporte antes de fechar a página.' }
+];
+function cenaBV(tipo){
+  if(tipo==='importar') return '<div class="cn cn-importar"><div class="bandeja"></div><div class="arq">'+icone('planilha',28)+'</div><div class="barra"><i></i></div></div>';
+  if(tipo==='panorama') return '<div class="cn cn-panorama"><i></i><i></i><i></i><i></i><i></i></div>';
+  if(tipo==='analise')  return '<div class="cn cn-analise"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><div class="foco">'+icone('lupa',18)+'</div></div>';
+  if(tipo==='decisao')  return '<div class="cn cn-decisao"><span class="op sim">✕ Excluir</span><span class="op nao">↺ Retornar</span><span class="carimbo">'+icone('carimbo',34)+'</span></div>';
+  return '<div class="cn cn-resultado"><div class="doc">'+icone('saida',30)+'</div><div class="ad"><span class="a">universo<i></i></span><span class="d">saneada<i></i></span></div></div>';
+}
+let _bvIdx=0, _focoAntesBV=null;
+function montarBoasVindas(){
+  const n=BV_PASSOS.length;
+  $('#bvTrilha').style.setProperty('--bv-n',n);
+  $('#bvTrilha').innerHTML='<div class="bv-trilho" aria-hidden="true"><i id="bvTrilhoFill"></i></div>'+BV_PASSOS.map(function(p,i){
+    return '<button type="button" class="bv-no" data-bv-no="'+i+'" style="--cor:'+p.cor+'" aria-label="Passo '+(i+1)+' de '+n+': '+esc(p.t)+'">'+
+      '<span class="c">'+(i+1)+'</span><span class="r">'+esc(p.rot)+'</span></button>';
+  }).join('');
+  $('#bvPalco').innerHTML=BV_PASSOS.map(function(p,i){
+    return '<section class="bv-quadro" style="--cor:'+p.cor+'">'+
+      '<div class="bv-cena" aria-hidden="true">'+cenaBV(p.cena)+'</div>'+
+      '<div class="bv-texto"><span class="bv-passo">Passo '+(i+1)+' de '+n+' · '+esc(p.onde)+'</span>'+
+        '<h3>'+icone(p.icone,22)+esc(p.t)+'</h3><p>'+esc(p.txt)+'</p><p class="bv-dica">'+esc(p.dica)+'</p>'+
+        '<button type="button" class="bv-link" data-bv-ir="'+i+'">Ir para esta tela ›</button></div>'+
+    '</section>';
+  }).join('');
+}
+function mostrarBV(i){
+  const n=BV_PASSOS.length;
+  _bvIdx=Math.max(0,Math.min(n-1,i));
+  $$('#bvPalco .bv-quadro').forEach(function(q,k){
+    q.classList.toggle('ativo',k===_bvIdx); q.classList.toggle('antes',k<_bvIdx);
+    q.setAttribute('aria-hidden',k===_bvIdx?'false':'true'); q.inert=(k!==_bvIdx);
+  });
+  $$('#bvTrilha .bv-no').forEach(function(b,k){
+    b.classList.toggle('feito',k<_bvIdx); b.classList.toggle('atual',k===_bvIdx);
+    if(k===_bvIdx) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current');
+  });
+  $('#modalBV').style.setProperty('--cor-bv',BV_PASSOS[_bvIdx].cor);
+  $('#bvTrilhoFill').style.width=(100*_bvIdx/(n-1))+'%';
+  $('#bvAnterior').disabled=(_bvIdx===0);
+  $('#bvProximo').textContent=(_bvIdx===n-1)?'Começar pela importação':'Próximo';
+  const t=$('#bvTempo'); t.classList.remove('corre'); void t.offsetWidth;
+  if(_bvIdx<n-1) t.classList.add('corre');
+}
+function abrirBoasVindas(){
+  if(!$('#bvPalco').children.length) montarBoasVindas();
+  _focoAntesBV=document.activeElement;
+  $('#veuBV').classList.add('aberto');
+  const m=$('#modalBV');
+  m.classList.add('aberto'); m.setAttribute('aria-hidden','false');
+  mostrarBV(0);
+  setTimeout(function(){ try{ m.focus({preventScroll:true}); }catch(e){} },40);
+}
+function fecharBoasVindas(){
+  const m=$('#modalBV');
+  if(!m.classList.contains('aberto')) return;
+  m.classList.remove('aberto'); m.setAttribute('aria-hidden','true');
+  $('#veuBV').classList.remove('aberto');
+  $('#bvTempo').classList.remove('corre');
+  esconderDica();
+  if(_focoAntesBV && _focoAntesBV.focus) try{ _focoAntesBV.focus(); }catch(e){}
+}
+function boasVindasAbertas(){ return $('#modalBV').classList.contains('aberto'); }
+function iniciarTrabalhoBV(){
+  fecharBoasVindas(); irParaAba('base');
+  const b=$('#areaSolta'); if(b) b.focus();
+}
+
 function ligarEventosEss(){
   $('#btnManual').addEventListener('click',abrirManual);
+  $('#bvPular').addEventListener('click',fecharBoasVindas);
+  $('#veuBV').addEventListener('click',fecharBoasVindas);
+  $('#bvCompleta').addEventListener('click',function(){ fecharBoasVindas(); abrirManual(); });
+  $('#bvAnterior').addEventListener('click',function(){ mostrarBV(_bvIdx-1); });
+  $('#bvProximo').addEventListener('click',function(){
+    if(_bvIdx>=BV_PASSOS.length-1) iniciarTrabalhoBV(); else mostrarBV(_bvIdx+1);
+  });
+  $('#bvTempo').addEventListener('animationend',function(){ if(boasVindasAbertas()) mostrarBV(_bvIdx+1); });
+  $('#modalBV').addEventListener('click',function(ev){
+    const no=ev.target.closest('[data-bv-no]'); if(no){ mostrarBV(+no.getAttribute('data-bv-no')); return; }
+    const ir=ev.target.closest('[data-bv-ir]');
+    if(ir){ fecharBoasVindas(); irParaAba(BV_PASSOS[+ir.getAttribute('data-bv-ir')].ir[0]); }
+  });
+  document.addEventListener('keydown',function(ev){
+    if(!boasVindasAbertas()) return;
+    if(ev.key==='Escape'){ ev.preventDefault(); ev.stopPropagation(); fecharBoasVindas(); return; }
+    if(ev.key==='ArrowRight'){ ev.preventDefault(); mostrarBV(_bvIdx+1); return; }
+    if(ev.key==='ArrowLeft'){ ev.preventDefault(); mostrarBV(_bvIdx-1); return; }
+    if(ev.key==='Tab'){
+      const foc=$$('#modalBV button').filter(function(x){ return x.offsetParent!==null && !x.disabled && !x.closest('[inert]'); });
+      if(!foc.length) return;
+      const pri=foc[0], ult=foc[foc.length-1];
+      if(ev.shiftKey && document.activeElement===pri){ ev.preventDefault(); ult.focus(); }
+      else if(!ev.shiftKey && document.activeElement===ult){ ev.preventDefault(); pri.focus(); }
+      else if(!$('#modalBV').contains(document.activeElement)){ ev.preventDefault(); pri.focus(); }
+    }
+  },true);
   $$('#abas .aba').forEach(function(b){ b.addEventListener('click',function(){ irParaAba(b.getAttribute('data-nav')); }); });
   $('#btnTema').addEventListener('click',alternarTema);
   const area=$('#areaSolta');
@@ -3269,6 +3501,7 @@ function iniciarEss(){
   irParaAba('base');
   if(typeof XLSX==='undefined')
     $('#progressoTexto').textContent='As bibliotecas externas não foram carregadas. Verifique a conexão e recarregue a página.';
+  abrirBoasVindas();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciarEss); else iniciarEss();
 
