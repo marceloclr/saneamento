@@ -629,6 +629,37 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   tfoot td { z-index:3; }
   thead th.novo-programado, tfoot td.novo-programado { background:linear-gradient(rgba(141,113,48,.09),rgba(141,113,48,.09)),var(--papel-2); }
   #tabSaldo thead th.corrente, #tabSaldo tfoot td.corrente { background:linear-gradient(var(--acento-tenue),var(--acento-tenue)),var(--papel-2); }
+/* Régua dos exercícios de execução */
+.regua-exec{display:flex;flex-direction:column;gap:6px}
+.regua-topo{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.regua-topo .campo{min-width:96px}
+.regua{position:relative;height:46px;margin-top:4px;touch-action:none}
+.regua-trilho,.regua-faixa{position:absolute;top:13px;height:4px;border-radius:2px}
+.regua-trilho{left:9px;right:9px;background:var(--linha-forte)}
+.regua-faixa{background:var(--acento)}
+.regua-marca{position:absolute;top:21px;width:1px;height:6px;margin-left:-.5px;background:var(--linha-forte)}
+.regua-marca.dentro{background:var(--acento)}
+.regua-rot{position:absolute;top:28px;transform:translateX(-50%);font-size:10.5px;color:var(--tinta-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.regua input[type=range]{position:absolute;left:0;top:6px;width:100%;height:18px;margin:0;padding:0;background:none;
+  pointer-events:none;-webkit-appearance:none;appearance:none;z-index:3}
+.regua input[type=range]::-webkit-slider-runnable-track{height:18px;background:transparent;border:0}
+.regua input[type=range]::-moz-range-track{height:18px;background:transparent;border:0}
+.regua input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;pointer-events:auto;width:18px;height:18px;
+  border-radius:50%;background:var(--carta);border:2px solid var(--acento);box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:grab}
+.regua input[type=range]::-moz-range-thumb{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--carta);
+  border:2px solid var(--acento);box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:grab}
+.regua input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}
+.regua input[type=range]:focus{outline:none}
+.regua input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--ardosia);outline-offset:2px}
+.regua input[type=range]:focus-visible::-moz-range-thumb{outline:2px solid var(--ardosia);outline-offset:2px}
+.regua-anos{display:flex;flex-wrap:wrap;gap:4px}
+.ano-exec{font:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;padding:3px 8px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--linha-forte);background:var(--carta);color:var(--tinta-3)}
+.ano-exec[aria-pressed="true"]{background:var(--acento);border-color:var(--acento);color:var(--carta)}
+.ano-exec.fora-faixa{border-style:dashed}
+.ano-exec:hover{filter:brightness(1.06)}
+.ano-exec:focus-visible{outline:2px solid var(--ardosia);outline-offset:1px}
+.regua-resumo{color:var(--tinta-2)}
 </style>
 </head>
 <body>
@@ -704,7 +735,12 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   
   <div class="bloco oculto" id="blocoRegras" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
     <header><h2>Regras aplicadas</h2><span class="legenda" id="regrasLegenda"></span></header>
-    <div class="aviso nota"><span class="marca">Regras</span><span>As Regras 1 a 4 correspondem aos itens 1.a, 1.b, 1.2 e 1.3 do documento oficial de saneamento. Os parâmetros são os oficiais, com âncora temporal automática; passe o ponteiro sobre cada cartão para o critério completo.</span></div>
+    <div class="aviso nota"><span class="marca">Regras</span><span>As Regras 1 a 4 correspondem aos itens 1.a, 1.b, 1.2 e 1.3 do documento oficial de saneamento. Os parâmetros são os oficiais, com âncora temporal automática. Só os exercícios de execução considerados são escolhidos por você, logo abaixo. Passe o ponteiro sobre cada cartão para o critério completo.</span></div>
+    <div style="margin-top:12px">
+      <h4 style="margin-bottom:6px">Exercícios de execução considerados</h4>
+      <p class="pequeno tenue" style="margin:0 0 6px">Empenhado e pago contam só nos exercícios escolhidos, nas regras e nos totais. Programado e saldo usam todos. O resultado é recalculado a cada mudança.</p>
+      <div id="cfgExecAnos"></div>
+    </div>
     <div class="cartoes" id="cartoesRegras" style="margin-top:12px"></div>
     <div class="tabela-caixa" style="max-height:none;margin-top:12px"><table id="tabParametros"><thead><tr><th data-tip="Parâmetro que governa o enquadramento." data-tip-t="Parâmetro">Parâmetro</th><th data-tip="Valor em vigor, já resolvido pela âncora temporal." data-tip-t="Em vigor">Em vigor</th><th data-tip="Em que regra ou etapa o parâmetro atua." data-tip-t="Uso">Uso</th></tr></thead><tbody></tbody></table></div>
   </div>
@@ -923,7 +959,7 @@ function grupoEstagio(txt){
 const CFG_OFICIAL = {
   ancora:'relogio', criterio:'empenho', baseValor:'positivo',
   ano1a:0, ano1b:0, presenteIni:0, presenteFim:0,
-  histIni:2007, histFim:0, prazo30:30, prazo120:120,
+  histIni:2007, histFim:0, prazo30:30, prazo120:120, execAnos:null,
   universo:'saneamento', concentracao:70, tituloPalavras:3, semelhanca:70
 };
 
@@ -1762,6 +1798,7 @@ function montarBase(linhas,aba){
       el.innerHTML=E.anos.map(function(a){ return '<option value="'+a+'">'+a+'</option>'; }).join('');
       el.value=atual;
     });
+    E.cfg.execAnos=normalizarExecAnos(E.cfg.execAnos);
     aplicarAncora();
     cfgParaTela();
   }
@@ -1890,6 +1927,157 @@ function soma(m,metrica,ini,fim,positivo){
   }
   return t;
 }
+/* Exercícios de execução considerados (E.cfg.execAnos; null = todos os da
+   base). Valem para empenhado e pago nas regras e nos totais; programado e
+   saldo continuam apurados sobre a série inteira. */
+function anoExecConsiderado(ano){ const s=E.cfg.execAnos; return !s || s.indexOf(ano)>=0; }
+function somaExec(m,metrica,ini,fim,positivo){
+  const im=E.idxMet[metrica]; if(im==null) return 0;
+  const fonte = positivo ? m.vp : m.v;
+  let t=0;
+  for(let i=0;i<E.nAnos;i++){
+    const ano=E.anos[i];
+    if((ini==null||ano>=ini) && (fim==null||ano<=fim) && anoExecConsiderado(ano)) t+=fonte[im*E.nAnos+i];
+  }
+  return t;
+}
+/* O indicador da planilha só vale se todos os exercícios da faixa dele estão selecionados. */
+function faixaSelecionada(faixa){
+  if(!faixa) return false;
+  for(let a=faixa[0];a<=faixa[1];a++) if(E.idxAno[a]!=null && !anoExecConsiderado(a)) return false;
+  return true;
+}
+/* Ajusta a seleção aos exercícios da base: a que cobre todos (ou nenhum) volta a ser “todos”. */
+function normalizarExecAnos(sel){
+  if(!Array.isArray(sel)) return null;
+  if(!E.anos.length) return sel.length ? sel.slice().sort(function(a,b){ return a-b; }) : null;
+  const dentro=E.anos.filter(function(a){ return sel.indexOf(a)>=0; });
+  return (!dentro.length || dentro.length===E.anos.length) ? null : dentro;
+}
+/* 2015, 2016, 2017, 2019 → “2015–2017, 2019”. */
+function faixasTexto(lista){
+  const partes=[]; let ini=null, ant=null;
+  lista.forEach(function(a){
+    if(ini===null){ ini=a; ant=a; return; }
+    if(a===ant+1){ ant=a; return; }
+    partes.push(ini===ant?String(ini):ini+'–'+ant); ini=a; ant=a;
+  });
+  if(ini!==null) partes.push(ini===ant?String(ini):ini+'–'+ant);
+  return partes.join(', ');
+}
+function rotuloExecAnos(sel){
+  if(!sel){
+    if(!E.anos.length) return 'todos os exercícios da base';
+    const a=E.anos[0], b=E.anos[E.anos.length-1];
+    return 'todos os exercícios da base ('+(a===b?a:a+'–'+b)+')';
+  }
+  return faixasTexto(sel)+' ('+sel.length+' de '+(E.anos.length||sel.length)+' exercícios)';
+}
+/* Consequências da seleção para as janelas da regra 3. */
+function avisosExecAnos(sel,cfg){
+  cfg=cfg||E.cfg;
+  const ok=function(a){ return !sel || sel.indexOf(a)>=0; };
+  const naBase=function(ini,fim){ return E.anos.filter(function(a){ return a>=ini && a<=fim; }); };
+  const per=function(a,b){ return a===b?String(a):a+'–'+b; };
+  const av=[];
+  const pres=naBase(cfg.presenteIni,cfg.presenteFim), hist=naBase(cfg.histIni,cfg.histFim);
+  const presSel=pres.filter(ok), histSel=hist.filter(ok);
+  if(pres.length && !presSel.length)
+    av.push({t:'risco',m:'Período corrente fora',x:'Nenhum exercício do período corrente ('+per(cfg.presenteIni,cfg.presenteFim)+') está selecionado. A Regra 3 não verá execução recente em MAPP algum e alcançará todos os que executaram no histórico.'});
+  else if(presSel.length<pres.length)
+    av.push({t:'alerta',m:'Período corrente parcial',x:'Só '+faixasTexto(presSel)+' do período corrente ('+per(cfg.presenteIni,cfg.presenteFim)+') conta para a Regra 3.'});
+  if(hist.length && !histSel.length)
+    av.push({t:'alerta',m:'Histórico fora',x:'Nenhum exercício do histórico da Regra 3 ('+per(cfg.histIni,cfg.histFim)+') está selecionado. A Regra 3 não alcançará MAPP algum.'});
+  if(E.faixaIndicador && (cfg.criterio==='indicador'||cfg.criterio==='combinado') && !faixaSelecionada(E.faixaIndicador))
+    av.push({t:'nota',m:'Indicador da base',x:'O indicador “Sem Exec” cobre '+per(E.faixaIndicador[0],E.faixaIndicador[1])+', e parte desses exercícios está fora da seleção. Onde ele seria usado, aplica-se o empenho.'});
+  return av;
+}
+
+/* Régua dos exercícios de execução: duas alças (de/até), os mesmos limites em
+   listas e um botão por exercício para tirar anos do meio da faixa. `aoMudar`
+   recebe a seleção normalizada (null = todos). */
+function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
+  if(!alvo) return;
+  if(!anos.length){ alvo.innerHTML='<p class="pequeno tenue">Importe a base para escolher os exercícios.</p>'; return; }
+  const n=anos.length, ult=n-1;
+  const escolhidos=sel?anos.filter(function(a){ return sel.indexOf(a)>=0; }):anos.slice();
+  const st={ lo:anos.indexOf(escolhidos[0]), hi:anos.indexOf(escolhidos[escolhidos.length-1]), fora:new Set() };
+  if(st.lo<0){ st.lo=0; st.hi=ult; }
+  for(let i=st.lo;i<=st.hi;i++) if(escolhidos.indexOf(anos[i])<0) st.fora.add(anos[i]);
+  const pos=function(i){ return ult?'calc(9px + (100% - 18px) * '+(i/ult)+')':'50%'; };
+  const opcoes=anos.map(function(a,i){ return '<option value="'+i+'">'+a+'</option>'; }).join('');
+  const rotulado=function(i){ return i===0||i===ult||anos[i]%5===0; };
+  alvo.innerHTML=
+    '<div class="regua-exec">'+
+      '<div class="regua-topo">'+
+        '<label class="campo"><span>De</span><select data-r="de" aria-label="Primeiro exercício de execução">'+opcoes+'</select></label>'+
+        '<label class="campo"><span>Até</span><select data-r="ate" aria-label="Último exercício de execução">'+opcoes+'</select></label>'+
+        '<button type="button" class="btn pequeno discreto" data-r="todos">Todos os exercícios</button>'+
+      '</div>'+
+      '<div class="regua"'+(ult?'':' data-unico="1"')+'>'+
+        '<div class="regua-trilho"></div><div class="regua-faixa"></div>'+
+        anos.map(function(a,i){ return '<i class="regua-marca" data-i="'+i+'" style="left:'+pos(i)+'"></i>'+
+          (rotulado(i)?'<span class="regua-rot" style="left:'+pos(i)+'">'+a+'</span>':''); }).join('')+
+        '<input type="range" data-r="lo" min="0" max="'+ult+'" step="1" aria-label="Primeiro exercício de execução">'+
+        '<input type="range" data-r="hi" min="0" max="'+ult+'" step="1" aria-label="Último exercício de execução">'+
+      '</div>'+
+      '<div class="regua-anos" role="group" aria-label="Exercícios de execução">'+
+        anos.map(function(a){ return '<button type="button" class="ano-exec" data-ano="'+a+'">'+a+'</button>'; }).join('')+
+      '</div>'+
+      '<div class="regua-resumo pequeno"></div>'+
+      '<div class="regua-avisos"></div>'+
+    '</div>';
+  const q=function(s){ return alvo.querySelector(s); };
+  const lo=q('[data-r="lo"]'), hi=q('[data-r="hi"]'), de=q('[data-r="de"]'), ate=q('[data-r="ate"]');
+  function selecao(){
+    const s=[];
+    for(let i=st.lo;i<=st.hi;i++) if(!st.fora.has(anos[i])) s.push(anos[i]);
+    return s;
+  }
+  function aparar(){
+    Array.from(st.fora).forEach(function(a){ const i=anos.indexOf(a); if(i<st.lo||i>st.hi) st.fora.delete(a); });
+    while(st.lo<st.hi && st.fora.has(anos[st.lo])){ st.fora.delete(anos[st.lo]); st.lo++; }
+    while(st.hi>st.lo && st.fora.has(anos[st.hi])){ st.fora.delete(anos[st.hi]); st.hi--; }
+  }
+  function pintar(){
+    lo.value=st.lo; hi.value=st.hi; de.value=st.lo; ate.value=st.hi;
+    const f=q('.regua-faixa'); f.style.left=pos(st.lo); f.style.width=ult?'calc((100% - 18px) * '+((st.hi-st.lo)/ult)+')':'0';
+    /* com as alças juntas no fim, a de cima precisa ser a que volta */
+    lo.style.zIndex = st.lo===ult ? 4 : 3;
+    const s=selecao();
+    alvo.querySelectorAll('.regua-marca').forEach(function(el){ el.classList.toggle('dentro',s.indexOf(anos[+el.dataset.i])>=0); });
+    alvo.querySelectorAll('.ano-exec').forEach(function(b){
+      const a=+b.dataset.ano, i=anos.indexOf(a), dentro=s.indexOf(a)>=0;
+      b.setAttribute('aria-pressed',dentro?'true':'false');
+      b.classList.toggle('fora-faixa',i<st.lo||i>st.hi);
+      b.title = dentro ? 'Clique para tirar '+a+' da apuração' : 'Clique para incluir '+a+' na apuração';
+    });
+    const norm=s.length===n?null:s;
+    q('.regua-resumo').textContent = norm
+      ? 'Considerados: '+faixasTexto(s)+' · '+s.length+' de '+n+' exercícios. Empenhado e pago dos demais anos ficam fora das regras e dos totais.'
+      : 'Considerados: todos os exercícios da base ('+anos[0]+'–'+anos[ult]+').';
+    const av=avisosExecAnos(norm,cfgAvisos&&cfgAvisos());
+    q('.regua-avisos').innerHTML=av.map(function(a){
+      return '<div class="aviso '+a.t+'" style="margin-top:8px"><span class="marca">'+esc(a.m)+'</span><span>'+esc(a.x)+'</span></div>'; }).join('');
+    return norm;
+  }
+  function mudou(){ aparar(); aoMudar(pintar()); }
+  lo.addEventListener('input',function(){ st.lo=Math.min(+lo.value,st.hi); mudou(); });
+  hi.addEventListener('input',function(){ st.hi=Math.max(+hi.value,st.lo); mudou(); });
+  de.addEventListener('change',function(){ st.lo=+de.value; if(st.lo>st.hi) st.hi=st.lo; mudou(); });
+  ate.addEventListener('change',function(){ st.hi=+ate.value; if(st.hi<st.lo) st.lo=st.hi; mudou(); });
+  q('[data-r="todos"]').addEventListener('click',function(){ st.lo=0; st.hi=ult; st.fora.clear(); mudou(); });
+  q('.regua-anos').addEventListener('click',function(ev){
+    const b=ev.target.closest('.ano-exec'); if(!b) return;
+    const a=+b.dataset.ano, i=anos.indexOf(a);
+    if(i<st.lo) st.lo=i; else if(i>st.hi) st.hi=i;
+    else if(st.fora.has(a)) st.fora.delete(a);
+    else if(selecao().length>1) st.fora.add(a);
+    else return;
+    mudou();
+  });
+  pintar();
+}
 function somaAno(m,metrica,ano){
   const im=E.idxMet[metrica]; if(im==null) return 0;
   const ia=E.idxAno[ano]; if(ia==null) return 0;
@@ -1932,7 +2120,7 @@ function dicaRegra(id){
   const textos={
     '1a':[
       'Quem se enquadra: MAPP aprovado até '+c.ano1a+rel+' que nunca teve execução em exercício algum da base.',
-      'Como se apura: ANO_APROVACAO menor ou igual a '+c.ano1a+' e, pelo critério em vigor ('+crit+'), nenhum valor em toda a série de '+c.histIni+' a '+c.presenteFim+'.',
+      'Como se apura: ANO_APROVACAO menor ou igual a '+c.ano1a+' e, pelo critério em vigor ('+crit+'), nenhum valor nos exercícios de execução considerados ('+rotuloExecAnos(c.execAnos)+').',
       'Ação recomendada: tornar PENDENTE.',
       'Desdobramento: listagem à Casa Civil; reativação mediante justificativa validada; sem pedido de reativação em '+c.prazo120+' dias, exclusão definitiva.',
       'Ressalva: a recomendação nada altera por si — depende de decisão humana, lançada na auditoria com o responsável identificado.'
@@ -1994,9 +2182,10 @@ function dicaConfianca(m){
 /* Verifica execução em um intervalo de exercícios segundo o critério vigente. */
 function executou(m,ini,fim){
   const cfg=E.cfg, pos = cfg.baseValor==='positivo';
-  const emp=soma(m,'Empenhado',ini,fim,pos), pg=soma(m,'Pago',ini,fim,pos);
+  const emp=somaExec(m,'Empenhado',ini,fim,pos), pg=somaExec(m,'Pago',ini,fim,pos);
   const faixa=E.faixaIndicador;
-  const faixaPresente = !!faixa && ini===faixa[0] && fim===faixa[1];
+  const faixaCasa = !!faixa && ini===faixa[0] && fim===faixa[1];
+  const faixaPresente = faixaCasa && faixaSelecionada(faixa);
   const rotuloValor = pos?'movimentação positiva':'saldo líquido';
   let exec,calculo,ressalva=null;
   switch(cfg.criterio){
@@ -2009,7 +2198,9 @@ function executou(m,ini,fim){
         exec = m.indSemExec===0;
         calculo='Indicador da base: '+(m.indSemExec===1?'todas as linhas assinaladas como sem execução':'há linha com execução');
       } else {
-        exec = emp>0; ressalva='O indicador da base cobre '+(faixa?faixa[0]+'–'+faixa[1]:'outra faixa')+
+        exec = emp>0; ressalva = faixaCasa
+          ? 'O indicador da base cobre '+faixa[0]+'–'+faixa[1]+', mas nem todos esses exercícios estão entre os considerados; aplicou-se o empenho.'
+          : 'O indicador da base cobre '+(faixa?faixa[0]+'–'+faixa[1]:'outra faixa')+
           ', distinta do período apurado ('+ini+'–'+fim+'); aplicou-se o empenho.';
         calculo='Empenhado '+ini+'–'+fim+' = '+rs(emp)+' (aplicação subsidiária)';
       }
@@ -2042,12 +2233,12 @@ function avaliar(m){
   const historia = executou(m,cfg.histIni,cfg.histFim);
   const presente = executou(m,cfg.presenteIni,cfg.presenteFim);
 
-  const empPresente = soma(m,'Empenhado',cfg.presenteIni,cfg.presenteFim,false);
+  const empPresente = somaExec(m,'Empenhado',cfg.presenteIni,cfg.presenteFim,false);
   /* O indicador da planilha cobre uma faixa fixa. Se o período corrente
      configurado não coincidir com ela, não há inconsistência a acusar:
      são faixas de apuração distintas. */
   const faixa=E.faixaIndicador;
-  const mesmaFaixa = !!faixa && faixa[0]===cfg.presenteIni && faixa[1]===cfg.presenteFim;
+  const mesmaFaixa = !!faixa && faixa[0]===cfg.presenteIni && faixa[1]===cfg.presenteFim && faixaSelecionada(faixa);
   const divergeIndicador = mesmaFaixa && (m.indSemExec!=null && m.indSemExec!==-1) &&
       ((m.indSemExec===1) !== (empPresente===0));
 
@@ -2133,12 +2324,12 @@ function diagnosticar(){
   for(let i=0;i<E.mapps.length;i++){
     const m=E.mapps[i];
     m.programado = soma(m,'Programado',null,null,false);
-    m.empenhado  = soma(m,'Empenhado',null,null,false);
-    m.pago       = soma(m,'Pago',null,null,false);
-    m.empHist    = soma(m,'Empenhado',cfg.histIni,cfg.histFim,pos);
-    m.empPres    = soma(m,'Empenhado',cfg.presenteIni,cfg.presenteFim,pos);
-    m.pagoPres   = soma(m,'Pago',cfg.presenteIni,cfg.presenteFim,pos);
-    m.empNeg     = soma(m,'Empenhado',null,null,true) - m.empenhado;
+    m.empenhado  = somaExec(m,'Empenhado',null,null,false);
+    m.pago       = somaExec(m,'Pago',null,null,false);
+    m.empHist    = somaExec(m,'Empenhado',cfg.histIni,cfg.histFim,pos);
+    m.empPres    = somaExec(m,'Empenhado',cfg.presenteIni,cfg.presenteFim,pos);
+    m.pagoPres   = somaExec(m,'Pago',cfg.presenteIni,cfg.presenteFim,pos);
+    m.empNeg     = somaExec(m,'Empenhado',null,null,true) - m.empenhado;
     m.progFuturo = soma(m,'Programado',cfg.presenteFim+1,null,false);
     /* SALDO DO PROGRAMADO — grandeza monetária com que o sistema trabalha:
        até o exercício corrente, programado − empenhado de cada ano; nos
@@ -2244,7 +2435,7 @@ function calcularQualidade(){
     'var(--ocre)', E.mapps.filter(function(m){ return m.empNeg>0.005; }),
     function(m){ return 'Estornos: '+rs(-m.empNeg)+' · saldo líquido empenhado: '+rs(m.empenhado); });
 
-  const mesmaFaixaQ = E.faixaIndicador && E.faixaIndicador[0]===E.cfg.presenteIni && E.faixaIndicador[1]===E.cfg.presenteFim;
+  const mesmaFaixaQ = E.faixaIndicador && E.faixaIndicador[0]===E.cfg.presenteIni && E.faixaIndicador[1]===E.cfg.presenteFim && faixaSelecionada(E.faixaIndicador);
   achado('divergencia', mesmaFaixaQ?'Indicador da base em desacordo com o recálculo':'Indicador da base em faixa distinta',
     mesmaFaixaQ
       ? 'O indicador de ausência de execução da planilha não coincide com o recálculo do sistema no mesmo período. Nada é corrigido automaticamente.'
@@ -2980,7 +3171,19 @@ function marcarPasso(){}          /* o rito de nove etapas não existe nesta ver
 function renderAuditoria(){}      /* a auditoria segue registrada em E.auditoria, sem painel próprio */
 function renderExportacoes(){}
 function renderSaneamento(){ renderSaneada(); }
-function cfgParaTela(){}          /* parâmetros oficiais, sem gaveta de edição nesta versão */
+/* Parâmetros oficiais, sem gaveta de edição nesta versão; só os exercícios
+   de execução são escolhidos, na régua do bloco “Regras aplicadas”. */
+function cfgParaTela(){
+  montarReguaExec($('#cfgExecAnos'),E.anos,E.cfg.execAnos,function(sel){
+    E.cfg.execAnos=sel;
+    clearTimeout(E._recalcExec);
+    E._recalcExec=setTimeout(async function(){
+      if(!E.mapps.length) return;
+      await veuCarga('Recalculando com os exercícios escolhidos…');
+      try{ diagnosticar(); renderTudo(); } finally { veuCarga(false); }
+    },450);
+  });
+}
 
 /* Situação de cada MAPP perante o saneamento. */
 function situacaoSan(m){
@@ -3055,6 +3258,7 @@ function renderRegrasEss(){
     ['Âncora temporal',textoAncora(),'Resolve “ano corrente” e “ano anterior” a partir do relógio, limitado à base.'],
     ['Regra 1 — aprovados até',String(c.ano1a),'Aprovados até este ano e sem execução alguma.'],
     ['Regra 2 — aprovados em',String(c.ano1b),'Aprovados neste ano e sem execução alguma.'],
+    ['Exercícios de execução',rotuloExecAnos(c.execAnos),'Empenhado e pago contam só nestes exercícios; programado e saldo usam todos.'],
     ['Regra 3 — histórico',c.histIni+'–'+c.histFim,'Houve execução neste período.'],
     ['Regra 3 — período atual',c.presenteIni===c.presenteFim?String(c.presenteIni):c.presenteIni+'–'+c.presenteFim,'Nenhuma execução neste período.'],
     ['Regra 4 — evidência','Estágio de execução','Estágio normalizado no grupo “execução física concluída”.'],

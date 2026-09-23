@@ -31,7 +31,8 @@ remover o que não deve entrar no resultado, há uma versão radicalmente mais s
 [`simplificado/index.html`](simplificado/index.html), disponível em:
 https://marceloclr.github.io/saneamento/simplificado
 
-Sem tela de configuração (usa sempre os parâmetros oficiais), sem revisão de
+Sem tela de configuração (usa sempre os parâmetros oficiais, exceto os exercícios de
+execução considerados, escolhidos numa régua no bloco "Regras aplicadas"), sem revisão de
 consistência, auditoria ou demais análises do sistema completo. Remover ou restaurar um
 MAPP é um clique só, sem exigir responsável ou justificativa. A "base saneada" resultante
 é exibida na tela, sempre com linhas e colunas totalizadoras, e pode ser exportada em

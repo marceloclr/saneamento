@@ -34,6 +34,12 @@ abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessã
   filtro e seção na ficha. Sessão em formato 2, versionada no nome
   (`DDMMAAAA-HHMM-Vnn.json`), gravada e retomada no computador, no GitHub ou nos
   dois, à escolha do usuário.
+- Exercícios de execução considerados: régua com duas alças, **De**/**Até** e um botão
+  por ano, nas duas versões (gaveta de configurações na completa, com auditoria;
+  bloco “Regras aplicadas” na essencial, com recálculo imediato). Empenhado e pago
+  contam só nos anos escolhidos, nas regras e nos totais; programado e saldo usam
+  todos. Avisa quando o período corrente ou o histórico da regra 3 fica de fora. O
+  texto da regra 1 deixou de citar um intervalo que o cálculo não usava.
 - Aba própria **Manifestação** entre Análise e Decisão, com a geração habilitada só com
   sessão ativa (gravada ou retomada na janela); **Baixar de novo** por rodada e por
   órgão; **Retomar sessão** sempre oferece computador ou GitHub, pedindo o acesso na

@@ -14,6 +14,13 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    navegação de abas e segmentos, **âncora temporal** (`aplicarAncora`,
    `anoCorrenteEfetivo`), leitura do arquivo, reconhecimento de colunas,
    `montarBase`, `consolidar`, e os somatórios `soma` / `somaAno` / `valorLinha`.
+   **Exercícios de execução** (`E.cfg.execAnos`, `null` = todos): `somaExec` filtra
+   empenhado e pago nas regras e nos totais (`m.empenhado`, `m.pago`, `empHist`,
+   `empPres`); programado e saldo seguem com `soma`, sobre a série inteira.
+   `faixaSelecionada` só deixa usar o indicador “Sem Exec” com a faixa inteira
+   escolhida. A régua (`montarReguaExec`: alças de/até, listas e um botão por ano)
+   e `avisosExecAnos` são as mesmas nas duas versões; na completa, fica na gaveta
+   e passa por **Aplicar** (com auditoria); na essencial, recalcula na hora.
 2. **Regras** — `executou`, `noUniverso`, `avaliar`, `diagnosticar`,
    `calcularQualidade`, `calcularFase2`, `composicaoUniverso`, e os textos
    explicativos `dicaRegra`, `dicaEstagio`, `dicaAcao`, `dicaConfianca`.

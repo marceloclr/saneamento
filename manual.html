@@ -381,7 +381,7 @@ const GUIA_COMPLETA = [
     conferir:['Quantidade de MAPPs consolidados coerente com a base de origem.','Colunas não reconhecidas, se houver, e seu eventual impacto.'],
     cautela:['Conflitos entre linhas da mesma chave são sinalizados, nunca resolvidos pelo sistema.'] },
   { t:'Identificar o responsável e ajustar parâmetros', cor:'var(--ocre)', ir:null, onde:'Botão Configurações, no alto',
-    fazer:['Preencher **Responsável pelas ações**: o nome acompanha todo lançamento de auditoria.','Conferir critério de execução, âncora temporal, universo e limiares; alterar apenas o necessário e acionar **Aplicar e recalcular**.'],
+    fazer:['Preencher **Responsável pelas ações**: o nome acompanha todo lançamento de auditoria.','Conferir critério de execução, âncora temporal, exercícios de execução considerados (régua de/até e anos avulsos), universo e limiares; alterar apenas o necessário e acionar **Aplicar e recalcular**.'],
     conferir:['Os anos resolvidos pela âncora (ano corrente e anterior).','O quadro “Parâmetros em vigor”, em Visão Geral › Regras aplicadas.'],
     cautela:['As ações são executadas sem diálogo de confirmação; a justificativa é registrada como “Ação executada diretamente, sem diálogo de confirmação”.','**Restaurar valores oficiais** devolve os parâmetros ao padrão das regras.'] },
   { t:'Ler os indicadores, as regras e o saldo', cor:'var(--latao)', ir:['panorama','indicadores'], onde:'Visão Geral › Indicadores, Universo, Regras aplicadas, Saldo por exercício',
@@ -441,9 +441,9 @@ const GUIA_ESSENCIAL = [
     conferir:['O painel de processamento, com cada fase e o percentual concluído.','O selo no alto, que passa a indicar a quantidade de MAPPs e de excluídos.'],
     cautela:['O processamento ocorre na memória do navegador; nada é transmitido a servidor.','Sem conexão, as bibliotecas externas não carregam e a importação fica indisponível.'] },
   { t:'Conferir o retrato e as regras aplicadas', cor:'var(--latao)', ir:['base'], onde:'1 · Base e regras',
-    fazer:['Examinar os cartões do retrato da importação, as colunas reconhecidas e a normalização dos estágios.','Passar o ponteiro sobre os cartões das Regras 1 a 4 para ler o critério completo.'],
+    fazer:['Examinar os cartões do retrato da importação, as colunas reconhecidas e a normalização dos estágios.','Em **Exercícios de execução considerados**, arrastar as bolinhas da régua, usar **De**/**Até** ou clicar nos anos para escolher os exercícios cuja execução conta. O resultado é recalculado sozinho.','Passar o ponteiro sobre os cartões das Regras 1 a 4 para ler o critério completo.'],
     conferir:['A tabela de parâmetros em vigor, já resolvidos pela âncora temporal.','A quantidade de MAPPs alcançados por regra.'],
-    cautela:['Os parâmetros são sempre os oficiais e não se alteram nesta versão; para outro critério de execução, use a versão completa.'] },
+    cautela:['Além dos exercícios de execução, os parâmetros são sempre os oficiais e não se alteram nesta versão; para outro critério de execução, use a versão completa.','Deixar de fora o período corrente faz a Regra 3 alcançar todo MAPP que executou no histórico; o aviso vermelho sob a régua indica isso.'] },
   { t:'Filtrar e examinar os MAPPs', cor:'var(--ardosia)', ir:['saneamento'], onde:'2 · Exclusão e retorno',
     fazer:['Filtrar por secretaria, órgão, programa, ano de aprovação, regra, estágio, situação no saneamento, execução no período atual, saldo mínimo, confiança, fonte e busca livre.','Ordenar por qualquer coluna, clicando no cabeçalho.','Clicar na linha para abrir a ficha do MAPP, com todas as regras testadas.','Acionar **Exportar seleção filtrada**, se necessário.'],
     conferir:['A regra, a ação do saneamento e a situação de cada MAPP.','Os totais filtrados, na linha totalizadora da grade.'],
@@ -518,6 +518,7 @@ const GLOSSARIO = [
   ['Chave de consolidação','Coluna `ÓRGÃO MAPP`, quando existir; senão, composição de `ORGAO` e `MAPP`. Normalizada por colapso de espaços.','ambas'],
   ['Universo de saneamento','MAPPs consolidados, exceto cancelados e concluídos físico e financeiramente.','ambas'],
   ['Âncora temporal','Resolução de “ano corrente” e “ano anterior” a partir do relógio, limitada ao último exercício com execução na base.','ambas'],
+  ['Exercícios de execução considerados','Anos cujo empenhado e pago entram nas regras e nos totais, escolhidos na régua (de/até, com anos avulsos). Programado e saldo usam sempre todos os exercícios. Padrão: todos os da base.','ambas'],
   ['Critério de execução','O que o sistema considera execução: empenho, pago, ambos, indicador ou combinado. Na versão essencial, sempre o critério oficial.','ambas'],
   ['Movimentação positiva','Houve empenho positivo em algum momento, ainda que estornado.','completa'],
   ['Saldo líquido','Positivos menos estornos.','completa'],
@@ -596,7 +597,7 @@ function cadeiaFuncoes(lista,cor){
 }
 
 const BLOCOS_SCRIPT = [
-  ['1','Núcleo','Constantes, estado global, utilitários pt-BR, dicas, seleção múltipla, ordenação de grades, abas, âncora temporal, leitura, reconhecimento de colunas e consolidação.','`REGRAS` `GRUPOS_ESTAGIO` `CFG_OFICIAL` `E` `iniciarDicas` `tip` `sinal` `montarMulti` `irParaAba` `aplicarAncora` `lerArquivo` `reconhecerColunas` `montarBase` `consolidar` `soma`'],
+  ['1','Núcleo','Constantes, estado global, utilitários pt-BR, dicas, seleção múltipla, ordenação de grades, abas, âncora temporal, leitura, reconhecimento de colunas e consolidação.','`REGRAS` `GRUPOS_ESTAGIO` `CFG_OFICIAL` `E` `iniciarDicas` `tip` `sinal` `montarMulti` `irParaAba` `aplicarAncora` `lerArquivo` `reconhecerColunas` `montarBase` `consolidar` `soma` `somaExec` `montarReguaExec`'],
   ['2','Regras','Aferição da execução, universo, avaliação de cada MAPP, diagnóstico, revisão de consistência, segunda fase e textos explicativos.','`executou` `noUniverso` `avaliar` `diagnosticar` `calcularQualidade` `calcularFase2` `composicaoUniverso` `dicaRegra`'],
   ['3','Painel','Cartões, orquestração da renderização e gráficos.','`cartao` `renderTudo` `renderPainel` `renderSaldoPorRegra` `desenharGraficos`'],
   ['4','Saldo','Saldo do programado por exercício, filtros, Novo Programado 2027 e exportação.','`periodosSaldo` `apurarSaldo` `renderSaldo` `exportarSaldo`'],
