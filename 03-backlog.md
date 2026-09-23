@@ -34,6 +34,10 @@ abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessã
   filtro e seção na ficha. Sessão em formato 2, versionada no nome
   (`DDMMAAAA-HHMM-Vnn.json`), gravada e retomada no computador, no GitHub ou nos
   dois, à escolha do usuário.
+- Aba própria **Manifestação** entre Análise e Decisão, com a geração habilitada só com
+  sessão ativa (gravada ou retomada na janela); **Baixar de novo** por rodada e por
+  órgão; **Retomar sessão** sempre oferece computador ou GitHub, pedindo o acesso na
+  hora; opção *Lembrar neste computador* para o acesso ao GitHub.
 
 - Linha totalizadora e cabeçalho fixo das grades com fundo sólido nas duas versões
   (colunas `.corrente` e `.novo-programado` passaram a camada sobre `--papel-2`).

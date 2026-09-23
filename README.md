@@ -14,9 +14,11 @@ Arquivo único de aproximadamente 300 KB, sem dependências de build: `<head>` c
 
 ## Manifestação dos órgãos e sessão
 
-Na área **Decisão**, o bloco *Manifestação dos órgãos* gera uma planilha protegida por órgão (só as colunas de resposta são editáveis) com os MAPPs enquadrados nas Regras 1 a 4, e grava junto a nova versão da sessão, com nomes casados `DDMMAAAA-HHMM-Vnn.json` e `DDMMAAAA-HHMM-Vnn-ÓRGÃO.xlsx`. Os órgãos devolvem as planilhas pelo canal oficial; o sistema confere cada uma pelo controle interno (rodada e token por linha), registra as manifestações e as mostra na ficha, no filtro do diagnóstico e na auditoria. A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.
+A aba **Manifestação**, entre Análise e Decisão, gera uma planilha protegida por órgão (só as colunas de resposta são editáveis) com os MAPPs enquadrados nas Regras 1 a 4, e grava junto a nova versão da sessão, com nomes casados `DDMMAAAA-HHMM-Vnn.json` e `DDMMAAAA-HHMM-Vnn-ÓRGÃO.xlsx`. Os órgãos devolvem as planilhas pelo canal oficial; o sistema confere cada uma pelo controle interno (rodada e token por linha), registra as manifestações e as mostra na ficha, no filtro do diagnóstico e na auditoria. A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.
 
-A sessão pode ser gravada e retomada **no computador, num repositório GitHub privado ou nos dois**, à escolha do usuário a cada gravação (Configurações › Sessão e armazenamento). O token do GitHub fica só na memória da janela.
+A geração exige uma sessão gravada ou retomada na janela (é ela que dá a versão e casa os nomes); gravar não descarta nada, então não é preciso recarregar o .json recém-gerado. **Baixar de novo** refaz, idênticas, as planilhas de uma rodada.
+
+A sessão pode ser gravada e retomada **no computador, num repositório GitHub privado ou nos dois**, à escolha do usuário a cada gravação. O acesso ao GitHub é pedido na hora ou em Configurações › Sessão e armazenamento; o token fica na memória da janela, ou no navegador se o usuário marcar *Lembrar neste computador*.
 
 ## Manual
 

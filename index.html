@@ -198,7 +198,7 @@ html[data-tema="escuro"] .btn.principal{color:#14171b}
 .btn.risco{border-color:var(--risco);color:var(--risco)}
 .btn.pequeno{padding:4px 9px;font-size:12px}
 .barra-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-input[type="text"],input[type="date"],input[type="number"],select,textarea{
+input[type="text"],input[type="password"],input[type="date"],input[type="number"],select,textarea{
   background:var(--carta-2);border:1px solid var(--linha);border-radius:var(--raio-p);padding:6px 9px;
 }
 input:focus,select:focus,textarea:focus{outline:2px solid var(--acento-medio);outline-offset:-1px;border-color:var(--acento)}
@@ -565,7 +565,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 
 /* ===== Redesenho de navegação: quatro áreas do fluxo ===== */
 .fluxo-principal{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--carta);border-bottom:1px solid var(--linha);position:sticky;top:0;z-index:8}
-.fluxo-etapa{display:flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--linha);border-radius:10px;background:var(--papel);cursor:pointer;transition:.15s ease;min-width:145px}
+.fluxo-etapa{display:flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--linha);border-radius:10px;background:var(--papel);cursor:pointer;transition:.15s ease;min-width:132px}
 .fluxo-etapa span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--linha);font-weight:800;font-size:12px}
 .fluxo-etapa strong{font-size:13px}.fluxo-etapa small{display:block;color:var(--tinta-3);font-size:10px;margin-left:auto}.fluxo-etapa.atual{border-color:var(--acento,var(--ardosia));box-shadow:0 0 0 2px color-mix(in srgb,var(--ardosia) 12%,transparent)}
 .fluxo-seta{color:var(--tinta-3);font-size:18px}
@@ -623,6 +623,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   <nav class="abas" role="tablist" id="abas" aria-label="Fluxo principal">
     <button class="aba" role="tab" id="aba-visao" aria-controls="p-panorama" aria-selected="true" style="--cor:var(--grafite)" data-nav="visao" data-tip="Base, indicadores, universo, regras, saldo e programação em uma única visão de entrada." data-tip-t="Visão Geral"><i class="ponto"></i>Visão Geral</button>
     <button class="aba" role="tab" id="aba-analise" aria-controls="p-diagnostico" aria-selected="false" style="--cor:var(--ardosia)" data-nav="analise" data-tip="Análise dos MAPPs, filtros, qualidade da base e despesas de continuidade." data-tip-t="Análise"><i class="ponto"></i>Análise</button>
+    <button class="aba" role="tab" id="aba-manifestacao" aria-controls="p-manifestacao" aria-selected="false" style="--cor:var(--petroleo)" data-nav="manifestacao" data-tip="Envio de planilhas protegidas aos órgãos e registro das manifestações devolvidas. Exige sessão gravada ou retomada nesta janela." data-tip-t="Manifestação"><i class="ponto"></i>Manifestação</button>
     <button class="aba" role="tab" id="aba-decisao" aria-controls="p-saneamento" aria-selected="false" style="--cor:var(--sepia)" data-nav="decisao" data-tip="Registro das decisões humanas sobre os MAPPs enquadrados: acatar, rejeitar ou ocultar." data-tip-t="Decisão"><i class="ponto"></i>Decisão</button>
     <button class="aba" role="tab" id="aba-resultado" aria-controls="p-antesdepois" aria-selected="false" style="--cor:var(--musgo)" data-nav="resultado" data-tip="Antes e depois, auditoria e exportações do resultado final." data-tip-t="Resultado"><i class="ponto"></i>Resultado</button>
   </nav>
@@ -633,9 +634,11 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   <div class="fluxo-seta">→</div>
   <div class="fluxo-etapa" data-nav-go="analise"><span>2</span><strong>Análise</strong><small>Achados e MAPPs</small></div>
   <div class="fluxo-seta">→</div>
-  <div class="fluxo-etapa" data-nav-go="decisao"><span>3</span><strong>Decisão</strong><small>Deliberação humana</small></div>
+  <div class="fluxo-etapa" data-nav-go="manifestacao"><span>3</span><strong>Manifestação</strong><small>Planilhas dos órgãos</small></div>
   <div class="fluxo-seta">→</div>
-  <div class="fluxo-etapa" data-nav-go="resultado"><span>4</span><strong>Resultado</strong><small>Consolidação e exportação</small></div>
+  <div class="fluxo-etapa" data-nav-go="decisao"><span>4</span><strong>Decisão</strong><small>Deliberação humana</small></div>
+  <div class="fluxo-seta">→</div>
+  <div class="fluxo-etapa" data-nav-go="resultado"><span>5</span><strong>Resultado</strong><small>Consolidação e exportação</small></div>
 </div>
 
 <main>
@@ -983,8 +986,13 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       </div>
     </div>
   </div>
+</section>
+
+<!-- ============================ MANIFESTAÇÃO ============================ -->
+<section role="tabpanel" id="p-manifestacao" class="oculto" aria-labelledby="aba-manifestacao" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
   <div class="bloco" id="blocoManif" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
     <header><h2>Manifestação dos órgãos</h2><span class="legenda" id="manifLegenda"></span></header>
+    <div id="manifSessao"></div>
     <div class="aviso nota"><span class="marca">Rodada</span><span>Gera uma planilha protegida por órgão com os MAPPs enquadrados nas Regras 1 a 4 e ainda mantidos no saneamento; só as colunas de resposta ficam editáveis. Junto sai a nova versão da sessão, com o mesmo prefixo <span class="mono">DDMMAAAA-HHMM-Vnn</span>. Na devolução, o controle interno de cada planilha confirma a que rodada ela pertence. A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.</span></div>
     <div class="grade g3" style="margin-top:12px">
       <label class="campo"><span>Órgãos <i class="sigla" tabindex="0" data-tip="Órgãos que recebem planilha nesta rodada. Sem marcação, todos os que têm MAPP enquadrado. Um órgão gera um .xlsx; vários, um .zip." data-tip-t="Órgãos">?</i></span><select id="mOrgao"></select></label>
@@ -1002,7 +1010,8 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <input type="file" id="arqRetornos" accept=".xlsx" multiple class="oculto">
     </div>
     <h4 style="margin:16px 0 6px">Rodadas</h4>
-    <div class="tabela-caixa" style="max-height:30vh"><table id="tabRodadas"><thead><tr><th>Rodada</th><th class="num">Versão</th><th>Órgão</th><th class="num">MAPPs</th><th class="num">Respondidos</th><th class="num">Responder até</th><th>Situação</th></tr></thead><tbody></tbody></table></div>
+    <div class="barra-acoes" id="rodadasAcoes" style="margin-bottom:8px"></div>
+    <div class="tabela-caixa" style="max-height:30vh"><table id="tabRodadas"><thead><tr><th>Rodada</th><th class="num">Versão</th><th>Órgão</th><th class="num">MAPPs</th><th class="num">Respondidos</th><th class="num">Responder até</th><th>Situação</th><th></th></tr></thead><tbody></tbody></table></div>
     <h4 style="margin:16px 0 6px">Manifestações registradas</h4>
     <div class="tabela-caixa" style="max-height:40vh"><table id="tabManif"><thead><tr><th>MAPP</th><th>Órgão</th><th>Regra</th><th>Manifestação</th><th>Justificativa</th><th class="num">Previsão</th><th>Responsável no órgão</th><th class="num">Data</th><th>Decisão</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportarManif" data-tip="Exporta todas as manifestações registradas, com sentido, pendências, arquivo de origem e a decisão atual.">Exportar manifestações</button></div>
@@ -1176,7 +1185,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   </div>
   <div class="bloco" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
     <header><h2>Sessão e armazenamento</h2><span class="legenda" id="estadoSessao"></span></header>
-    <div class="aviso nota"><span class="marca">GitHub</span><span>Use um repositório <strong>privado</strong>, só para os dados (por exemplo, <span class="mono">marceloclr/saneamento-dados</span>): a sessão traz decisões, nomes de responsáveis e manifestações dos órgãos. O token (fine-grained, só <em>Contents: read and write</em> nesse repositório) fica apenas na memória desta janela e é pedido de novo a cada abertura. Estes campos valem de imediato, sem recálculo.</span></div>
+    <div class="aviso nota"><span class="marca">GitHub</span><span>Use um repositório <strong>privado</strong>, só para os dados (por exemplo, <span class="mono">marceloclr/saneamento-dados</span>): a sessão traz decisões, nomes de responsáveis e manifestações dos órgãos. O token (fine-grained, só <em>Contents: read and write</em> nesse repositório) fica na memória desta janela; marque <strong>Lembrar neste computador</strong> para não informá-lo a cada abertura — não marque em computador compartilhado. Estes campos valem de imediato, sem recálculo.</span></div>
     <div class="grade g3" style="margin-top:10px">
       <label class="campo"><span>Destino da sessão <i class="sigla" tabindex="0" data-tip="Onde gravar cada nova versão do .json. A escolha é oferecida de novo a cada gravação, já com esta opção marcada." data-tip-t="Destino da sessão">?</i></span>
         <select id="cfgDestino"><option value="local">No computador (download)</option><option value="github">No GitHub</option><option value="ambos">No computador e no GitHub</option></select></label>
@@ -1185,6 +1194,10 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span>Branch</span><input type="text" id="ghBranch" placeholder="main" autocomplete="off"></label>
       <label class="campo"><span>Pasta</span><input type="text" id="ghPasta" placeholder="sessoes" autocomplete="off"></label>
       <div class="campo" style="display:flex;flex-direction:column;gap:4px;font-size:11.5px"><span>&nbsp;</span><button class="btn" id="btnTestarGitHub" data-tip="Lista a pasta configurada para confirmar repositório, branch e token.">Testar conexão</button></div>
+    </div>
+    <div class="barra-acoes" style="margin-top:8px">
+      <label class="chk" data-tip="Guarda repositório, branch, pasta e token neste navegador, para não informá-los a cada abertura. Não marque em computador compartilhado."><input type="checkbox" id="ghLembrar"> Lembrar neste computador</label>
+      <button class="btn discreto" id="btnEsquecerGitHub" data-tip="Apaga deste navegador o acesso ao GitHub guardado (o token atual continua valendo só até fechar a janela).">Esquecer neste computador</button>
     </div>
     <div class="pequeno tenue" id="ghEstado" style="margin-top:6px"></div>
   </div>
@@ -1902,6 +1915,7 @@ function irParaAba(id){
   const grupos={
     visao:['panorama'],
     analise:['diagnostico','qualidade','fase2'],
+    manifestacao:['manifestacao'],
     decisao:['saneamento'],
     resultado:['antesdepois','auditoria']
   };
@@ -1927,6 +1941,7 @@ function irParaAba(id){
   $$('.fluxo-etapa').forEach(function(e){ e.classList.toggle('atual',e===etapa); });
   if(id==='visao' && E.diag) desenharGraficos();
   if(id==='analise' && E.diag) { renderDiagnostico(); if(typeof renderQualidade==='function') renderQualidade(); if(typeof renderFase2==='function') renderFase2(); }
+  if(id==='manifestacao') renderManifestacoes();
   if(id==='resultado' && E.diag) { renderAntesDepois(); if(typeof renderAuditoria==='function') renderAuditoria(); }
   window.scrollTo({top:0,behavior:'instant'});
 }
@@ -5592,7 +5607,7 @@ const APR_DESTINO = [
 const ROTULO_DESTINO = {
   panorama:'Visão Geral', diagnostico:'Análise › Diagnóstico', qualidade:'Análise › Revisão da base', saneamento:'Decisão',
   antesdepois:'Resultado › Antes e depois', fase2:'Análise › Despesas de continuidade', auditoria:'Resultado › Auditoria e exportações',
-  importacao:'Importação', indicadores:'Indicadores', universo:'Universo', regras:'Regras aplicadas', saldo:'Saldo por exercício', programacao:'Programação'
+  manifestacao:'Manifestação', importacao:'Importação', indicadores:'Indicadores', universo:'Universo', regras:'Regras aplicadas', saldo:'Saldo por exercício', programacao:'Programação'
 };
 function rotuloDestino(d){ return d.map(function(x){ return ROTULO_DESTINO[x]||x; }).join(' › '); }
 function irParaDestino(d){
@@ -6022,27 +6037,61 @@ function montarSessao(nome){
 }
 
 function githubPronto(){ return !!(E.github.repo && E.github.token); }
+function sessaoAtiva(){ return !!(E.ultimaGravacao && E.ultimaGravacao.onde && E.ultimaGravacao.onde.length); }
+
+/* Acesso ao GitHub lembrado neste navegador — único uso de armazenamento
+   local, sempre opcional (Configurações › Lembrar neste computador). */
+const CHAVE_ACESSO_LOCAL='webmapp-saneamento-github';
+function carregarAcessoLocal(){
+  try{
+    const d=JSON.parse(localStorage.getItem(CHAVE_ACESSO_LOCAL)||'null');
+    if(d && d.token){ Object.assign(E.github,{ repo:d.repo||'', branch:d.branch||'main', pasta:d.pasta||'sessoes', token:d.token, lembrar:true }); }
+  }catch(e){}
+}
+function salvarAcessoLocal(){
+  try{ localStorage.setItem(CHAVE_ACESSO_LOCAL,JSON.stringify({ repo:E.github.repo, branch:E.github.branch, pasta:E.github.pasta, token:E.github.token })); return true; }
+  catch(e){ recado('O navegador não permitiu guardar o acesso neste computador.'); return false; }
+}
+function esquecerAcessoLocal(){ try{ localStorage.removeItem(CHAVE_ACESSO_LOCAL); }catch(e){} E.github.lembrar=false; }
+
+/* Pede repositório e token na hora, quando o GitHub ainda não está pronto. */
+async function pedirAcessoGitHub(motivo){
+  const g=E.github;
+  const r=await perguntar({ titulo:'Acesso ao GitHub', texto:motivo||'Informe o repositório privado de dados e o token.',
+    corpo: campoTexto('repo','Repositório (dono/nome)',g.repo||'marceloclr/saneamento-dados','Repositório privado onde ficam as sessões.')+
+      '<div class="grade g2">'+campoTexto('branch','Branch',g.branch||'main')+campoTexto('pasta','Pasta',g.pasta||'sessoes')+'</div>'+
+      '<label class="campo" style="margin-bottom:10px"><span>Token de acesso (fine-grained, Contents: read and write)</span><input type="password" data-campo="token" autocomplete="off" placeholder="github_pat_…"></label>'+
+      '<label class="chk"><input type="checkbox" data-campo="lembrar"'+(g.lembrar?' checked':'')+'> Lembrar neste computador (não marque em computador compartilhado)</label>',
+    confirmar:'Continuar' });
+  if(!r) return false;
+  g.repo=limpo(r.dados.repo); g.branch=limpo(r.dados.branch)||'main'; g.pasta=limpo(r.dados.pasta); g.token=String(r.dados.token||'').trim();
+  if(!githubPronto()){ recado('Informe repositório e token para usar o GitHub.'); return false; }
+  if(r.dados.lembrar){ if(salvarAcessoLocal()) g.lembrar=true; } else esquecerAcessoLocal();
+  sessaoParaTela();
+  return true;
+}
 
 /* Pergunta onde gravar a versão, salvo se o usuário fixou a escolha. */
 async function escolherDestino(nome){
   if(E.destinoFixo) return E.destinoFixo;
   const gh=githubPronto();
-  const pref=(!gh && E.destinoSessao!=='local') ? 'local' : E.destinoSessao;
+  const pref=E.destinoSessao;
   const opc=function(v,rot,dica,off){
     const marcado=(v===pref && !off);
     return '<label class="chk" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px'+(off?';opacity:.5':'')+'">'+
       '<input type="radio" name="destinoSessao" data-campo="destino" value="'+v+'"'+(marcado?' checked':'')+(off?' disabled':'')+'>'+
       '<span><b>'+esc(rot)+'</b><br><span class="pequeno tenue">'+esc(dica)+'</span></span></label>';
   };
-  const semGh='Configure o repositório e o token em Configurações › Sessão e armazenamento.';
+  const semGh='O repositório e o token serão pedidos em seguida.';
   const corpo=
     opc('local','No computador','Baixa o arquivo '+nome+' para a pasta de downloads.',false)+
-    opc('github','No GitHub',gh?('Grava em '+E.github.repo+' › '+E.github.pasta+'/'+nome+'.'):semGh,!gh)+
-    opc('ambos','No computador e no GitHub',gh?'As duas cópias; a do computador serve de reserva.':semGh,!gh)+
+    opc('github','No GitHub',gh?('Grava em '+E.github.repo+' › '+E.github.pasta+'/'+nome+'.'):semGh,false)+
+    opc('ambos','No computador e no GitHub',gh?'As duas cópias; a do computador serve de reserva.':semGh,false)+
     '<label class="chk" style="margin-top:6px"><input type="checkbox" data-campo="fixar"> Usar esta escolha até o fim da sessão</label>';
   const r=await perguntar({ titulo:'Onde gravar a versão '+nome.replace(/\.json$/,'').split('-').pop()+'?', texto:'Arquivo '+nome, corpo:corpo, confirmar:'Gravar' });
   if(!r) return null;
   const destino=r.dados.destino||'local';
+  if(destino!=='local' && !githubPronto() && !(await pedirAcessoGitHub('Para gravar a sessão no GitHub.'))) return null;
   if(r.dados.fixar) E.destinoFixo=destino;
   return destino;
 }
@@ -6076,6 +6125,7 @@ async function gravarSessao(op){
   return nome;
 }
 function pintarUltimaGravacao(){
+  pintarSessaoManif();
   const el=$('#estadoSessao'); if(!el) return;
   el.textContent = E.ultimaGravacao && E.ultimaGravacao.onde.length
     ? 'Última versão: '+E.ultimaGravacao.nome+' ('+E.ultimaGravacao.onde.join(' e ')+')'
@@ -6111,12 +6161,15 @@ function aplicarSessao(d,origem){
 }
 
 async function escolherOrigemSessao(){
-  if(!githubPronto()){ abrirSessaoDoComputador(); return; }
-  const r=await perguntar({ titulo:'Retomar sessão', texto:'De onde vem a versão a retomar?', confirmar:false,
+  const gh=githubPronto();
+  const r=await perguntar({ titulo:'Retomar sessão', texto:'De onde vem a versão a retomar? Importe antes a mesma base de execução.', confirmar:false,
     corpo:'<div class="barra-acoes"><button class="btn" data-escolha="local">Arquivo do computador</button>'+
-      '<button class="btn principal" data-escolha="github">GitHub · '+esc(E.github.repo)+'</button></div>' });
+      '<button class="btn principal" data-escolha="github">'+(gh?'GitHub · '+esc(E.github.repo):'GitHub (informar acesso)')+'</button></div>' });
   if(!r) return;
-  if(r.escolha==='github') await abrirSessaoDoGitHub(); else abrirSessaoDoComputador();
+  if(r.escolha==='github'){
+    if(!githubPronto() && !(await pedirAcessoGitHub('Para listar as sessões gravadas no GitHub.'))) return;
+    await abrirSessaoDoGitHub();
+  } else abrirSessaoDoComputador();
 }
 function abrirSessaoDoComputador(){
   const inp=document.createElement('input'); inp.type='file'; inp.accept='.json';
@@ -6187,6 +6240,8 @@ async function testarGitHub(){
 function sessaoParaTela(){
   const s=function(id,v){ const el=$(id); if(el) el.value=v; };
   s('#cfgDestino',E.destinoSessao); s('#ghRepo',E.github.repo); s('#ghBranch',E.github.branch); s('#ghPasta',E.github.pasta);
+  if(E.github.token) s('#ghToken',E.github.token);
+  const l=$('#ghLembrar'); if(l) l.checked=!!E.github.lembrar;
 }
 
 /* ------------------------------ Envios e situação ------------------------- */
@@ -6240,11 +6295,26 @@ function resumoRodada(){
   const el=$('#mResumoGeracao'); if(!el) return;
   if(!E.diag){ el.textContent=''; return; }
   const lista=conjuntoRodada(), org=new Set(lista.map(function(m){ return m.orgao; }));
-  el.textContent=n(lista.length)+' MAPPs de '+n(org.size)+' órgão(s) · '+(org.size>1?'um .zip com '+n(org.size)+' planilhas':'uma planilha .xlsx')+' e a nova versão da sessão';
+  el.textContent=n(lista.length)+' MAPPs de '+n(org.size)+' órgão(s) · '+(org.size>1?'um .zip com '+n(org.size)+' planilhas':'uma planilha .xlsx')+
+    ' e a versão V'+dois(E.versaoSessao+1)+' da sessão, com o mesmo prefixo';
+}
+/* A geração exige sessão gravada ou retomada nesta janela: é ela que dá o
+   número da versão e casa os nomes das planilhas com o .json. Não é preciso
+   recarregar o .json recém-gravado — ele é cópia do que está na memória. */
+function pintarSessaoManif(){
+  const box=$('#manifSessao'); if(!box) return;
+  const ok=sessaoAtiva(), g=E.ultimaGravacao;
+  box.innerHTML = ok
+    ? '<div class="aviso bom"><span class="marca">Sessão ativa</span><span>'+esc(g.nome)+' ('+esc(g.onde.join(' e '))+'). Gerar planilhas grava a versão V'+dois(E.versaoSessao+1)+' com o mesmo prefixo das planilhas; alterações feitas depois da última gravação entram nela.</span></div>'
+    : '<div class="aviso alerta"><span class="marca">Sessão</span><span>Para gerar as planilhas, grave ou retome uma sessão nesta janela: é ela que dá o número da versão e casa os nomes das planilhas com o .json. '+
+      '<button type="button" class="btn pequeno" data-sessao="guardar">Guardar sessão</button> <button type="button" class="btn pequeno" data-sessao="retomar">Retomar sessão</button></span></div>';
+  const b=$('#btnGerarRodada');
+  if(b){ b.disabled=!E.diag || !ok; b.title = !E.diag ? 'Importe antes a base de execução.' : (!ok ? 'Grave ou retome uma sessão para habilitar.' : ''); }
 }
 
 async function gerarRodada(){
   if(!E.diag){ recado('Importe antes a base de execução.'); return; }
+  if(!sessaoAtiva()){ recado('Grave ou retome uma sessão antes de gerar as planilhas.'); return; }
   if(typeof ExcelJS==='undefined' || typeof JSZip==='undefined'){ recado('As bibliotecas de planilha não carregaram. Verifique a conexão e recarregue a página.'); return; }
   const lista=conjuntoRodada();
   if(!lista.length){ recado('Nenhum MAPP enquadrado atende à seleção.'); return; }
@@ -6293,7 +6363,7 @@ async function gerarRodada(){
   await gravarSessao({ data:agora });
 }
 
-async function montarPlanilhaOrgao(rodada,orgao,itens){
+async function montarPlanilhaOrgao(rodada,orgao,itens,rks){
   const wb=new ExcelJS.Workbook();
   wb.creator='Webmapp · Módulo de Saneamento da base de Projetos MAPP'; wb.created=new Date(rodada.geradaEm);
   const cab={ font:{ bold:true, color:{argb:'FFFFFFFF'} }, fill:{ type:'pattern', pattern:'solid', fgColor:{argb:'FF3F5C78'} },
@@ -6344,7 +6414,7 @@ async function montarPlanilhaOrgao(rodada,orgao,itens){
   const anoC=new Date().getFullYear(), anos=[];
   for(let a=anoC;a<=anoC+4;a++) anos.push(String(a));
   itens.forEach(function(m,i){
-    const rk=regraChaveDe(m), r=i+2;
+    const rk=(rks&&rks[m.chave])||regraChaveDe(m), r=i+2;
     const regras=m.d.regras.map(function(x){ return REGRAS[x].nome+' ('+REGRAS[x].doc+')'; }).join(' + ');
     const acao=m.d.regras.map(function(x){ return REGRAS[x].acao; }).join(' / ');
     ws.addRow([m.chave,m.codigo,m.titulo||m.mappTxt,regras,acao,Math.round(m.saldo*100)/100,rodada.dataLimite?new Date(rodada.dataLimite+'T12:00:00'):null,
@@ -6373,6 +6443,30 @@ async function montarPlanilhaOrgao(rodada,orgao,itens){
   await wc.protect(MANIF_SENHA,{});
 
   return await wb.xlsx.writeBuffer();
+}
+
+/* Reemissão: refaz as planilhas de uma rodada já registrada, idênticas
+   (mesmos tokens, mesmas regras gravadas), sem rodada nem versão nova. */
+async function reemitirRodada(id,idx){
+  const r=E.rodadas.find(function(x){ return x.id===id; });
+  if(!r){ recado('Rodada não encontrada.'); return; }
+  if(!E.diag){ recado('Importe antes a base de execução.'); return; }
+  if(typeof ExcelJS==='undefined' || typeof JSZip==='undefined'){ recado('As bibliotecas de planilha não carregaram.'); return; }
+  const orgs = idx==null ? r.orgaos : [r.orgaos[idx]];
+  const arquivos=[]; let faltam=0;
+  for(const o of orgs){
+    const itens=Object.keys(o.itens).map(function(ch){ const i=E.indice.get(ch); if(i==null){ faltam++; return null; } return E.mapps[i]; }).filter(Boolean)
+      .sort(function(a,b){ return String(a.codigo).localeCompare(String(b.codigo),'pt-BR',{numeric:true}); });
+    if(itens.length) arquivos.push({ nome:o.arquivo, buf:await montarPlanilhaOrgao(r,o.orgao,itens,o.itens) });
+  }
+  if(!arquivos.length){ recado('Nenhum MAPP da rodada foi encontrado na base importada.'); return; }
+  if(arquivos.length===1) baixarBlob(new Blob([arquivos[0].buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),arquivos[0].nome);
+  else {
+    const zip=new JSZip(); arquivos.forEach(function(a){ zip.file(a.nome,a.buf); });
+    baixarBlob(await zip.generateAsync({type:'blob'}),r.id.split('-').slice(0,3).join('-')+'-planilhas.zip');
+  }
+  auditar(null,'Planilhas reemitidas','—',r.id,n(arquivos.length)+' planilha(s) refeitas'+(idx!=null?' ('+orgs[0].orgao+')':'')+'.','—');
+  recado(n(arquivos.length)+' planilha(s) baixada(s) de novo'+(faltam?'; '+n(faltam)+' MAPP(s) da rodada não estão na base importada e ficaram de fora':'')+'.');
 }
 
 /* ------------------------------ Retornos dos órgãos ----------------------- */
@@ -6503,7 +6597,7 @@ function prepararFiltrosManif(){
 
 function renderManifestacoes(){
   if(!$('#blocoManif')) return;
-  resumoRodada();
+  resumoRodada(); pintarSessaoManif();
   const qtd=Object.keys(E.manifestacoes).length;
   $('#manifLegenda').textContent=E.rodadas.length
     ? n(E.rodadas.length)+' rodada(s) · '+n(qtd)+' manifestação(ões) registrada(s)'
@@ -6512,16 +6606,20 @@ function renderManifestacoes(){
   const hoje=hojeISO();
   const linhasR=[];
   E.rodadas.slice().reverse().forEach(function(r){
-    r.orgaos.forEach(function(o){
+    r.orgaos.forEach(function(o,k){
       const chaves=Object.keys(o.itens);
       const resp=chaves.filter(function(ch){ const mf=E.manifestacoes[ch]; return mf && mf.rodada===r.id; }).length;
       const sit = resp===chaves.length ? ['Retornado','alta'] : resp ? ['Parcial','media'] : (r.dataLimite<hoje ? ['Vencido','r1a'] : ['Sem retorno','sem']);
       linhasR.push('<tr><td class="mono">'+esc(r.id)+'</td><td class="num">V'+dois(r.versao)+'</td><td>'+esc(o.orgao)+'</td>'+
         '<td class="num">'+n(chaves.length)+'</td><td class="num">'+n(resp)+'</td><td class="num">'+dataISOparaBR(r.dataLimite)+'</td>'+
-        '<td><span class="etq '+sit[1]+'">'+sit[0]+'</span></td></tr>');
+        '<td><span class="etq '+sit[1]+'">'+sit[0]+'</span></td>'+
+        '<td><button type="button" class="btn pequeno" data-reemitir="'+esc(r.id)+'" data-orgao="'+k+'" data-tip="Refaz, idêntica, a planilha deste órgão ('+esc(o.arquivo)+').">Baixar de novo</button></td></tr>');
     });
   });
-  $('#tabRodadas tbody').innerHTML=linhasR.join('') || '<tr><td colspan="7" class="vazio">Nenhuma rodada gerada. Escolha os órgãos acima e gere as planilhas.</td></tr>';
+  $('#rodadasAcoes').innerHTML=E.rodadas.slice().reverse().map(function(r){
+    return '<button type="button" class="btn pequeno" data-reemitir="'+esc(r.id)+'" data-tip="Refaz, idênticas, as '+n(r.orgaos.length)+' planilha(s) da rodada '+esc(r.id)+', sem criar rodada nem versão nova.">Baixar de novo · V'+dois(r.versao)+' ('+n(r.orgaos.length)+')</button>';
+  }).join('');
+  $('#tabRodadas tbody').innerHTML=linhasR.join('') || '<tr><td colspan="8" class="vazio">Nenhuma rodada gerada. Escolha os órgãos acima e gere as planilhas.</td></tr>';
   /* Manifestações registradas */
   const lista=Object.keys(E.manifestacoes).map(function(ch){ return E.manifestacoes[ch]; })
     .sort(function(a,b){ return String(a.orgao).localeCompare(String(b.orgao)) || String(a.chave).localeCompare(String(b.chave)); });
@@ -6586,13 +6684,30 @@ function ligarManifestacoes(){
   area.addEventListener('drop',function(ev){ importarRetornos(ev.dataTransfer.files); });
   $('#tabManif').addEventListener('click',function(ev){ const tr=ev.target.closest('tr[data-chave]'); if(tr) abrirFicha(tr.getAttribute('data-chave')); });
   $('#btnExportarManif').addEventListener('click',exportarManifestacoes);
+  $('#rodadasAcoes').addEventListener('click',function(ev){
+    const b=ev.target.closest('[data-reemitir]'); if(b) reemitirRodada(b.getAttribute('data-reemitir'),null);
+  });
+  $('#tabRodadas').addEventListener('click',function(ev){
+    const b=ev.target.closest('[data-reemitir]'); if(!b) return;
+    const k=b.getAttribute('data-orgao'); reemitirRodada(b.getAttribute('data-reemitir'),k==null?null:+k);
+  });
+  $('#manifSessao').addEventListener('click',function(ev){
+    const b=ev.target.closest('[data-sessao]'); if(!b) return;
+    if(b.getAttribute('data-sessao')==='guardar') gravarSessao(); else escolherOrigemSessao();
+  });
+  $('#ghLembrar').addEventListener('change',function(ev){
+    if(ev.target.checked){ if(!githubPronto()){ recado('Informe repositório e token antes.'); ev.target.checked=false; return; } if(salvarAcessoLocal()){ E.github.lembrar=true; recado('Acesso ao GitHub lembrado neste computador.'); } }
+    else { esquecerAcessoLocal(); recado('Acesso ao GitHub esquecido neste computador.'); }
+  });
+  $('#btnEsquecerGitHub').addEventListener('click',function(){ esquecerAcessoLocal(); $('#ghLembrar').checked=false; recado('Acesso ao GitHub esquecido neste computador.'); });
   /* Configurações de armazenamento: valem de imediato, sem recálculo. */
   $('#cfgDestino').addEventListener('change',function(ev){ E.destinoSessao=ev.target.value; E.destinoFixo=null; });
-  $('#ghRepo').addEventListener('input',function(ev){ E.github.repo=limpo(ev.target.value); });
-  $('#ghBranch').addEventListener('input',function(ev){ E.github.branch=limpo(ev.target.value)||'main'; });
-  $('#ghPasta').addEventListener('input',function(ev){ E.github.pasta=limpo(ev.target.value); });
-  $('#ghToken').addEventListener('input',function(ev){ E.github.token=ev.target.value.trim(); });
+  $('#ghRepo').addEventListener('input',function(ev){ E.github.repo=limpo(ev.target.value); if(E.github.lembrar) salvarAcessoLocal(); });
+  $('#ghBranch').addEventListener('input',function(ev){ E.github.branch=limpo(ev.target.value)||'main'; if(E.github.lembrar) salvarAcessoLocal(); });
+  $('#ghPasta').addEventListener('input',function(ev){ E.github.pasta=limpo(ev.target.value); if(E.github.lembrar) salvarAcessoLocal(); });
+  $('#ghToken').addEventListener('input',function(ev){ E.github.token=ev.target.value.trim(); if(E.github.lembrar) salvarAcessoLocal(); });
   $('#btnTestarGitHub').addEventListener('click',testarGitHub);
+  carregarAcessoLocal();
   sessaoParaTela(); pintarUltimaGravacao(); renderManifestacoes();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ligarManifestacoes); else ligarManifestacoes();

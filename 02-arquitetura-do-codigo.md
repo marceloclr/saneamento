@@ -2,7 +2,8 @@
 
 Arquivo único, cerca de 350 KB: `<head>` com todo o CSS, `<body>` com
 a marcação, e onze blocos `<script>` sequenciais. Tudo em JavaScript simples, sem
-módulos nem framework. Nenhum uso de `localStorage`.
+módulos nem framework. O único uso de `localStorage` é opcional: lembrar o acesso ao
+GitHub quando o usuário marca *Lembrar neste computador*.
 
 ## Blocos de script, na ordem
 
@@ -49,13 +50,15 @@ módulos nem framework. Nenhum uso de `localStorage`.
 (consolidados), `indice`, `cfg`, `decisoes`, `exclusoes`, `auditoria`,
 `encerramento`, `diag`, `qualidade`, `fase2`, `saldo`, `ad`, filtros, paginação e
 gráficos; no bloco 11, `versaoSessao`, `rodadas`, `manifestacoes`, `destinoSessao` e
-`github` (o token nunca vai ao `.json`). A base original é reconstruída para exportação a partir dos dicionários.
+`github` (o token nunca vai ao `.json`; vai ao `localStorage` só se o usuário marcar). A base original é reconstruída para exportação a partir dos dicionários.
 
 ## Abas e identificadores
 
 `p-panorama` (segmentos `seg-importacao`, `seg-indicadores`, `seg-universo`,
 `seg-saldo`), `p-diagnostico`, `p-qualidade` (rótulo “Revisão”), `p-saneamento`,
-`p-antesdepois`, `p-fase2` (rótulo “Despesas de continuidade”), `p-auditoria`.
+`p-antesdepois`, `p-fase2` (rótulo “Despesas de continuidade”), `p-auditoria` e
+`p-manifestacao` (aba própria “Manifestação”, entre Análise e Decisão; habilita a geração
+só com sessão ativa, `sessaoAtiva()`).
 Boas-vindas de abertura `modalBV` (véu `veuBV`), exibidas só no carregamento;
 apresentação completa `modalApres` (véu `veuApres`), aberta pelo botão do alto.
 Configurações em gaveta lateral `gavetaConfig`, aberta pelo botão do alto.
