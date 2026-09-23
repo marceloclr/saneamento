@@ -562,7 +562,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
 .modal.boasvindas:hover .bv-tempo > i{animation-play-state:paused}
 @keyframes bv-tempo{from{width:0}to{width:100%}}
 .modal.boasvindas > footer{align-items:center;margin-top:0;background:var(--carta-2);flex-wrap:wrap}
-.modal.boasvindas > footer .rodape-nota{margin-right:auto;font-size:11.5px;color:var(--tinta-3);max-width:360px}
+.modal.boasvindas > footer .rodape-nota{margin-right:auto;font-size:11.5px;color:var(--tinta-3);max-width:300px}
 .modal.boasvindas > footer .bv-link{--cor:var(--ferrugem)}
 /* Cenas animadas: só a do quadro ativo se move */
 .cn{position:relative;width:190px;height:150px}
@@ -630,18 +630,17 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   tfoot td { z-index:3; }
   thead th.novo-programado, tfoot td.novo-programado { background:linear-gradient(rgba(141,113,48,.09),rgba(141,113,48,.09)),var(--papel-2); }
   #tabSaldo thead th.corrente, #tabSaldo tfoot td.corrente { background:linear-gradient(var(--acento-tenue),var(--acento-tenue)),var(--papel-2); }
-/* Régua dos exercícios de execução */
+/* Régua dos exercícios de execução: --n colunas iguais, uma por ano */
 .regua-exec{display:flex;flex-direction:column;gap:6px}
-.regua-topo{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
-.regua-topo .campo{min-width:96px}
-.regua{position:relative;height:46px;margin-top:4px;touch-action:none}
+.regua{position:relative;height:30px;margin-top:2px;touch-action:none}
 .regua-trilho,.regua-faixa{position:absolute;top:13px;height:4px;border-radius:2px}
-.regua-trilho{left:9px;right:9px;background:var(--linha-forte)}
+.regua-trilho{left:calc(100% / (2 * var(--n)));right:calc(100% / (2 * var(--n)));background:var(--linha-forte)}
 .regua-faixa{background:var(--acento)}
 .regua-marca{position:absolute;top:21px;width:1px;height:6px;margin-left:-.5px;background:var(--linha-forte)}
 .regua-marca.dentro{background:var(--acento)}
-.regua-rot{position:absolute;top:28px;transform:translateX(-50%);font-size:10.5px;color:var(--tinta-3);font-variant-numeric:tabular-nums;white-space:nowrap}
-.regua input[type=range]{position:absolute;left:0;top:6px;width:100%;height:18px;margin:0;padding:0;background:none;
+/* a trilha nativa vai do centro da 1ª coluna ao da última; ±9px acomodam metade da alça */
+.regua input[type=range]{position:absolute;top:6px;height:18px;margin:0;padding:0;background:none;
+  left:calc(100% / (2 * var(--n)) - 9px);width:calc(100% - 100% / var(--n) + 18px);
   pointer-events:none;-webkit-appearance:none;appearance:none;z-index:3}
 .regua input[type=range]::-webkit-slider-runnable-track{height:18px;background:transparent;border:0}
 .regua input[type=range]::-moz-range-track{height:18px;background:transparent;border:0}
@@ -653,14 +652,20 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
 .regua input[type=range]:focus{outline:none}
 .regua input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--ardosia);outline-offset:2px}
 .regua input[type=range]:focus-visible::-moz-range-thumb{outline:2px solid var(--ardosia);outline-offset:2px}
-.regua-anos{display:flex;flex-wrap:wrap;gap:4px}
-.ano-exec{font:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;padding:3px 8px;border-radius:999px;cursor:pointer;
-  border:1px solid var(--linha-forte);background:var(--carta);color:var(--tinta-3)}
+.regua-anos{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:0}
+.ano-exec{font:inherit;font-size:11px;font-variant-numeric:tabular-nums;padding:3px 0;margin:0 1.5px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--linha-forte);background:var(--carta);color:var(--tinta-3);text-align:center;overflow:hidden;white-space:nowrap}
+.ano-exec .a2{display:none}
+/* telas estreitas: cada ano mantém 40px e a régua rola de lado, sem perder o alinhamento */
+.regua-rolagem{overflow-x:auto;overflow-y:hidden;padding-bottom:2px}
+.regua-largura{min-width:calc(var(--n) * 40px)}
 .ano-exec[aria-pressed="true"]{background:var(--acento);border-color:var(--acento);color:var(--carta)}
 .ano-exec.fora-faixa{border-style:dashed}
 .ano-exec:hover{filter:brightness(1.06)}
 .ano-exec:focus-visible{outline:2px solid var(--ardosia);outline-offset:1px}
+.regua-rodape{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:space-between}
 .regua-resumo{color:var(--tinta-2)}
+.bv-nao{margin-right:8px;white-space:nowrap;font-size:12px;color:var(--tinta-2);display:flex;align-items:center;gap:6px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -872,6 +877,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   <div class="bv-tempo" aria-hidden="true"><i id="bvTempo"></i></div>
   <footer>
     <span class="rodape-nota">Guia de operação passo a passo, conceitos e regras estão no manual, pelo botão <b>Manual</b> do alto. <button type="button" class="bv-link" id="bvCompleta">Abrir agora</button></span>
+    <label class="chk bv-nao" data-tip="Nas próximas aberturas, o passo a passo não aparece sozinho. Continua disponível no botão Manual (e em Apresentação, na versão completa)."><input type="checkbox" id="bvNaoMostrar"> Não mostrar novamente</label>
     <button class="btn discreto" id="bvPular" data-tip="Fecha o passo a passo. Atalho: tecla Esc.">Pular</button>
     <button class="btn" id="bvAnterior">Anterior</button>
     <button class="btn principal" id="bvProximo" style="--acento:var(--ferrugem)">Próximo</button>
@@ -2014,31 +2020,27 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
   const st={ lo:anos.indexOf(escolhidos[0]), hi:anos.indexOf(escolhidos[escolhidos.length-1]), fora:new Set() };
   if(st.lo<0){ st.lo=0; st.hi=ult; }
   for(let i=st.lo;i<=st.hi;i++) if(escolhidos.indexOf(anos[i])<0) st.fora.add(anos[i]);
-  const pos=function(i){ return ult?'calc(9px + (100% - 18px) * '+(i/ult)+')':'50%'; };
-  const opcoes=anos.map(function(a,i){ return '<option value="'+i+'">'+a+'</option>'; }).join('');
-  const rotulado=function(i){ return i===0||i===ult||anos[i]%5===0; };
+  /* cada ano ocupa uma coluna de largura igual: o centro da coluna i é a posição da
+     marca, da alça e da pílula correspondentes */
+  const pos=function(i){ return 'calc(100% * '+((i+0.5)/n)+')'; };
   alvo.innerHTML=
-    '<div class="regua-exec">'+
-      '<div class="regua-topo">'+
-        '<label class="campo"><span>De</span><select data-r="de" aria-label="Primeiro exercício de execução">'+opcoes+'</select></label>'+
-        '<label class="campo"><span>Até</span><select data-r="ate" aria-label="Último exercício de execução">'+opcoes+'</select></label>'+
-        '<button type="button" class="btn pequeno discreto" data-r="todos">Todos os exercícios</button>'+
-      '</div>'+
+    '<div class="regua-exec" style="--n:'+n+'">'+
+      '<div class="regua-rolagem"><div class="regua-largura">'+
       '<div class="regua"'+(ult?'':' data-unico="1"')+'>'+
         '<div class="regua-trilho"></div><div class="regua-faixa"></div>'+
-        anos.map(function(a,i){ return '<i class="regua-marca" data-i="'+i+'" style="left:'+pos(i)+'"></i>'+
-          (rotulado(i)?'<span class="regua-rot" style="left:'+pos(i)+'">'+a+'</span>':''); }).join('')+
+        anos.map(function(a,i){ return '<i class="regua-marca" data-i="'+i+'" style="left:'+pos(i)+'"></i>'; }).join('')+
         '<input type="range" data-r="lo" min="0" max="'+ult+'" step="1" aria-label="Primeiro exercício de execução">'+
         '<input type="range" data-r="hi" min="0" max="'+ult+'" step="1" aria-label="Último exercício de execução">'+
       '</div>'+
       '<div class="regua-anos" role="group" aria-label="Exercícios de execução">'+
-        anos.map(function(a){ return '<button type="button" class="ano-exec" data-ano="'+a+'">'+a+'</button>'; }).join('')+
-      '</div>'+
-      '<div class="regua-resumo pequeno"></div>'+
+        anos.map(function(a){ return '<button type="button" class="ano-exec" data-ano="'+a+'"><span class="a4">'+a+'</span><span class="a2">'+String(a).slice(2)+'</span></button>'; }).join('')+
+      '</div></div></div>'+
+      '<div class="regua-rodape"><span class="regua-resumo pequeno"></span>'+
+        '<button type="button" class="btn pequeno discreto" data-r="todos">Todos os exercícios</button></div>'+
       '<div class="regua-avisos"></div>'+
     '</div>';
   const q=function(s){ return alvo.querySelector(s); };
-  const lo=q('[data-r="lo"]'), hi=q('[data-r="hi"]'), de=q('[data-r="de"]'), ate=q('[data-r="ate"]');
+  const lo=q('[data-r="lo"]'), hi=q('[data-r="hi"]');
   function selecao(){
     const s=[];
     for(let i=st.lo;i<=st.hi;i++) if(!st.fora.has(anos[i])) s.push(anos[i]);
@@ -2050,8 +2052,8 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
     while(st.hi>st.lo && st.fora.has(anos[st.hi])){ st.fora.delete(anos[st.hi]); st.hi--; }
   }
   function pintar(){
-    lo.value=st.lo; hi.value=st.hi; de.value=st.lo; ate.value=st.hi;
-    const f=q('.regua-faixa'); f.style.left=pos(st.lo); f.style.width=ult?'calc((100% - 18px) * '+((st.hi-st.lo)/ult)+')':'0';
+    lo.value=st.lo; hi.value=st.hi;
+    const f=q('.regua-faixa'); f.style.left=pos(st.lo); f.style.width='calc(100% * '+((st.hi-st.lo)/n)+')';
     /* com as alças juntas no fim, a de cima precisa ser a que volta */
     lo.style.zIndex = st.lo===ult ? 4 : 3;
     const s=selecao();
@@ -2077,8 +2079,6 @@ function montarReguaExec(alvo,anos,sel,aoMudar,cfgAvisos){
   hi.addEventListener('input',function(){ st.hi=Math.max(+hi.value,st.lo); aparar(); pintar(); });
   lo.addEventListener('change',mudou);
   hi.addEventListener('change',mudou);
-  de.addEventListener('change',function(){ st.lo=+de.value; if(st.lo>st.hi) st.hi=st.lo; mudou(); });
-  ate.addEventListener('change',function(){ st.hi=+ate.value; if(st.hi<st.lo) st.lo=st.hi; mudou(); });
   q('[data-r="todos"]').addEventListener('click',function(){ st.lo=0; st.hi=ult; st.fora.clear(); mudou(); });
   q('.regua-anos').addEventListener('click',function(ev){
     const b=ev.target.closest('.ano-exec'); if(!b) return;
@@ -3574,6 +3574,15 @@ function mostrarBV(i){
   const t=$('#bvTempo'); t.classList.remove('corre'); void t.offsetWidth;
   if(_bvIdx<n-1) t.classList.add('corre');
 }
+/* "Não mostrar novamente": preferência deste navegador, sem efeito se o armazenamento estiver bloqueado. */
+const BV_CHAVE='webmapp.essencial.bvDispensada';
+function bvDispensada(){ try{ return localStorage.getItem(BV_CHAVE)==='1'; }catch(e){ return false; } }
+function bvDispensar(sim){ try{ if(sim) localStorage.setItem(BV_CHAVE,'1'); else localStorage.removeItem(BV_CHAVE); }catch(e){} }
+function abrirBoasVindasInicial(){
+  const c=document.getElementById('bvNaoMostrar');
+  if(c){ c.checked=bvDispensada(); c.addEventListener('change',function(){ bvDispensar(c.checked); }); }
+  if(!bvDispensada()) abrirBoasVindas();
+}
 function abrirBoasVindas(){
   if(!$('#bvPalco').children.length) montarBoasVindas();
   _focoAntesBV=document.activeElement;
@@ -3733,7 +3742,7 @@ function iniciarEss(){
   irParaAba('base');
   if(typeof XLSX==='undefined')
     $('#progressoTexto').textContent='As bibliotecas externas não foram carregadas. Verifique a conexão e recarregue a página.';
-  abrirBoasVindas();
+  abrirBoasVindasInicial();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciarEss); else iniciarEss();
 $('#btnTrocarBase').addEventListener('click',function(){ $('#arquivo').click(); });

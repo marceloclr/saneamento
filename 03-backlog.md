@@ -34,6 +34,10 @@ abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessã
   filtro e seção na ficha. Sessão em formato 2, versionada no nome
   (`DDMMAAAA-HHMM-Vnn.json`), gravada e retomada no computador, no GitHub ou nos
   dois, à escolha do usuário.
+- Régua sem De/Até, alças e pílulas alinhadas (uma coluna por ano, rolagem lateral em tela
+  estreita), recálculo ao soltar; grade do saldo com um ano por coluna, coluna do
+  agrupamento fixa e abertura encostada à direita (setas rolam); "Não mostrar novamente"
+  nas boas-vindas das duas versões (localStorage).
 - Enxugamento das telas (versão completa): abas do alto com número e subtítulo, sem a
   faixa repetida; Visão Geral na ordem rito → Saldo → inconsistências → Programação →
   gráficos, demais blocos recolhidos; saíram Regras aplicadas, Parâmetros em vigor e os
