@@ -28,6 +28,13 @@ abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessã
 
 ## Lote de 23/09/2026 — concluído
 
+- Manifestação dos órgãos reintroduzida em outro modelo (o registro manual do item 2
+  do lote de setembro não volta): rodadas de planilhas protegidas por órgão, com
+  ExcelJS e JSZip, conferência dos retornos pelo controle interno e token por linha,
+  filtro e seção na ficha. Sessão em formato 2, versionada no nome
+  (`DDMMAAAA-HHMM-Vnn.json`), gravada e retomada no computador, no GitHub ou nos
+  dois, à escolha do usuário.
+
 - Linha totalizadora e cabeçalho fixo das grades com fundo sólido nas duas versões
   (colunas `.corrente` e `.novo-programado` passaram a camada sobre `--papel-2`).
 - Boas-vindas de abertura (`modalBV`): passo a passo animado em cinco etapas, só no

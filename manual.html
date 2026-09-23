@@ -396,6 +396,14 @@ const GUIA_COMPLETA = [
     fazer:['Filtrar por secretaria, órgão, programa, ano de aprovação, regra, estágio, situação da revisão, execução, saldo mínimo, confiança, fonte e busca livre.','Ordenar por qualquer coluna, clicando no cabeçalho.','Abrir a ficha do MAPP para ver todas as regras testadas e suas evidências.'],
     conferir:['A ação recomendada e o grau de confiança de cada MAPP.','Os totais filtrados, na linha totalizadora da grade.'],
     cautela:['Filtro vazio significa ausência de restrição.','Casos de múltiplas regras, paralisados e dados insuficientes exigem exame manual.'] },
+  { t:'Enviar planilhas aos órgãos', cor:'var(--petroleo)', ir:['saneamento'], onde:'Decisão › Manifestação dos órgãos',
+    fazer:['Escolher os órgãos (sem marcação, todos os que têm MAPP enquadrado) e o prazo para resposta.','Acionar **Gerar planilhas**: um órgão gera um .xlsx; vários, um .zip.','Escolher onde gravar a nova versão da sessão e enviar as planilhas pelo canal oficial (SEI ou e-mail).'],
+    conferir:['Os nomes casados: `DDMMAAAA-HHMM-Vnn-ÓRGÃO.xlsx` e `DDMMAAAA-HHMM-Vnn.json`.','A rodada no quadro Rodadas, com a data-limite, e o lançamento na auditoria.'],
+    cautela:['Guarde o .json da rodada: sem ele retomado, os retornos não são aceitos.','Na planilha, só as colunas de resposta são editáveis; a proteção evita estragos acidentais, mas não é segurança.','Para cobrar quem não respondeu, marque **Somente MAPPs sem manifestação** e gere nova rodada.'] },
+  { t:'Importar as manifestações dos órgãos', cor:'var(--petroleo)', ir:['saneamento'], onde:'Decisão › Manifestação dos órgãos › Retornos',
+    fazer:['Retomar a sessão da rodada (ou posterior) com a mesma base importada.','Soltar as planilhas devolvidas na área de retornos, várias de uma vez.','Examinar a conferência e acionar **Registrar**; depois, gravar a nova versão da sessão.'],
+    conferir:['Por arquivo: respondidas, com pendência, em branco e ignoradas.','A manifestação na ficha do MAPP e no filtro **Manifestação do órgão** do diagnóstico.'],
+    cautela:['O controle interno decide a rodada, não o nome do arquivo; planilha de rodada desconhecida é rejeitada.','Linha com chave alterada é ignorada; resposta incompleta entra com pendência; retorno após a data-limite é marcado como intempestivo.','A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.'] },
   { t:'Registrar a decisão humana', cor:'var(--ameixa)', ir:['diagnostico'], onde:'Análise › Diagnóstico, ou ficha do MAPP',
     fazer:['Selecionar um ou mais MAPPs.','Acionar **Acatar recomendação** ou **Rejeitar recomendação**: o registro é imediato.'],
     conferir:['A situação da revisão atualizada na grade.','O lançamento correspondente no registro de auditoria.'],
@@ -420,10 +428,10 @@ const GUIA_COMPLETA = [
     fazer:['Exportar as relações específicas necessárias, uma a uma, ou a **Base consolidada em CSV**.','Acionar **Exportar auditoria** para o registro integral.'],
     conferir:['MAPP, regra, campo, valor anterior, valor novo, responsável, data e justificativa em cada lançamento.'],
     cautela:['A base original exportada é reconstruída a partir dos dicionários, sem alteração.'] },
-  { t:'Guardar e retomar a sessão', cor:'var(--musgo)', ir:null, onde:'Botões Guardar sessão e Retomar sessão, no alto',
-    fazer:['Acionar **Guardar sessão** ao fim de cada jornada de trabalho.','Em nova jornada, importar a mesma base e acionar **Retomar sessão**.'],
-    conferir:['A mensagem de retomada com a quantidade de decisões restauradas.'],
-    cautela:['O arquivo .json guarda decisões, exclusões, configurações, anos do Novo Programado e auditoria, mas não a base de dados.','Nada fica gravado no navegador: sem a sessão guardada, o trabalho se perde ao fechar a página.'] }
+  { t:'Guardar e retomar a sessão', cor:'var(--musgo)', ir:null, onde:'Botões Guardar sessão e Retomar sessão, no alto; Configurações › Sessão e armazenamento',
+    fazer:['Acionar **Guardar sessão** ao fim de cada jornada e escolher onde gravar: no computador, no GitHub ou nos dois.','Para usar o GitHub, informar em Configurações o repositório privado, a branch, a pasta e o token, e acionar **Testar conexão**.','Em nova jornada, importar a mesma base e acionar **Retomar sessão**, a partir do computador ou do GitHub.'],
+    conferir:['O nome versionado `DDMMAAAA-HHMM-Vnn.json`: a versão sobe a cada gravação e a mais recente é a de maior número.','A mensagem de retomada com decisões, exclusões, rodadas e manifestações restauradas.'],
+    cautela:['O .json guarda decisões, exclusões, configurações, anos do Novo Programado, rodadas, manifestações e auditoria, mas não a base de dados.','O token fica só na memória desta janela; use repositório privado, pois a sessão traz nomes e manifestações.','Nada fica gravado no navegador: sem a sessão guardada, o trabalho se perde ao fechar a página.'] }
 ];
 
 const GUIA_ESSENCIAL = [
@@ -501,7 +509,8 @@ const COMPARATIVO = [
   ['Despesas de continuidade (segunda fase)','sim','—'],
   ['Antes e depois','sim','—'],
   ['Exportação do resultado','resultado, relações e auditoria','base saneada'],
-  ['Guardar e retomar sessão (.json)','sim','—']
+  ['Manifestação dos órgãos (planilhas por órgão)','sim','—'],
+  ['Guardar e retomar sessão (.json)','no computador ou no GitHub','—']
 ];
 
 const GLOSSARIO = [
@@ -519,7 +528,11 @@ const GLOSSARIO = [
   ['Novo Programado 2027','VLR_PLANEJADO_27 somado aos saldos (programado − empenhado) dos exercícios escolhidos; saldo negativo não é somado e o MAPP é apontado como inconsistente.','completa'],
   ['Providência','Coluna que retira um MAPP do resultado ou o devolve a ele, de imediato e de forma reversível. Na versão completa, o ato é auditado.','ambas'],
   ['Excluído do saneamento','Na versão essencial, MAPP alcançado por regra que não recebe a ação da regra e permanece na base como está.','essencial'],
-  ['Responsável pelas ações','Nome informado em Configurações e lançado em cada registro de auditoria.','completa']
+  ['Responsável pelas ações','Nome informado em Configurações e lançado em cada registro de auditoria.','completa'],
+  ['Rodada','Envio de planilhas protegidas aos órgãos, com identificador próprio, data-limite e a versão da sessão em que foi gerada.','completa'],
+  ['Manifestação do órgão','Resposta do órgão na planilha da rodada: de acordo com a ação proposta, ou contestação (inclui pedido de reativação), com justificativa e previsão de execução.','completa'],
+  ['Intempestiva','Manifestação com data posterior à data-limite da rodada; é aceita e sinalizada.','completa'],
+  ['Versão da sessão','Número Vnn no nome do .json (DDMMAAAA-HHMM-Vnn); sobe a cada gravação.','completa']
 ];
 
 function htmlSaldo(){
@@ -592,7 +605,8 @@ const BLOCOS_SCRIPT = [
   ['7','Saneamento final','Conjunto enquadrado, exclusão individual, encerramento e exportação do resultado.','`conjuntoEnquadrado` `celulaProvidencia` `ocultarMapps` `restabelecerMapps` `finalizarSaneamento` `exportarResultadoFinal`'],
   ['8','Antes e Depois','Situação antes e depois das decisões, por medida e por órgão (ou outro agrupamento).','`situacaoAntes` `situacaoDepois` `apurarAntesDepois` `renderAntesDepois`'],
   ['9','Exportações e ligações','Relações exportáveis, configurações, sessão em .json, ligação de eventos e inicialização.','`linhasMapp` `conjuntos` `exportar` `cfgParaTela` `aplicarConfig` `guardarSessao` `retomarSessao` `ligarEventos` `iniciar`'],
-  ['10','Boas-vindas, apresentação e manual','Boas-vindas de abertura, apresentação completa e ligação com o manual único (`manual.html`). Somente leitura do estado.','`abrirBoasVindas` `abrirApresentacao` `abrirManual` `estadoParaManual` `enviarEstadoManual` `iniciarManual`']
+  ['10','Boas-vindas, apresentação e manual','Boas-vindas de abertura, apresentação completa e ligação com o manual único (`manual.html`). Somente leitura do estado.','`abrirBoasVindas` `abrirApresentacao` `abrirManual` `estadoParaManual` `enviarEstadoManual` `iniciarManual`'],
+  ['11','Manifestação e sessão','Rodadas de planilhas por órgão (ExcelJS e JSZip), conferência dos retornos, sessão versionada e gravação no computador ou no GitHub.','`gerarRodada` `montarPlanilhaOrgao` `importarRetornos` `aplicarRetornos` `situacaoManif` `gravarSessao` `aplicarSessao` `githubGravar` `githubListar` `perguntar`']
 ];
 
 const CHAVES_E = [
@@ -607,7 +621,9 @@ const CHAVES_E = [
   ['auditoria · seq · responsavel','Registro integral das alterações, sequencial e último responsável informado.'],
   ['qualidade · fase2 · saldo · ad','Achados de consistência, indícios da segunda fase, saldo por exercício e quadro Antes e Depois.'],
   ['filtro · ordem · pagina · porPagina','Estado da grade do diagnóstico; os equivalentes com sufixo `San` servem ao saneamento final.'],
-  ['passo','Etapa corrente do rito, pintada por `pintarFluxo`.']
+  ['passo','Etapa corrente do rito, pintada por `pintarFluxo`.'],
+  ['versaoSessao · rodadas · manifestacoes','Contador de gravações da sessão (Vnn), rodadas de envio aos órgãos e manifestações vigentes por chave, com histórico.'],
+  ['destinoSessao · github','Destino preferido da gravação e repositório, branch e pasta do GitHub; o token fica só na memória e nunca vai ao .json.']
 ];
 
 const MAPAS_ROTULO = [
@@ -622,7 +638,7 @@ const MAPAS_ROTULO = [
 const TECNICO = [
   { id:'t-arq', t:'Arquitetura do projeto', cor:'var(--grafite)', html:function(){
     return '<p>'+fmtTexto('O projeto tem três páginas autônomas, sem servidor nem etapa de construção: `index.html` (versão completa), `simplificado/index.html` (versão essencial) e `manual.html` (este manual, único para as duas versões).')+'</p>'+
-      '<p>'+fmtTexto('A versão completa é um único arquivo HTML: o `<head>` concentra todo o CSS, o `<body>` traz a marcação estática e dez blocos `<script>` sequenciais, em JavaScript simples, sem módulos nem framework, compartilham o escopo global. Não há uso de `localStorage` nem de qualquer armazenamento do navegador.')+'</p>'+
+      '<p>'+fmtTexto('A versão completa é um único arquivo HTML: o `<head>` concentra todo o CSS, o `<body>` traz a marcação estática e onze blocos `<script>` sequenciais, em JavaScript simples, sem módulos nem framework, compartilham o escopo global. Não há uso de `localStorage` nem de qualquer armazenamento do navegador.')+'</p>'+
       '<p>'+fmtTexto('O botão **Manual** de cada versão abre `manual.html?versao=completa` ou `?versao=essencial` numa janela nomeada. O manual conversa com o sistema por `postMessage`: pede o estado (`tipo:\'pronto\'`), recebe os números da sessão, os textos das regras e os parâmetros em vigor (`tipo:\'estado\'`) e pede a abertura de telas (`tipo:\'ir\'`). Cada seção do manual declara a versão a que pertence.')+'</p>'+
       tabela(['Bloco','Nome','Responsabilidade','Funções principais'],BLOCOS_SCRIPT.map(function(b){ return [b[0],b[1],b[2],b[3]]; }),'manTabBlocos');
   }},
@@ -670,6 +686,13 @@ const TECNICO = [
       ['Acrescentar um item a `conjuntos()` com `id`, `nome`, `aba` (até 31 caracteres), `dica` e `dados`.','Para uma exportação avulsa, compor as linhas e usar `exportarLista(lista,nome)`.'].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ol>'+
       codigo("{ id:'exemplo', nome:'Relação de exemplo', aba:'EXEMPLO',\n  dica:'O que a relação contém.',\n  dados:function(){ return linhasMapp(E.diag.paralisados); } }");
   }},
+  { id:'t-manif', t:'Manifestações, sessão versionada e GitHub', cor:'var(--petroleo)', html:function(){
+    return '<p>'+fmtTexto('**Rodada.** `gerarRodada` agrupa por órgão os MAPPs de `conjuntoEnquadrado()` não ocultados e chama `montarPlanilhaOrgao` (ExcelJS) para cada um. Cada planilha tem as abas INSTRUÇÕES, MAPPS e CONTROLE (`veryHidden`). Na aba MAPPS, só as colunas H a L têm `protection.locked=false`; as listas de manifestação vêm de `RESPOSTAS[regra]` e a coluna oculta CONTROLE traz `cyrb53(rodada|órgão|chave)`. As planilhas vão num .zip (JSZip) quando há mais de um órgão.')+'</p>'+
+      '<p>'+fmtTexto('**Retorno.** `importarRetornos` lê cada arquivo com o SheetJS, localiza a rodada pelo CONTROLE (nunca pelo nome), confere o token de cada linha e as exigências da regra, mostra a conferência em `perguntar` e, confirmada, `aplicarRetornos` grava `E.manifestacoes`, lança na auditoria e atualiza os retornos da rodada.')+'</p>'+
+      '<p>'+fmtTexto('**Sessão formato 2.** `gravarSessao` incrementa `E.versaoSessao`, nomeia `DDMMAAAA-HHMM-Vnn.json` e grava no destino escolhido; `aplicarSessao` aceita os formatos 1 e 2 e avisa quando `assinaturaBase` não bate com a base importada.')+'</p>'+
+      codigo("{ formato:2, versao:3, nome:'23092026-1435-V03.json', assinaturaBase:'…',\n  cfg, decisoes, exclusoes, encerramento, auditoria, responsavel, seq, npAnos,\n  rodadas:[{ id, versao, geradaEm, prazoDias, dataLimite,\n    orgaos:[{ orgao, arquivo, itens:{ chave: regra }, hash, retornos:[] }] }],\n  manifestacoes:{ chave:{ rodada, orgao, regra, resposta, sentido, justificativa,\n    previsao, responsavelOrgao, dataOrgao, arquivo, intempestiva, pendencias, historico } },\n  cfgSessao:{ destino, github:{ repo, branch, pasta } } }")+
+      '<p>'+fmtTexto('**GitHub.** `githubGravar` usa `PUT /repos/{dono}/{repo}/contents/{pasta}/{arquivo}` com o conteúdo em base64; cada versão é um arquivo novo. `githubListar` e `githubLer` (`Accept: application/vnd.github.raw`) servem a **Retomar sessão**. O token vem do campo de Configurações e fica só em `E.github.token`.')+'</p>';
+  }},
   { id:'t-conv', t:'Convenções de trabalho e de interface', cor:'var(--sepia)', html:function(){
     return '<ul>'+[
       'Alterações cirúrgicas, por substituição de trechos; cada entrega vai em commit próprio no repositório.',
@@ -704,8 +727,9 @@ const TECNICO = [
       '<h4 style="margin:10px 0 6px">Limitações conhecidas</h4><ul>'+[
       'A base não traz percentual de execução física; a regra 4 apoia-se exclusivamente no estágio registrado.',
       'O indicador `Sem Exec 23-26` cobre faixa fixa; fora dela o cotejo é suspenso, sem acusar inconsistência.',
-      'Prazos e manifestações dos órgãos não são controlados pelo sistema; os prazos figuram apenas como texto e parâmetro.',
-      'Sem persistência no navegador: o trabalho só se conserva pela sessão em .json.',
+      'A proteção das planilhas dos órgãos evita alteração acidental, mas não é segurança: a autenticidade de cada linha vem do token conferido na importação.',
+      'Os retornos só são aceitos com a sessão da rodada (ou posterior) retomada, pois é ela que registra a rodada.',
+      'Sem persistência no navegador: o trabalho só se conserva pela sessão em .json, gravada no computador ou no GitHub.',
       'Sem conexão, as bibliotecas de CDN não carregam e a importação fica indisponível.',
       'O manual mostra os números da sessão e o atalho “Ir para a tela” apenas quando aberto pelo botão Manual do sistema.'
       ].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul>';

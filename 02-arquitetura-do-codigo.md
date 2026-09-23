@@ -1,7 +1,7 @@
 # Arquitetura do `index.html`
 
 Arquivo único, cerca de 350 KB: `<head>` com todo o CSS, `<body>` com
-a marcação, e dez blocos `<script>` sequenciais. Tudo em JavaScript simples, sem
+a marcação, e onze blocos `<script>` sequenciais. Tudo em JavaScript simples, sem
 módulos nem framework. Nenhum uso de `localStorage`.
 
 ## Blocos de script, na ordem
@@ -36,6 +36,11 @@ módulos nem framework. Nenhum uso de `localStorage`.
    (`BV_PASSOS`, `abrirBoasVindas`, `mostrarBV`), ligação com o manual único
    (`abrirManual`, `estadoParaManual`, `enviarEstadoManual`, chamada ao fim de
    `renderTudo`), `iniciarManual`. Apenas lê o estado `E`; nada altera.
+11. **Manifestação e sessão** — rodadas de planilhas por órgão (`gerarRodada`,
+   `montarPlanilhaOrgao`, com ExcelJS e JSZip), conferência dos retornos
+   (`importarRetornos`, `aplicarRetornos`), situação por MAPP (`situacaoManif`),
+   sessão versionada (`gravarSessao`, `aplicarSessao`) e GitHub (`githubGravar`,
+   `githubListar`, `githubLer`); diálogo de escolha `perguntar`, sobre o `#modal`.
 
 ## Estado global `E`
 
@@ -43,7 +48,8 @@ módulos nem framework. Nenhum uso de `localStorage`.
 `linhas` (registros dicionarizados, valores em `Float64Array`), `mapps`
 (consolidados), `indice`, `cfg`, `decisoes`, `exclusoes`, `auditoria`,
 `encerramento`, `diag`, `qualidade`, `fase2`, `saldo`, `ad`, filtros, paginação e
-gráficos. A base original é reconstruída para exportação a partir dos dicionários.
+gráficos; no bloco 11, `versaoSessao`, `rodadas`, `manifestacoes`, `destinoSessao` e
+`github` (o token nunca vai ao `.json`). A base original é reconstruída para exportação a partir dos dicionários.
 
 ## Abas e identificadores
 
@@ -56,6 +62,22 @@ Configurações em gaveta lateral `gavetaConfig`, aberta pelo botão do alto.
 
 Rótulo e identificador são coisas distintas: identificadores permanecem, rótulos
 mudam por mapa.
+
+## Sessão formato 2 e rodadas de manifestação
+
+`gravarSessao` incrementa `E.versaoSessao` e grava `DDMMAAAA-HHMM-Vnn.json` no destino
+escolhido pelo usuário (computador, GitHub ou ambos). O `.json` acrescenta ao formato 1
+`formato`, `versao`, `nome`, `assinaturaBase`, `rodadas`, `manifestacoes` e `cfgSessao`;
+`aplicarSessao` aceita os dois formatos.
+
+Cada planilha de rodada tem as abas INSTRUÇÕES, MAPPS (protegida; só H a L
+editáveis, listas por regra em `RESPOSTAS`, coluna oculta com
+`cyrb53(rodada|órgão|chave)`) e CONTROLE (`veryHidden`: rodada, versão, órgão, datas,
+hash). Na importação manda o CONTROLE, não o nome do arquivo. A senha de proteção é
+só contra alteração acidental.
+
+GitHub: API de conteúdo (`PUT`/`GET /repos/{dono}/{repo}/contents/{pasta}/…`), token
+fine-grained com *Contents: read and write* num repositório privado de dados.
 
 ## Manual único (`manual.html`)
 

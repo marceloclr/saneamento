@@ -12,6 +12,12 @@ Abra `index.html` diretamente no navegador (ou acesse a URL acima) e importe a p
 
 Arquivo único de aproximadamente 300 KB, sem dependências de build: `<head>` com todo o CSS, `<body>` com a marcação e nove blocos `<script>` sequenciais em JavaScript puro (sem módulos ou framework). Detalhes completos em [`02-arquitetura-do-codigo.md`](02-arquitetura-do-codigo.md).
 
+## Manifestação dos órgãos e sessão
+
+Na área **Decisão**, o bloco *Manifestação dos órgãos* gera uma planilha protegida por órgão (só as colunas de resposta são editáveis) com os MAPPs enquadrados nas Regras 1 a 4, e grava junto a nova versão da sessão, com nomes casados `DDMMAAAA-HHMM-Vnn.json` e `DDMMAAAA-HHMM-Vnn-ÓRGÃO.xlsx`. Os órgãos devolvem as planilhas pelo canal oficial; o sistema confere cada uma pelo controle interno (rodada e token por linha), registra as manifestações e as mostra na ficha, no filtro do diagnóstico e na auditoria. A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.
+
+A sessão pode ser gravada e retomada **no computador, num repositório GitHub privado ou nos dois**, à escolha do usuário a cada gravação (Configurações › Sessão e armazenamento). O token do GitHub fica só na memória da janela.
+
 ## Manual
 
 Um único manual, [`manual.html`](manual.html), atende às duas versões. O botão **Manual**, no alto de cada sistema, abre o manual em janela própria já na versão correspondente (`?versao=completa` ou `?versao=essencial`); aberto pelo sistema, o manual mostra os números da sessão e leva o sistema à tela de cada passo do guia. Também pode ser aberto diretamente em https://marceloclr.github.io/saneamento/manual.html, com seletor de versão no alto.

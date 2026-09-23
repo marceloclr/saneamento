@@ -10,6 +10,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ============================================================
    Sistema visual — paleta discreta de repartição pública
@@ -608,8 +610,8 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     </div>
     <div class="topo-acoes">
       <div class="topo-botoes">
-        <button class="btn discreto" id="btnSessaoSalvar" data-tip="Grava um arquivo .json com as decisões, as exclusões, as configurações e o registro de auditoria desta sessão. A base de dados não é incluída.">Guardar sessão</button>
-        <button class="btn discreto" id="btnSessaoAbrir" data-tip="Restaura decisões, exclusões e configurações a partir de um arquivo de sessão previamente guardado.">Retomar sessão</button>
+        <button class="btn discreto" id="btnSessaoSalvar" data-tip="Grava uma nova versão da sessão (DDMMAAAA-HHMM-Vnn.json) com decisões, exclusões, configurações, rodadas, manifestações dos órgãos e auditoria — no computador, no GitHub ou nos dois, à sua escolha. A base de dados não é incluída." data-tip-t="Guardar sessão">Guardar sessão</button>
+        <button class="btn discreto" id="btnSessaoAbrir" data-tip="Restaura uma versão da sessão a partir de um arquivo do computador ou do repositório GitHub configurado. Importe antes a mesma base de execução." data-tip-t="Retomar sessão">Retomar sessão</button>
         <button class="btn discreto" id="btnApresentacao" data-tip="Abre a apresentação completa: resumo técnico, fluxo de trabalho do saneamento com acesso direto a cada etapa, cadeia de fundamentação e regras em vigor." data-tip-t="Apresentação completa">Apresentação</button>
         <button class="btn discreto" id="btnManual" data-tip="Abre o manual em nova janela: guia de operação passo a passo, conceitos e regras e manual técnico. O mesmo manual atende à versão essencial e mostra o conteúdo desta versão." data-tip-t="Manual">Manual</button>
         <button class="btn discreto" id="btnConfig" data-tip="Abre o painel de parâmetros: âncora temporal, critério de execução, universo de análise, prazos e limiares. Toda alteração é aplicada de imediato, auditada e obriga o recálculo." data-tip-t="Configurações">Configurações</button>
@@ -814,6 +816,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span>Saldo do programado mínimo (R$) <i class="sigla" tabindex="0" data-tip="Considera o saldo do programado do MAPP: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores.">?</i></span><select id="fValorMin"><option value="0" selected>Sem valor mínimo</option><option value="10000">A partir de R$ 10 mil</option><option value="50000">A partir de R$ 50 mil</option><option value="100000">A partir de R$ 100 mil</option><option value="500000">A partir de R$ 500 mil</option><option value="1000000">A partir de R$ 1 milhão</option><option value="5000000">A partir de R$ 5 milhões</option><option value="10000000">A partir de R$ 10 milhões</option><option value="50000000">A partir de R$ 50 milhões</option><option value="100000000">A partir de R$ 100 milhões</option></select></label>
       <label class="campo"><span>Confiança <i class="sigla" tabindex="0" data-tip="Grau de suficiência probatória do enquadramento: alta, média ou baixa.">?</i></span><select id="fConfianca"></select></label>
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. O saldo do programado da linha continua somando todas as fontes do MAPP — a ficha mostra a quebra por fonte.">?</i></span><select id="fFonte"></select></label>
+      <label class="campo"><span>Manifestação do órgão <i class="sigla" tabindex="0" data-tip="Situação do MAPP nas rodadas de manifestação: não enviado, aguardando retorno, prazo vencido sem retorno, de acordo com a ação proposta ou contestando (inclui pedidos de reativação)." data-tip-t="Manifestação do órgão">?</i></span><select id="fManif"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa.">?</i></span><input type="text" id="fBusca" placeholder="código, título, órgão…"></label>
     </div>
     <div class="barra-acoes" style="margin-top:12px">
@@ -979,6 +982,30 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
         </div>
       </div>
     </div>
+  </div>
+  <div class="bloco" id="blocoManif" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
+    <header><h2>Manifestação dos órgãos</h2><span class="legenda" id="manifLegenda"></span></header>
+    <div class="aviso nota"><span class="marca">Rodada</span><span>Gera uma planilha protegida por órgão com os MAPPs enquadrados nas Regras 1 a 4 e ainda mantidos no saneamento; só as colunas de resposta ficam editáveis. Junto sai a nova versão da sessão, com o mesmo prefixo <span class="mono">DDMMAAAA-HHMM-Vnn</span>. Na devolução, o controle interno de cada planilha confirma a que rodada ela pertence. A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.</span></div>
+    <div class="grade g3" style="margin-top:12px">
+      <label class="campo"><span>Órgãos <i class="sigla" tabindex="0" data-tip="Órgãos que recebem planilha nesta rodada. Sem marcação, todos os que têm MAPP enquadrado. Um órgão gera um .xlsx; vários, um .zip." data-tip-t="Órgãos">?</i></span><select id="mOrgao"></select></label>
+      <label class="campo"><span>Prazo para resposta <i class="sigla" tabindex="0" data-tip="Dias corridos a partir da geração. A data-limite vai impressa na planilha; retornos posteriores são aceitos e marcados como intempestivos." data-tip-t="Prazo">?</i></span>
+        <select id="mPrazo"><option value="15">15 dias</option><option value="30" selected>30 dias</option><option value="45">45 dias</option><option value="60">60 dias</option><option value="120">120 dias</option></select></label>
+      <div class="campo" style="display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--tinta-3)"><span>Reenvio</span><label class="chk" style="font-size:13px;color:var(--tinta);padding-top:6px" data-tip="Deixa de fora os MAPPs que já têm manifestação registrada — útil para cobrar quem não respondeu."><input type="checkbox" id="mSoPendentes"> Somente MAPPs sem manifestação</label></div>
+    </div>
+    <div class="barra-acoes" style="margin-top:12px">
+      <button class="btn principal" id="btnGerarRodada" data-tip="Gera as planilhas dos órgãos selecionados, registra a rodada na auditoria e grava a nova versão da sessão (no computador, no GitHub ou nos dois).">Gerar planilhas</button>
+      <span class="tenue pequeno" id="mResumoGeracao"></span>
+    </div>
+    <h4 style="margin:16px 0 6px">Retornos dos órgãos</h4>
+    <div class="area-solta compacta" id="areaRetornos" role="button" tabindex="0" data-tip="Clique para escolher as planilhas devolvidas pelos órgãos, ou arraste várias de uma vez. Antes de registrar, o sistema mostra a conferência de cada arquivo." data-tip-t="Retornos">
+      <span class="texto-arq"><strong>Escolha ou arraste as planilhas devolvidas</strong><span class="pequeno tenue">várias de uma vez · a sessão da rodada precisa estar retomada</span></span>
+      <input type="file" id="arqRetornos" accept=".xlsx" multiple class="oculto">
+    </div>
+    <h4 style="margin:16px 0 6px">Rodadas</h4>
+    <div class="tabela-caixa" style="max-height:30vh"><table id="tabRodadas"><thead><tr><th>Rodada</th><th class="num">Versão</th><th>Órgão</th><th class="num">MAPPs</th><th class="num">Respondidos</th><th class="num">Responder até</th><th>Situação</th></tr></thead><tbody></tbody></table></div>
+    <h4 style="margin:16px 0 6px">Manifestações registradas</h4>
+    <div class="tabela-caixa" style="max-height:40vh"><table id="tabManif"><thead><tr><th>MAPP</th><th>Órgão</th><th>Regra</th><th>Manifestação</th><th>Justificativa</th><th class="num">Previsão</th><th>Responsável no órgão</th><th class="num">Data</th><th>Decisão</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportarManif" data-tip="Exporta todas as manifestações registradas, com sentido, pendências, arquivo de origem e a decisão atual.">Exportar manifestações</button></div>
   </div>
 </section>
 
@@ -1146,6 +1173,20 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span>Título genérico — máximo de palavras <i class="sigla" tabindex="0" data-tip="Títulos com até este número de palavras são apontados como pouco informativos.">?</i></span><select id="cfgTituloPalavras"><option value="1">1 palavra</option><option value="2">2 palavras</option><option value="3" selected>3 palavras</option><option value="4">4 palavras</option><option value="5">5 palavras</option><option value="6">6 palavras</option><option value="7">7 palavras</option><option value="8">8 palavras</option></select></label>
       <label class="campo"><span>Semelhança de título para fusão (%) <i class="sigla" tabindex="0" data-tip="Percentual mínimo de coincidência entre os radicais dos títulos para sugerir agrupamento.">?</i></span><select id="cfgSemelhanca"><option value="50">50%</option><option value="55">55%</option><option value="60">60%</option><option value="65">65%</option><option value="70" selected>70%</option><option value="75">75%</option><option value="80">80%</option><option value="85">85%</option><option value="90">90%</option><option value="95">95%</option><option value="100">100%</option></select></label>
     </div>
+  </div>
+  <div class="bloco" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
+    <header><h2>Sessão e armazenamento</h2><span class="legenda" id="estadoSessao"></span></header>
+    <div class="aviso nota"><span class="marca">GitHub</span><span>Use um repositório <strong>privado</strong>, só para os dados (por exemplo, <span class="mono">marceloclr/saneamento-dados</span>): a sessão traz decisões, nomes de responsáveis e manifestações dos órgãos. O token (fine-grained, só <em>Contents: read and write</em> nesse repositório) fica apenas na memória desta janela e é pedido de novo a cada abertura. Estes campos valem de imediato, sem recálculo.</span></div>
+    <div class="grade g3" style="margin-top:10px">
+      <label class="campo"><span>Destino da sessão <i class="sigla" tabindex="0" data-tip="Onde gravar cada nova versão do .json. A escolha é oferecida de novo a cada gravação, já com esta opção marcada." data-tip-t="Destino da sessão">?</i></span>
+        <select id="cfgDestino"><option value="local">No computador (download)</option><option value="github">No GitHub</option><option value="ambos">No computador e no GitHub</option></select></label>
+      <label class="campo"><span>Repositório (dono/nome)</span><input type="text" id="ghRepo" placeholder="marceloclr/saneamento-dados" autocomplete="off"></label>
+      <label class="campo"><span>Token de acesso</span><input type="password" id="ghToken" placeholder="github_pat_…" autocomplete="off"></label>
+      <label class="campo"><span>Branch</span><input type="text" id="ghBranch" placeholder="main" autocomplete="off"></label>
+      <label class="campo"><span>Pasta</span><input type="text" id="ghPasta" placeholder="sessoes" autocomplete="off"></label>
+      <div class="campo" style="display:flex;flex-direction:column;gap:4px;font-size:11.5px"><span>&nbsp;</span><button class="btn" id="btnTestarGitHub" data-tip="Lista a pasta configurada para confirmar repositório, branch e token.">Testar conexão</button></div>
+    </div>
+    <div class="pequeno tenue" id="ghEstado" style="margin-top:6px"></div>
   </div>
   <div class="barra-acoes">
     <button class="btn principal" id="btnAplicarConfig" data-tip="Aplica as alterações de imediato, sem diálogo, registra-as na auditoria e recalcula integralmente o diagnóstico.">Aplicar e recalcular</button>
@@ -2798,6 +2839,7 @@ function renderTudo(){
     ['Despesas de continuidade',renderFase2], ['Auditoria',renderAuditoria],
     ['Exportações',renderExportacoes], ['Selo da base',atualizarSelo],
     ['Gráficos',desenharGraficos], ['Cabeçalhos',prepararCabecalhos],
+    ['Manifestações',function(){ prepararFiltrosManif(); renderManifestacoes(); }],
     ['Manual',enviarEstadoManual]
   ];
   const falhas=[];
@@ -3474,7 +3516,9 @@ function prepararFiltros(){
   const fontesSet=new Set();
   E.mapps.forEach(function(m){ m.porFonte.forEach(function(pf){ fontesSet.add(pf.fonte); }); });
   opcoes('#fFonte',Array.from(fontesSet).sort().map(function(v){ return [v,v]; }),'Todas as fontes');
-  ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte'].forEach(montarMulti);
+  opcoes('#fManif',[['nao_enviado','Não enviado'],['aguardando','Aguardando retorno'],['vencido','Prazo vencido sem retorno'],
+    ['acordo','De acordo'],['contesta','Contesta ou solicita']],'Todas');
+  ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte','#fManif'].forEach(montarMulti);
 }
 
 function lerFiltros(){
@@ -3482,7 +3526,7 @@ function lerFiltros(){
     secretaria:valoresMulti('#fSecretaria'), orgao:valoresMulti('#fOrgao'), programa:valoresMulti('#fPrograma'),
     ano:valoresMulti('#fAno'), regra:valoresMulti('#fRegra'), estagio:valoresMulti('#fEstagio'),
     revisao:valoresMulti('#fRevisao'), exec:valoresMulti('#fExec'), confianca:valoresMulti('#fConfianca'),
-    fonte:valoresMulti('#fFonte'),
+    fonte:valoresMulti('#fFonte'), manif:valoresMulti('#fManif'),
     valorMin:parseFloat($('#fValorMin').value)||0,
     busca:norm($('#fBusca').value)
   };
@@ -3499,6 +3543,7 @@ function filtrar(){
     if(!casaMulti(f.estagio,m.estagio)) return false;
     if(!casaMulti(f.confianca,m.d.confianca)) return false;
     if(!casaFonte(f.fonte,m)) return false;
+    if(f.manif.length && f.manif.indexOf(situacaoManif(m.chave))<0) return false;
     if(f.valorMin && m.saldo<f.valorMin) return false;
     if(f.regra.length){
       const atende=f.regra.some(function(r){
@@ -3791,6 +3836,7 @@ function abrirFicha(chave){
     '</div></div>';
 
   const dec=E.decisoes[m.chave];
+  html+=htmlFichaManif(m);
   html+='<div class="ficha-secao"><h4>Decisão</h4><div class="pares">'+
     par('Classificação','<span class="etq '+(d.classificacao==='MÚLTIPLAS REGRAS'?'sobre':'sem')+'">'+esc(d.classificacao)+'</span>')+
     par('Ação recomendada','<strong>'+esc(d.acao)+'</strong>','Recomendação do sistema. Só produz efeito após decisão humana registrada.')+
@@ -5262,33 +5308,15 @@ async function restaurarConfig(){
 
 /* -------------------------------- Sessão --------------------------------- */
 
-function guardarSessao(){
-  const dados={ versao:1, gerado:new Date().toISOString(), arquivo:E.arquivo?E.arquivo.name:'',
-    cfg:E.cfg, decisoes:E.decisoes,
-    auditoria:E.auditoria, responsavel:E.responsavel, seq:E.seq,
-    exclusoes:E.exclusoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao,
-    npAnos:E.npAnos };
-  const url=URL.createObjectURL(new Blob([JSON.stringify(dados,null,1)],{type:'application/json'}));
-  const a=document.createElement('a'); a.href=url; a.download='sessao_saneamento_'+hojeISO()+'.json'; a.click();
-  URL.revokeObjectURL(url);
-  recado('Sessão guardada.');
-}
+/* A gravação e a retomada da sessão vivem no bloco 11 (sessão versionada,
+   destino local ou GitHub). Estas funções mantêm os nomes antigos. */
+function guardarSessao(){ return gravarSessao(); }
 function retomarSessao(file){
   const fr=new FileReader();
   fr.onload=function(){
-    try{
-      const d=JSON.parse(fr.result);
-      E.cfg=Object.assign({},CFG_OFICIAL,d.cfg||{});
-      E.decisoes=d.decisoes||{};
-      E.auditoria=d.auditoria||[]; E.responsavel=d.responsavel||''; E.seq=d.seq||1;
-      E.exclusoes=d.exclusoes||{}; E.encerramento=d.encerramento||null; E.motivoExclusao=d.motivoExclusao||'';
-      if(Array.isArray(d.npAnos)) E.npAnos=d.npAnos.slice();
-      cfgParaTela();
-      if(E.mapps.length){ diagnosticar(); renderTudo(); }
-      else { renderAuditoria(); pintarEncerramento(); }
-      recado('Sessão retomada: '+Object.keys(E.decisoes).length+' decisões, '+
-        Object.keys(E.exclusoes).length+' exclusões e '+E.auditoria.length+' lançamentos.');
-    }catch(err){ recado('Arquivo de sessão inválido.'); }
+    let d;
+    try{ d=JSON.parse(fr.result); }catch(err){ recado('Arquivo de sessão inválido.'); return; }
+    aplicarSessao(d,'computador');
   };
   fr.readAsText(file);
 }
@@ -5315,7 +5343,7 @@ function ligarEventos(){
   area.addEventListener('drop',function(ev){ if(ev.dataTransfer.files[0]) selecionarArquivo(ev.dataTransfer.files[0]); });
   $('#btnProcessar').addEventListener('click',importarComTrava);
 
-  ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte'].forEach(function(s){
+  ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte','#fManif'].forEach(function(s){
     $(s).addEventListener('change',function(){ E.pagina=1; renderDiagnostico(); });
   });
   let t=null;
@@ -5323,7 +5351,7 @@ function ligarEventos(){
     $(s).addEventListener('input',function(){ clearTimeout(t); t=setTimeout(function(){ E.pagina=1; renderDiagnostico(); },260); });
   });
   $('#btnLimparFiltros').addEventListener('click',function(){
-    ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte'].forEach(limparMulti);
+    ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte','#fManif'].forEach(limparMulti);
     $('#fBusca').value=''; $('#fValorMin').value='0';
     E.pagina=1; renderDiagnostico();
   });
@@ -5425,11 +5453,7 @@ function ligarEventos(){
   $('#btnRestaurarConfig').addEventListener('click',restaurarConfig);
 
   $('#btnSessaoSalvar').addEventListener('click',guardarSessao);
-  $('#btnSessaoAbrir').addEventListener('click',function(){
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='.json';
-    inp.addEventListener('change',function(){ if(inp.files[0]) retomarSessao(inp.files[0]); });
-    inp.click();
-  });
+  $('#btnSessaoAbrir').addEventListener('click',escolherOrigemSessao);
 
   document.addEventListener('click',function(ev){
     const tr=ev.target.closest('#tabContinuidade tr[data-chave], #tabProgramacao tr[data-chave], #tabTitulos tr[data-chave]');
@@ -5860,6 +5884,718 @@ function iniciarManual(){
   abrirBoasVindas();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',iniciarManual); else iniciarManual();
+</script>
+<script>
+"use strict";
+/* ==========================================================================
+   11. Manifestação dos órgãos, sessão versionada e gravação no GitHub
+   Fecha o ciclo envio → retorno → registro sem servidor. Cada rodada gera
+   uma planilha protegida por órgão (ExcelJS), com só as células de resposta
+   editáveis, uma aba CONTROLE oculta e um token por linha. A sessão .json
+   ganha versão no nome (DDMMAAAA-HHMM-Vnn) e passa a guardar rodadas e
+   manifestações; as planilhas da rodada levam o mesmo prefixo. Na volta, o
+   controle interno de cada planilha — não o nome do arquivo — decide se ela
+   pertence a uma rodada registrada na sessão. A sessão pode ser gravada no
+   computador, num repositório GitHub privado ou nos dois, à escolha do
+   usuário. Nenhuma manifestação decide nada: acatar ou rejeitar continua
+   sendo ato humano.
+   ========================================================================== */
+
+/* Proteção contra alteração acidental da estrutura; não é segurança. A
+   autenticidade das linhas é conferida pelos tokens na importação. */
+const MANIF_SENHA='saneamento-mapp';
+const MANIF_FORMATO=1;
+
+/* Opções de manifestação por regra. A primeira concorda com a ação proposta;
+   a segunda contesta e exige justificativa (e, quando indicado, previsão). */
+const RESPOSTAS = {
+  '1a':    { opcoes:['De acordo — tornar pendente','Solicita reativação'],                               previsao:true },
+  '1b':    { opcoes:['De acordo — tornar pendente','Manter ativo — execução prevista'],                  previsao:true },
+  '1.2':   { opcoes:['Confirma conclusão física e financeira','Não concluído — há execução prevista'],   previsao:true },
+  '1.3':   { opcoes:['Confirma conclusão física e financeira','Execução física não concluída'],          previsao:false },
+  'sobre': { opcoes:['De acordo com a ação proposta','Discorda — manter ativo'],                         previsao:true }
+};
+const ROTULO_SITUACAO_MANIF = {
+  nao_enviado:'Não enviado', aguardando:'Aguardando retorno', vencido:'Prazo vencido sem retorno',
+  acordo:'De acordo', contesta:'Contesta ou solicita', intempestiva:'Retorno intempestivo', pendencia:'Retorno com pendência'
+};
+
+Object.assign(E,{
+  versaoSessao:0,      /* quantidade de gravações da sessão; nomeia o .json (Vnn) */
+  rodadas:[],          /* rodadas de envio aos órgãos */
+  manifestacoes:{},    /* chave → manifestação vigente, com histórico */
+  destinoSessao:'local', destinoFixo:null, ultimaGravacao:null,
+  github:{ repo:'', branch:'main', pasta:'sessoes', token:'' },
+  _envios:null
+});
+
+/* ------------------------------ Utilitários ------------------------------ */
+
+/* Hash de 53 bits (cyrb53): identifica listas e assina linhas. */
+function cyrb53(str,seed){
+  let h1=0xdeadbeef^(seed||0), h2=0x41c6ce57^(seed||0);
+  for(let i=0,ch;i<str.length;i++){ ch=str.charCodeAt(i); h1=Math.imul(h1^ch,2654435761); h2=Math.imul(h2^ch,1597334677); }
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);
+}
+function dois(n){ return String(n).padStart(2,'0'); }
+function carimboArquivo(d){ return dois(d.getDate())+dois(d.getMonth()+1)+d.getFullYear()+'-'+dois(d.getHours())+dois(d.getMinutes()); }
+function nomeVersionado(v,d){ return carimboArquivo(d||new Date())+'-V'+dois(v); }
+function slugOrgao(nome){ return norm(nome).toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48)||'ORGAO'; }
+function tokenLinha(rodada,orgao,chave){ return cyrb53(rodada+'|'+orgao+'|'+chave); }
+function assinaturaBase(){
+  return E.mapps.length ? cyrb53(E.mapps.map(function(m){ return m.chave; }).sort().join('|')+'#'+E.linhas.length) : '';
+}
+function baixarBlob(blob,nome){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=nome; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); },4000);
+}
+function lerComoBuffer(file){
+  return new Promise(function(ok,falha){
+    const fr=new FileReader();
+    fr.onload=function(){ ok(fr.result); };
+    fr.onerror=function(){ falha(new Error('Não foi possível ler '+file.name+'.')); };
+    fr.readAsArrayBuffer(file);
+  });
+}
+function regraChaveDe(m){ return m.d.regras.length>1 ? 'sobre' : m.d.regras[0]; }
+function rotuloRegraChave(rk){ return rk==='sobre' ? 'Sobreposição' : (REGRAS[rk]?REGRAS[rk].nome+' (item '+REGRAS[rk].doc+')':rk); }
+function dataISOparaBR(iso){ if(!iso) return '—'; const p=String(iso).slice(0,10).split('-'); return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:iso; }
+function hojeFimISO(){ return hojeISO(); }
+
+/* ------------------------------ Diálogo com escolha ------------------------
+   O diálogo genérico #modal, sem uso desde que as ações passaram a dispensar
+   confirmação, volta a servir às escolhas que só o usuário pode fazer: onde
+   gravar a sessão, de onde retomá-la e a conferência dos retornos. */
+
+let _perguntaAtual=null;
+function perguntar(op){
+  return new Promise(function(resolver){
+    if(_perguntaAtual) _perguntaAtual(null);
+    $('#modalTitulo').textContent=op.titulo||'Confirmação';
+    $('#modalTexto').textContent=op.texto||'';
+    $('#modalCorpo').innerHTML=op.corpo||'';
+    $('#modalConfirmar').textContent=op.confirmar||'Confirmar';
+    $('#modalConfirmar').classList.toggle('oculto',op.confirmar===false);
+    $('#modalCancelar').textContent=op.cancelar||'Cancelar';
+    const m=$('#modal');
+    if(op.largo) m.style.width='min(860px,96vw)'; else m.style.width='';
+    m.classList.add('aberto'); $('#veu').classList.add('aberto');
+    const fim=function(valor){
+      _perguntaAtual=null;
+      m.classList.remove('aberto');
+      if(!$('#gaveta').classList.contains('aberta') && !$('#gavetaConfig').classList.contains('aberta')) $('#veu').classList.remove('aberto');
+      resolver(valor);
+    };
+    _perguntaAtual=fim;
+    const dados=function(){
+      const o={};
+      $$('[data-campo]',m).forEach(function(el){
+        const k=el.getAttribute('data-campo');
+        if(el.type==='radio'){ if(el.checked) o[k]=el.value; }
+        else if(el.type==='checkbox') o[k]=el.checked;
+        else o[k]=el.value;
+      });
+      return o;
+    };
+    $('#modalConfirmar').onclick=function(){ fim({ok:true,dados:dados()}); };
+    $('#modalCancelar').onclick=function(){ fim(null); };
+    $$('[data-escolha]',m).forEach(function(b){ b.onclick=function(){ fim({ok:true,escolha:b.getAttribute('data-escolha'),dados:dados()}); }; });
+    setTimeout(function(){ const f=$('#modalCorpo input:not([disabled]), #modalConfirmar'); if(f) try{ f.focus(); }catch(e){} },40);
+  });
+}
+document.addEventListener('keydown',function(ev){ if(ev.key==='Escape' && _perguntaAtual){ ev.preventDefault(); _perguntaAtual(null); } });
+
+/* ------------------------------ Sessão versionada ------------------------- */
+
+function montarSessao(nome){
+  return {
+    formato:2, versao:E.versaoSessao, nome:nome, gerado:new Date().toISOString(),
+    arquivo:E.arquivo?E.arquivo.name:'', assinaturaBase:assinaturaBase(),
+    cfg:E.cfg, decisoes:E.decisoes, auditoria:E.auditoria, responsavel:E.responsavel, seq:E.seq,
+    exclusoes:E.exclusoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao, npAnos:E.npAnos,
+    rodadas:E.rodadas, manifestacoes:E.manifestacoes,
+    cfgSessao:{ destino:E.destinoSessao, github:{ repo:E.github.repo, branch:E.github.branch, pasta:E.github.pasta } }
+  };
+}
+
+function githubPronto(){ return !!(E.github.repo && E.github.token); }
+
+/* Pergunta onde gravar a versão, salvo se o usuário fixou a escolha. */
+async function escolherDestino(nome){
+  if(E.destinoFixo) return E.destinoFixo;
+  const gh=githubPronto();
+  const pref=(!gh && E.destinoSessao!=='local') ? 'local' : E.destinoSessao;
+  const opc=function(v,rot,dica,off){
+    const marcado=(v===pref && !off);
+    return '<label class="chk" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px'+(off?';opacity:.5':'')+'">'+
+      '<input type="radio" name="destinoSessao" data-campo="destino" value="'+v+'"'+(marcado?' checked':'')+(off?' disabled':'')+'>'+
+      '<span><b>'+esc(rot)+'</b><br><span class="pequeno tenue">'+esc(dica)+'</span></span></label>';
+  };
+  const semGh='Configure o repositório e o token em Configurações › Sessão e armazenamento.';
+  const corpo=
+    opc('local','No computador','Baixa o arquivo '+nome+' para a pasta de downloads.',false)+
+    opc('github','No GitHub',gh?('Grava em '+E.github.repo+' › '+E.github.pasta+'/'+nome+'.'):semGh,!gh)+
+    opc('ambos','No computador e no GitHub',gh?'As duas cópias; a do computador serve de reserva.':semGh,!gh)+
+    '<label class="chk" style="margin-top:6px"><input type="checkbox" data-campo="fixar"> Usar esta escolha até o fim da sessão</label>';
+  const r=await perguntar({ titulo:'Onde gravar a versão '+nome.replace(/\.json$/,'').split('-').pop()+'?', texto:'Arquivo '+nome, corpo:corpo, confirmar:'Gravar' });
+  if(!r) return null;
+  const destino=r.dados.destino||'local';
+  if(r.dados.fixar) E.destinoFixo=destino;
+  return destino;
+}
+
+/* Grava a sessão como nova versão. `data` permite casar o nome com o das
+   planilhas de uma rodada gerada no mesmo instante. */
+async function gravarSessao(op){
+  op=op||{};
+  const v=E.versaoSessao+1;
+  const nome=nomeVersionado(v,op.data)+'.json';
+  const destino=await escolherDestino(nome);
+  if(!destino){ recado('Versão não gravada. As alterações continuam só nesta janela.'); return null; }
+  E.versaoSessao=v;
+  const texto=JSON.stringify(montarSessao(nome),null,1);
+  const locais=[];
+  if(destino==='local'||destino==='ambos'){ baixarBlob(new Blob([texto],{type:'application/json'}),nome); locais.push('no computador'); }
+  if(destino==='github'||destino==='ambos'){
+    try{ await githubGravar(nome,texto); locais.push('no GitHub'); }
+    catch(err){
+      console.error(err);
+      if(destino==='github'){
+        const r=await perguntar({ titulo:'Não foi possível gravar no GitHub', texto:err.message,
+          corpo:'<p class="pequeno">Para não perder esta versão, baixe o arquivo agora e grave-o no GitHub depois.</p>', confirmar:'Baixar no computador' });
+        if(r){ baixarBlob(new Blob([texto],{type:'application/json'}),nome); locais.push('no computador'); }
+      } else recado('GitHub: '+err.message);
+    }
+  }
+  E.ultimaGravacao={ nome:nome, onde:locais, em:new Date().toISOString() };
+  recado(locais.length ? ('Versão V'+dois(v)+' gravada '+locais.join(' e ')+'.') : 'Versão V'+dois(v)+' não foi gravada.');
+  pintarUltimaGravacao();
+  return nome;
+}
+function pintarUltimaGravacao(){
+  const el=$('#estadoSessao'); if(!el) return;
+  el.textContent = E.ultimaGravacao && E.ultimaGravacao.onde.length
+    ? 'Última versão: '+E.ultimaGravacao.nome+' ('+E.ultimaGravacao.onde.join(' e ')+')'
+    : 'Nenhuma versão gravada nesta janela.';
+}
+
+/* Aplica um .json de sessão (formato 1, anterior às rodadas, ou 2). */
+function aplicarSessao(d,origem){
+  E.cfg=Object.assign({},CFG_OFICIAL,d.cfg||{});
+  E.decisoes=d.decisoes||{};
+  E.auditoria=d.auditoria||[]; E.responsavel=d.responsavel||''; E.seq=d.seq||1;
+  E.exclusoes=d.exclusoes||{}; E.encerramento=d.encerramento||null; E.motivoExclusao=d.motivoExclusao||'';
+  if(Array.isArray(d.npAnos)) E.npAnos=d.npAnos.slice();
+  E.versaoSessao=d.formato===2 ? (d.versao||0) : 0;
+  E.rodadas=Array.isArray(d.rodadas)?d.rodadas:[];
+  E.manifestacoes=d.manifestacoes||{};
+  E._envios=null;
+  if(d.cfgSessao){
+    if(d.cfgSessao.destino) E.destinoSessao=d.cfgSessao.destino;
+    const g=d.cfgSessao.github||{};
+    if(g.repo) E.github.repo=g.repo; if(g.branch) E.github.branch=g.branch; if(g.pasta) E.github.pasta=g.pasta;
+  }
+  E.ultimaGravacao={ nome:d.nome||'(sessão sem nome)', onde:[origem||'arquivo'], em:new Date().toISOString() };
+  cfgParaTela(); sessaoParaTela();
+  if(E.mapps.length){ diagnosticar(); renderTudo(); }
+  else { renderAuditoria(); pintarEncerramento(); renderManifestacoes(); }
+  pintarUltimaGravacao();
+  const aviso = (d.assinaturaBase && E.mapps.length && d.assinaturaBase!==assinaturaBase())
+    ? ' Atenção: a sessão foi gravada sobre outra base ('+(d.arquivo||'arquivo não identificado')+').' : '';
+  recado('Sessão '+(d.nome||'')+' retomada: '+Object.keys(E.decisoes).length+' decisões, '+
+    Object.keys(E.exclusoes).length+' exclusões, '+E.rodadas.length+' rodada(s) e '+
+    Object.keys(E.manifestacoes).length+' manifestação(ões).'+aviso);
+}
+
+async function escolherOrigemSessao(){
+  if(!githubPronto()){ abrirSessaoDoComputador(); return; }
+  const r=await perguntar({ titulo:'Retomar sessão', texto:'De onde vem a versão a retomar?', confirmar:false,
+    corpo:'<div class="barra-acoes"><button class="btn" data-escolha="local">Arquivo do computador</button>'+
+      '<button class="btn principal" data-escolha="github">GitHub · '+esc(E.github.repo)+'</button></div>' });
+  if(!r) return;
+  if(r.escolha==='github') await abrirSessaoDoGitHub(); else abrirSessaoDoComputador();
+}
+function abrirSessaoDoComputador(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.json';
+  inp.addEventListener('change',function(){ if(inp.files[0]) retomarSessao(inp.files[0]); });
+  inp.click();
+}
+async function abrirSessaoDoGitHub(){
+  let lista;
+  try{ lista=await githubListar(); }catch(err){ recado('GitHub: '+err.message); return; }
+  if(!lista.length){ recado('Nenhuma versão .json em '+E.github.repo+' › '+E.github.pasta+'.'); return; }
+  const corpo='<label class="campo"><span>Versão</span><select data-campo="arquivo">'+
+    lista.map(function(a,i){ return '<option value="'+esc(a.path)+'"'+(i===0?' selected':'')+'>'+esc(a.name)+(i===0?' (mais recente)':'')+'</option>'; }).join('')+
+    '</select></label>';
+  const r=await perguntar({ titulo:'Retomar do GitHub', texto:E.github.repo+' › '+E.github.pasta, corpo:corpo, confirmar:'Retomar' });
+  if(!r) return;
+  try{ aplicarSessao(JSON.parse(await githubLer(r.dados.arquivo)),'GitHub'); }
+  catch(err){ recado('Não foi possível retomar: '+err.message); }
+}
+
+/* ------------------------------ GitHub (API de conteúdo) ------------------ */
+
+function base64Utf8(txt){
+  const b=new TextEncoder().encode(txt); let s='';
+  for(let i=0;i<b.length;i+=0x8000) s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));
+  return btoa(s);
+}
+async function githubReq(metodo,caminho,corpo,aceitar){
+  const g=E.github;
+  if(!githubPronto()) throw new Error('repositório ou token não informado.');
+  const url='https://api.github.com/repos/'+g.repo.trim()+'/contents/'+caminho.split('/').map(encodeURIComponent).join('/')+
+    (metodo==='GET'?'?ref='+encodeURIComponent(g.branch||'main'):'');
+  let resp;
+  try{
+    resp=await fetch(url,{ method:metodo, headers:{ 'Authorization':'Bearer '+g.token.trim(), 'Accept':aceitar||'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28' }, body:corpo?JSON.stringify(corpo):undefined });
+  }catch(e){ throw new Error('sem conexão com o GitHub.'); }
+  if(resp.status===401) throw new Error('token inválido ou expirado.');
+  if(resp.status===403) throw new Error('o token não tem permissão de escrita (Contents: read and write) neste repositório.');
+  if(resp.status===404) throw new Error('repositório, branch ou pasta não encontrado ('+g.repo+' › '+caminho+').');
+  if(!resp.ok) throw new Error('resposta '+resp.status+' do GitHub.');
+  return resp;
+}
+function caminhoPasta(nome){ const p=(E.github.pasta||'').replace(/^\/+|\/+$/g,''); return p?(p+'/'+nome):nome; }
+async function githubGravar(nome,texto){
+  await githubReq('PUT',caminhoPasta(nome),{ message:'Sessão '+nome.replace(/\.json$/,'')+' · '+(E.responsavel||'responsável não identificado'),
+    content:base64Utf8(texto), branch:E.github.branch||'main' });
+}
+function chaveOrdemVersao(nome){
+  const m=/^(\d{2})(\d{2})(\d{4})-(\d{2})(\d{2})-V(\d+)/.exec(nome);
+  return m ? m[3]+m[2]+m[1]+m[4]+m[5]+String(m[6]).padStart(4,'0') : '0';
+}
+async function githubListar(){
+  const r=await githubReq('GET',(E.github.pasta||'').replace(/^\/+|\/+$/g,''));
+  const itens=await r.json();
+  return (Array.isArray(itens)?itens:[]).filter(function(a){ return a.type==='file' && /\.json$/i.test(a.name); })
+    .sort(function(a,b){ return chaveOrdemVersao(b.name).localeCompare(chaveOrdemVersao(a.name)); });
+}
+async function githubLer(caminho){
+  const r=await githubReq('GET',caminho,null,'application/vnd.github.raw');
+  return await r.text();
+}
+async function testarGitHub(){
+  const el=$('#ghEstado');
+  el.textContent='Testando…';
+  try{ const l=await githubListar(); el.textContent='Conexão confirmada: '+l.length+' versão(ões) na pasta.'; }
+  catch(err){ el.textContent='Falha: '+err.message; }
+}
+function sessaoParaTela(){
+  const s=function(id,v){ const el=$(id); if(el) el.value=v; };
+  s('#cfgDestino',E.destinoSessao); s('#ghRepo',E.github.repo); s('#ghBranch',E.github.branch); s('#ghPasta',E.github.pasta);
+}
+
+/* ------------------------------ Envios e situação ------------------------- */
+
+/* Índice chave → último envio (rodada e órgão). */
+function envios(){
+  if(E._envios) return E._envios;
+  const mapa=new Map();
+  E.rodadas.forEach(function(r){
+    r.orgaos.forEach(function(o){
+      Object.keys(o.itens).forEach(function(ch){ mapa.set(ch,{ rodada:r, orgao:o }); });
+    });
+  });
+  E._envios=mapa; return mapa;
+}
+function sentidoResposta(rk,resp){ const o=RESPOSTAS[rk]; return o && resp===o.opcoes[0] ? 'acordo' : 'contesta'; }
+function situacaoManif(chave){
+  const man=E.manifestacoes[chave];
+  if(man) return man.sentido;
+  const env=envios().get(chave);
+  if(!env) return 'nao_enviado';
+  return env.rodada.dataLimite < hojeISO() ? 'vencido' : 'aguardando';
+}
+function etqManif(chave){
+  const s=situacaoManif(chave), man=E.manifestacoes[chave];
+  const cls={ acordo:'alta', contesta:'baixa', aguardando:'media', vencido:'r1a', nao_enviado:'sem' }[s]||'sem';
+  const txt = man ? man.resposta : ROTULO_SITUACAO_MANIF[s];
+  return '<span class="etq '+cls+'">'+esc(txt)+'</span>'+
+    (man&&man.intempestiva?' <span class="etq r1b">intempestiva</span>':'')+
+    (man&&man.pendencias&&man.pendencias.length?' <span class="etq paral" data-tip="'+esc(man.pendencias.join('; '))+'">pendência</span>':'');
+}
+
+/* ------------------------------ Geração da rodada ------------------------- */
+
+const FASES_RODADA=[
+  { id:'selecao',   rot:'Seleção dos MAPPs por órgão',        cor:'--ardosia', ate:8 },
+  { id:'planilhas', rot:'Montagem das planilhas protegidas',  cor:'--latao',   ate:88 },
+  { id:'pacote',    rot:'Compactação e download',             cor:'--musgo',   ate:100 }
+];
+
+function conjuntoRodada(){
+  const sel=valoresMulti('#mOrgao'), soPend=$('#mSoPendentes').checked;
+  return conjuntoEnquadrado().filter(function(m){
+    if(estaOculto(m.chave)) return false;
+    if(sel.length && sel.indexOf(m.orgao)<0) return false;
+    if(soPend && E.manifestacoes[m.chave]) return false;
+    return true;
+  });
+}
+function resumoRodada(){
+  const el=$('#mResumoGeracao'); if(!el) return;
+  if(!E.diag){ el.textContent=''; return; }
+  const lista=conjuntoRodada(), org=new Set(lista.map(function(m){ return m.orgao; }));
+  el.textContent=n(lista.length)+' MAPPs de '+n(org.size)+' órgão(s) · '+(org.size>1?'um .zip com '+n(org.size)+' planilhas':'uma planilha .xlsx')+' e a nova versão da sessão';
+}
+
+async function gerarRodada(){
+  if(!E.diag){ recado('Importe antes a base de execução.'); return; }
+  if(typeof ExcelJS==='undefined' || typeof JSZip==='undefined'){ recado('As bibliotecas de planilha não carregaram. Verifique a conexão e recarregue a página.'); return; }
+  const lista=conjuntoRodada();
+  if(!lista.length){ recado('Nenhum MAPP enquadrado atende à seleção.'); return; }
+  const prazo=parseInt($('#mPrazo').value,10)||30;
+  const agora=new Date(), v=E.versaoSessao+1, base=nomeVersionado(v,agora);
+  const limite=new Date(agora.getTime()+prazo*86400000).toISOString().slice(0,10);
+  const rodada={ id:base+'-'+cyrb53(base+Math.random()).slice(0,6).toUpperCase(), versao:v, geradaEm:agora.toISOString(),
+    prazoDias:prazo, dataLimite:limite, responsavel:E.responsavel||'', orgaos:[] };
+  const grupos=new Map();
+  lista.forEach(function(m){ if(!grupos.has(m.orgao)) grupos.set(m.orgao,[]); grupos.get(m.orgao).push(m); });
+  const orgaos=Array.from(grupos.keys()).sort();
+
+  iniciarProcesso('Planilhas para manifestação dos órgãos',FASES_RODADA);
+  try{
+    await fase('selecao',n(lista.length)+' MAPPs de '+n(orgaos.length)+' órgão(s)…');
+    await fase('planilhas','Montando as planilhas…');
+    const arquivos=[];
+    for(let i=0;i<orgaos.length;i++){
+      const org=orgaos[i], itens=grupos.get(org).sort(function(a,b){ return String(a.codigo).localeCompare(String(b.codigo),'pt-BR',{numeric:true}); });
+      const nome=base+'-'+slugOrgao(org)+'.xlsx';
+      const buf=await montarPlanilhaOrgao(rodada,org,itens);
+      const reg={ orgao:org, arquivo:nome, itens:{}, hash:'', retornos:[] };
+      itens.forEach(function(m){ reg.itens[m.chave]=regraChaveDe(m); });
+      reg.hash=cyrb53(Object.keys(reg.itens).sort().join('|'));
+      rodada.orgaos.push(reg);
+      arquivos.push({ nome:nome, buf:buf });
+      $('#cargaTexto').textContent='Planilha '+(i+1)+' de '+orgaos.length+': '+org;
+      progressoFase((i+1)/orgaos.length);
+      if(i%5===4) await esperarQuadro(0);
+    }
+    await fase('pacote',arquivos.length>1?'Compactando '+arquivos.length+' planilhas…':'Preparando o download…');
+    if(arquivos.length===1) baixarBlob(new Blob([arquivos[0].buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),arquivos[0].nome);
+    else {
+      const zip=new JSZip();
+      arquivos.forEach(function(a){ zip.file(a.nome,a.buf); });
+      baixarBlob(await zip.generateAsync({type:'blob'},function(md){ progressoFase(md.percent/100); }),base+'-planilhas.zip');
+    }
+    await concluirProcesso(n(arquivos.length)+' planilha(s) gerada(s) para '+n(lista.length)+' MAPPs.');
+  }catch(err){
+    console.error(err); falharProcesso('Falha ao gerar as planilhas: '+err.message); return;
+  }
+  E.rodadas.push(rodada); E._envios=null;
+  auditar(null,'Rodada de manifestação','—',rodada.id,
+    n(rodada.orgaos.length)+' órgão(s), '+n(lista.length)+' MAPPs; responder até '+dataISOparaBR(limite)+'.','—');
+  renderManifestacoes();
+  await gravarSessao({ data:agora });
+}
+
+async function montarPlanilhaOrgao(rodada,orgao,itens){
+  const wb=new ExcelJS.Workbook();
+  wb.creator='Webmapp · Módulo de Saneamento da base de Projetos MAPP'; wb.created=new Date(rodada.geradaEm);
+  const cab={ font:{ bold:true, color:{argb:'FFFFFFFF'} }, fill:{ type:'pattern', pattern:'solid', fgColor:{argb:'FF3F5C78'} },
+    alignment:{ vertical:'middle', wrapText:true } };
+  const editavel={ type:'pattern', pattern:'solid', fgColor:{argb:'FFFFF6D8'} };
+  const limiteBR=dataISOparaBR(rodada.dataLimite);
+  const protecao={ selectLockedCells:true, selectUnlockedCells:true, formatColumns:true, formatRows:true, autoFilter:true };
+
+  /* Instruções */
+  const wi=wb.addWorksheet('INSTRUÇÕES',{ views:[{ showGridLines:false }] });
+  wi.getColumn(1).width=118;
+  wi.pageSetup={ orientation:'portrait', fitToPage:true, fitToWidth:1, fitToHeight:0 };
+  [
+    ['Manifestação do órgão sobre MAPPs enquadrados nas regras de saneamento',true],
+    ['Órgão: '+orgao,true],
+    ['Responder até: '+limiteBR+' · Rodada '+rodada.id,false],
+    ['',false],
+    ['Como responder',true],
+    ['1. Na aba MAPPS, preencha somente as colunas em amarelo: MANIFESTAÇÃO, JUSTIFICATIVA, PREVISÃO DE EXECUÇÃO, RESPONSÁVEL NO ÓRGÃO e DATA DA MANIFESTAÇÃO.',false],
+    ['2. Em MANIFESTAÇÃO, escolha uma das opções da lista. A primeira concorda com a ação proposta; a segunda a contesta.',false],
+    ['3. Quando contestar ou pedir reativação, a JUSTIFICATIVA é obrigatória, e a PREVISÃO DE EXECUÇÃO também, salvo na Regra 4.',false],
+    ['4. Não altere, inclua, exclua nem reordene linhas ou colunas, e não renomeie o arquivo: a planilha tem controle interno e é conferida na devolução.',false],
+    ['5. Devolva este mesmo arquivo pelo canal oficial até a data indicada.',false],
+    ['',false],
+    ['O que significa cada regra',true],
+    ['Regra 1 (item 1.a) — aprovado até o ano anterior e sem execução: tornar pendente; a reativação depende de justificativa validada.',false],
+    ['Regra 2 (item 1.b) — aprovado no ano corrente e sem execução: manifestação em 30 dias; sem resposta, pendente por 120 dias e depois exclusão.',false],
+    ['Regra 3 (item 1.2) — execução encerrada: concluído físico e financeiro.',false],
+    ['Regra 4 (item 1.3) — execução física concluída: manifestação em 30 dias; depois, concluído físico e financeiro.',false],
+    ['Sobreposição — o MAPP atende a mais de uma regra; manifeste-se sobre a ação proposta.',false]
+  ].forEach(function(l,i){
+    const c=wi.getCell(i+1,1); c.value=l[0]; c.alignment={ wrapText:true, vertical:'top' };
+    if(l[1]) c.font={ bold:true, size:i===0?14:11, color:{argb:'FF3F5C78'} };
+  });
+  await wi.protect(MANIF_SENHA,protecao);
+
+  /* MAPPs */
+  const ws=wb.addWorksheet('MAPPS',{ views:[{ state:'frozen', ySplit:1 }] });
+  const COLS=[
+    ['CHAVE',30],['MAPP',11],['TÍTULO',46],['REGRA',22],['AÇÃO PROPOSTA',42],['SALDO DO PROGRAMADO (R$)',18],['RESPONDER ATÉ',13],
+    ['MANIFESTAÇÃO',38],['JUSTIFICATIVA',56],['PREVISÃO DE EXECUÇÃO',14],['RESPONSÁVEL NO ÓRGÃO',26],['DATA DA MANIFESTAÇÃO',14],['CONTROLE',14]
+  ];
+  ws.columns=COLS.map(function(c){ return { header:c[0], width:c[1] }; });
+  ws.getRow(1).height=32;
+  ws.pageSetup={ orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0, printTitlesRow:'1:1' };
+  ws.getRow(1).eachCell(function(c,k){ c.font=cab.font; c.fill=cab.fill; c.alignment=cab.alignment;
+    if(k>=8 && k<=12) c.fill={ type:'pattern', pattern:'solid', fgColor:{argb:'FF8D7130'} }; });
+  const anoC=new Date().getFullYear(), anos=[];
+  for(let a=anoC;a<=anoC+4;a++) anos.push(String(a));
+  itens.forEach(function(m,i){
+    const rk=regraChaveDe(m), r=i+2;
+    const regras=m.d.regras.map(function(x){ return REGRAS[x].nome+' ('+REGRAS[x].doc+')'; }).join(' + ');
+    const acao=m.d.regras.map(function(x){ return REGRAS[x].acao; }).join(' / ');
+    ws.addRow([m.chave,m.codigo,m.titulo||m.mappTxt,regras,acao,Math.round(m.saldo*100)/100,rodada.dataLimite?new Date(rodada.dataLimite+'T12:00:00'):null,
+      null,null,null,null,null,tokenLinha(rodada.id,orgao,m.chave)]);
+    const row=ws.getRow(r);
+    row.alignment={ vertical:'top', wrapText:true };
+    row.getCell(6).numFmt='#,##0.00'; row.getCell(7).numFmt='dd/mm/yyyy';
+    for(let k=8;k<=12;k++){ const c=row.getCell(k); c.protection={ locked:false }; c.fill=editavel; }
+    row.getCell(12).numFmt='dd/mm/yyyy';
+    row.getCell(8).dataValidation={ type:'list', allowBlank:true, formulae:['"'+RESPOSTAS[rk].opcoes.join(',')+'"'],
+      showErrorMessage:true, errorTitle:'Opção inválida', error:'Escolha uma das opções da lista.' };
+    row.getCell(10).dataValidation={ type:'list', allowBlank:true, formulae:['"'+anos.join(',')+'"'],
+      showErrorMessage:true, errorTitle:'Exercício inválido', error:'Escolha um exercício da lista.' };
+    row.getCell(12).dataValidation={ type:'date', operator:'greaterThan', allowBlank:true, formulae:[new Date(2020,0,1)],
+      showErrorMessage:true, errorTitle:'Data inválida', error:'Informe a data no formato dd/mm/aaaa.' };
+  });
+  ws.getColumn(13).hidden=true;
+  ws.autoFilter={ from:{row:1,column:1}, to:{row:1,column:12} };
+  await ws.protect(MANIF_SENHA,protecao);
+
+  /* Controle (oculto) */
+  const wc=wb.addWorksheet('CONTROLE',{ state:'veryHidden' });
+  [['formato',MANIF_FORMATO],['sistema','Webmapp · Saneamento de MAPPs'],['rodada',rodada.id],['versao',rodada.versao],
+   ['orgao',orgao],['gerado_em',rodada.geradaEm],['data_limite',rodada.dataLimite],['linhas',itens.length],
+   ['hash',cyrb53(itens.map(function(m){ return m.chave; }).sort().join('|'))]].forEach(function(l){ wc.addRow(l); });
+  await wc.protect(MANIF_SENHA,{});
+
+  return await wb.xlsx.writeBuffer();
+}
+
+/* ------------------------------ Retornos dos órgãos ----------------------- */
+
+function lerControle(wb){
+  const ws=wb.Sheets['CONTROLE']; if(!ws) return null;
+  const o={};
+  XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null}).forEach(function(l){ if(l[0]!=null) o[String(l[0])]=l[1]; });
+  return o.rodada ? o : null;
+}
+function paraISO(v){
+  if(v==null || v==='') return '';
+  if(v instanceof Date && !isNaN(v)) return v.toISOString().slice(0,10);
+  const s=String(v).trim(), m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if(m) return m[3]+'-'+dois(m[2])+'-'+dois(m[1]);
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  if(typeof v==='number'){ const d=new Date(Math.round((v-25569)*86400000)); return isNaN(d)?'':d.toISOString().slice(0,10); }
+  return '';
+}
+
+async function examinarRetorno(file){
+  const rel={ arquivo:file.name, orgao:'—', rodada:null, validas:[], branco:0, ignoradas:[], erro:'' };
+  let wb;
+  try{ wb=XLSX.read(await lerComoBuffer(file),{ type:'array', cellDates:true }); }
+  catch(e){ rel.erro='arquivo ilegível ou não é uma planilha .xlsx'; return rel; }
+  const ctl=lerControle(wb);
+  if(!ctl){ rel.erro='planilha sem controle interno: não foi gerada por uma rodada deste sistema'; return rel; }
+  rel.orgao=ctl.orgao||'—';
+  const rodada=E.rodadas.find(function(r){ return r.id===ctl.rodada; });
+  if(!rodada){ rel.erro='rodada '+ctl.rodada+' não registrada nesta sessão; retome a versão V'+dois(ctl.versao||0)+' ('+dataBR(Date.parse(ctl.gerado_em))+') ou posterior'; return rel; }
+  const reg=rodada.orgaos.find(function(o){ return o.orgao===ctl.orgao; });
+  if(!reg){ rel.erro='o órgão '+ctl.orgao+' não consta da rodada '+rodada.id; return rel; }
+  rel.rodada=rodada; rel.reg=reg;
+  const ws=wb.Sheets['MAPPS'];
+  if(!ws){ rel.erro='a aba MAPPS foi removida ou renomeada'; return rel; }
+  const linhas=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null,blankrows:false});
+  const cabec=(linhas[0]||[]).map(function(c){ return norm(c); });
+  const col=function(nome){ return cabec.indexOf(norm(nome)); };
+  const ix={ chave:col('CHAVE'), resp:col('MANIFESTAÇÃO'), just:col('JUSTIFICATIVA'), prev:col('PREVISÃO DE EXECUÇÃO'),
+    resp2:col('RESPONSÁVEL NO ÓRGÃO'), data:col('DATA DA MANIFESTAÇÃO'), ctl:col('CONTROLE') };
+  if(Object.keys(ix).some(function(k){ return ix[k]<0; })){ rel.erro='cabeçalho da aba MAPPS alterado'; return rel; }
+  for(let i=1;i<linhas.length;i++){
+    const l=linhas[i], chave=limpo(l[ix.chave]);
+    if(!chave) continue;
+    if(!(chave in reg.itens) || String(l[ix.ctl]||'')!==tokenLinha(rodada.id,reg.orgao,chave)){
+      rel.ignoradas.push({ linha:i+1, chave:chave, motivo:'controle da linha não confere (chave alterada ou linha de outro arquivo)' }); continue;
+    }
+    const resp=limpo(l[ix.resp]);
+    if(!resp){ rel.branco++; continue; }
+    const rk=reg.itens[chave], op=RESPOSTAS[rk], pend=[];
+    if(op.opcoes.indexOf(resp)<0) pend.push('resposta fora da lista da regra');
+    const sentido=sentidoResposta(rk,resp);
+    const just=limpo(l[ix.just]), prev=limpo(l[ix.prev]);
+    if(sentido==='contesta' && !just) pend.push('justificativa ausente');
+    if(sentido==='contesta' && op.previsao && !prev) pend.push('previsão de execução ausente');
+    const dataOrgao=paraISO(l[ix.data]);
+    rel.validas.push({ chave:chave, rodada:rodada.id, orgao:reg.orgao, regra:rk, resposta:resp, sentido:sentido,
+      justificativa:just, previsao:prev, responsavelOrgao:limpo(l[ix.resp2]), dataOrgao:dataOrgao,
+      arquivo:file.name, intempestiva:(dataOrgao||hojeISO())>rodada.dataLimite, pendencias:pend });
+  }
+  return rel;
+}
+
+async function importarRetornos(files){
+  if(!E.diag){ recado('Importe antes a base de execução e retome a sessão da rodada.'); return; }
+  files=Array.from(files||[]).filter(function(f){ return /\.xlsx$/i.test(f.name); });
+  if(!files.length){ recado('Escolha as planilhas .xlsx devolvidas pelos órgãos.'); return; }
+  const rels=[];
+  for(const f of files) rels.push(await examinarRetorno(f));
+  /* Mesmo MAPP em mais de um arquivo: prevalece a manifestação mais recente. */
+  const porChave=new Map(), conflitos=new Set();
+  rels.forEach(function(r){ r.validas.forEach(function(v){
+    const ant=porChave.get(v.chave);
+    if(ant){ conflitos.add(v.chave); if((v.dataOrgao||'')>=(ant.dataOrgao||'')) porChave.set(v.chave,v); }
+    else porChave.set(v.chave,v);
+  }); });
+  const total=porChave.size;
+  const linhasTab=rels.map(function(r){
+    const pend=r.validas.filter(function(v){ return v.pendencias.length; }).length;
+    return '<tr><td>'+esc(r.arquivo)+'</td><td>'+esc(r.orgao)+'</td>'+
+      (r.erro ? '<td colspan="4"><span class="etq r1a">rejeitado</span> '+esc(r.erro)+'</td>'
+              : '<td class="num">'+n(r.validas.length)+'</td><td class="num">'+n(pend)+'</td><td class="num">'+n(r.branco)+'</td><td class="num">'+n(r.ignoradas.length)+'</td>')+'</tr>';
+  }).join('');
+  const detIgn=rels.reduce(function(a,r){ return a.concat(r.ignoradas.slice(0,20).map(function(x){ return r.arquivo+' · linha '+x.linha+' · '+x.chave+': '+x.motivo; })); },[]);
+  const corpo='<div class="tabela-caixa" style="max-height:46vh"><table><thead><tr><th>Arquivo</th><th>Órgão</th><th class="num">Respondidas</th><th class="num">Com pendência</th><th class="num">Em branco</th><th class="num">Ignoradas</th></tr></thead><tbody>'+
+    linhasTab+'</tbody></table></div>'+
+    (conflitos.size?'<p class="pequeno" style="margin-top:8px">'+n(conflitos.size)+' MAPP(s) aparecem em mais de um arquivo; prevalece a manifestação de data mais recente.</p>':'')+
+    (detIgn.length?'<details style="margin-top:8px"><summary class="pequeno">Linhas ignoradas</summary><ul class="pequeno">'+detIgn.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></details>':'')+
+    '<p class="pequeno tenue" style="margin-top:8px">A manifestação não decide nada: acatar ou rejeitar a recomendação continua sendo ato humano.</p>';
+  const r=await perguntar({ titulo:'Conferência dos retornos', texto:n(files.length)+' arquivo(s) · '+n(total)+' manifestação(ões) a registrar',
+    corpo:corpo, confirmar:total?'Registrar '+n(total)+' manifestação(ões)':false, cancelar:total?'Cancelar':'Fechar', largo:true });
+  if(!r || !total) return;
+  aplicarRetornos(rels,porChave);
+  await gravarSessao();
+}
+
+function aplicarRetornos(rels,porChave){
+  const agora=new Date().toISOString();
+  porChave.forEach(function(v,chave){
+    const ant=E.manifestacoes[chave];
+    const historico=ant ? (ant.historico||[]).slice() : [];
+    if(ant && !(ant.arquivo===v.arquivo && ant.rodada===v.rodada)){
+      const copia=Object.assign({},ant); delete copia.historico; historico.push(copia);
+    }
+    E.manifestacoes[chave]=Object.assign({},v,{ importadoEm:agora, historico:historico });
+    const i=E.indice.get(chave), m=i!=null?E.mapps[i]:null;
+    auditar(m,'Manifestação do órgão',ant?ant.resposta:'—',v.resposta,
+      'Arquivo '+v.arquivo+' (rodada '+v.rodada+')'+(v.intempestiva?'; intempestiva':'')+(v.pendencias.length?'; pendências: '+v.pendencias.join(', '):''));
+  });
+  rels.forEach(function(r){
+    if(r.erro || !r.reg) return;
+    r.reg.retornos=(r.reg.retornos||[]).filter(function(x){ return x.arquivo!==r.arquivo; });
+    r.reg.retornos.push({ arquivo:r.arquivo, importadoEm:agora, respondidas:r.validas.length });
+  });
+  renderManifestacoes();
+  try{ renderDiagnostico(); renderAuditoria(); }catch(e){ console.error(e); }
+  recado(n(porChave.size)+' manifestação(ões) registrada(s).');
+}
+
+/* ------------------------------ Exibição ---------------------------------- */
+
+function prepararFiltrosManif(){
+  if(!$('#mOrgao')) return;
+  const orgs=Array.from(new Set(conjuntoEnquadrado().map(function(m){ return m.orgao; }))).filter(Boolean).sort();
+  opcoes('#mOrgao',orgs.map(function(o){ return [o,o]; }),'Todos os órgãos');
+  montarMulti('#mOrgao');
+}
+
+function renderManifestacoes(){
+  if(!$('#blocoManif')) return;
+  resumoRodada();
+  const qtd=Object.keys(E.manifestacoes).length;
+  $('#manifLegenda').textContent=E.rodadas.length
+    ? n(E.rodadas.length)+' rodada(s) · '+n(qtd)+' manifestação(ões) registrada(s)'
+    : 'Nenhuma rodada gerada nesta sessão';
+  /* Rodadas por órgão */
+  const hoje=hojeISO();
+  const linhasR=[];
+  E.rodadas.slice().reverse().forEach(function(r){
+    r.orgaos.forEach(function(o){
+      const chaves=Object.keys(o.itens);
+      const resp=chaves.filter(function(ch){ const mf=E.manifestacoes[ch]; return mf && mf.rodada===r.id; }).length;
+      const sit = resp===chaves.length ? ['Retornado','alta'] : resp ? ['Parcial','media'] : (r.dataLimite<hoje ? ['Vencido','r1a'] : ['Sem retorno','sem']);
+      linhasR.push('<tr><td class="mono">'+esc(r.id)+'</td><td class="num">V'+dois(r.versao)+'</td><td>'+esc(o.orgao)+'</td>'+
+        '<td class="num">'+n(chaves.length)+'</td><td class="num">'+n(resp)+'</td><td class="num">'+dataISOparaBR(r.dataLimite)+'</td>'+
+        '<td><span class="etq '+sit[1]+'">'+sit[0]+'</span></td></tr>');
+    });
+  });
+  $('#tabRodadas tbody').innerHTML=linhasR.join('') || '<tr><td colspan="7" class="vazio">Nenhuma rodada gerada. Escolha os órgãos acima e gere as planilhas.</td></tr>';
+  /* Manifestações registradas */
+  const lista=Object.keys(E.manifestacoes).map(function(ch){ return E.manifestacoes[ch]; })
+    .sort(function(a,b){ return String(a.orgao).localeCompare(String(b.orgao)) || String(a.chave).localeCompare(String(b.chave)); });
+  const LIM=1000;
+  $('#tabManif tbody').innerHTML=lista.slice(0,LIM).map(function(mf){
+    const i=E.indice.get(mf.chave), m=i!=null?E.mapps[i]:null, dec=E.decisoes[mf.chave];
+    return '<tr data-chave="'+esc(mf.chave)+'" style="cursor:pointer"><td class="mono">'+esc(m?m.codigo:mf.chave)+'</td><td>'+esc(mf.orgao)+'</td>'+
+      '<td>'+esc(rotuloRegraChave(mf.regra))+'</td><td>'+etqManif(mf.chave)+'</td><td>'+esc(mf.justificativa||'—')+'</td>'+
+      '<td class="num">'+esc(mf.previsao||'—')+'</td><td>'+esc(mf.responsavelOrgao||'—')+'</td><td class="num">'+dataISOparaBR(mf.dataOrgao)+'</td>'+
+      '<td>'+(dec?'<span class="etq '+(dec.situacao==='acatada'?'alta':'baixa')+'">'+(dec.situacao==='acatada'?'Acatada':'Rejeitada')+'</span>':'<span class="etq sem">Pendente</span>')+'</td></tr>';
+  }).join('') || '<tr><td colspan="9" class="vazio">Nenhuma manifestação registrada. Solte acima as planilhas devolvidas pelos órgãos.</td></tr>';
+  const nAc=lista.filter(function(x){ return x.sentido==='acordo'; }).length;
+  $('#tabManif tfoot').innerHTML=lista.length
+    ? '<tr><td colspan="3">Total ('+n(lista.length)+' manifestações'+(lista.length>LIM?'; exibidas '+n(LIM):'')+')</td><td colspan="6">'+n(nAc)+' de acordo · '+n(lista.length-nAc)+' contestam ou solicitam</td></tr>' : '';
+}
+
+function htmlFichaManif(m){
+  const mf=E.manifestacoes[m.chave], env=envios().get(m.chave);
+  const par=function(r,v){ return '<div class="par"><span class="r">'+esc(r)+'</span><span class="v">'+v+'</span></div>'; };
+  let corpo;
+  if(mf){
+    corpo='<div class="pares">'+par('Manifestação',etqManif(m.chave))+par('Justificativa',esc(mf.justificativa||'—'))+
+      par('Previsão de execução',esc(mf.previsao||'—'))+par('Responsável no órgão',esc(mf.responsavelOrgao||'—'))+
+      par('Data da manifestação',dataISOparaBR(mf.dataOrgao))+par('Arquivo',esc(mf.arquivo))+par('Rodada',esc(mf.rodada))+
+      (mf.pendencias&&mf.pendencias.length?par('Pendências',esc(mf.pendencias.join('; '))):'')+
+      (mf.historico&&mf.historico.length?par('Manifestações anteriores',n(mf.historico.length)+' (a mais antiga: '+esc(mf.historico[0].resposta)+')'):'')+'</div>';
+  } else if(env){
+    corpo='<div class="pares">'+par('Situação',etqManif(m.chave))+par('Rodada',esc(env.rodada.id))+par('Responder até',dataISOparaBR(env.rodada.dataLimite))+'</div>';
+  } else corpo='<p class="pequeno tenue">MAPP ainda não enviado a manifestação do órgão.</p>';
+  return '<div class="ficha-secao"><h4>Manifestação do órgão</h4>'+corpo+'</div>';
+}
+
+function exportarManifestacoes(){
+  const lista=Object.keys(E.manifestacoes).map(function(ch){ return E.manifestacoes[ch]; });
+  if(!lista.length){ recado('Nenhuma manifestação registrada.'); return; }
+  const linhas=lista.map(function(mf){
+    const i=E.indice.get(mf.chave), m=i!=null?E.mapps[i]:null, dec=E.decisoes[mf.chave];
+    return { 'CHAVE':mf.chave, 'MAPP':m?m.codigo:'', 'TÍTULO':m?(m.titulo||m.mappTxt):'', 'ÓRGÃO':mf.orgao, 'REGRA':rotuloRegraChave(mf.regra),
+      'MANIFESTAÇÃO':mf.resposta, 'SENTIDO':mf.sentido==='acordo'?'De acordo':'Contesta ou solicita', 'JUSTIFICATIVA':mf.justificativa,
+      'PREVISÃO DE EXECUÇÃO':mf.previsao, 'RESPONSÁVEL NO ÓRGÃO':mf.responsavelOrgao, 'DATA DA MANIFESTAÇÃO':dataISOparaBR(mf.dataOrgao),
+      'INTEMPESTIVA':mf.intempestiva?'SIM':'NÃO', 'PENDÊNCIAS':(mf.pendencias||[]).join('; '), 'ARQUIVO':mf.arquivo, 'RODADA':mf.rodada,
+      'DECISÃO':dec?(dec.situacao==='acatada'?'Acatada':'Rejeitada'):'Pendente' };
+  });
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas),'MANIFESTACOES');
+  XLSX.writeFile(wb,'manifestacoes_'+hojeISO()+'.xlsx');
+}
+
+/* ------------------------------ Ligações ---------------------------------- */
+
+function ligarManifestacoes(){
+  if(!$('#blocoManif')) return;
+  $('#btnGerarRodada').addEventListener('click',gerarRodada);
+  $('#mOrgao').addEventListener('change',resumoRodada);
+  $('#mSoPendentes').addEventListener('change',resumoRodada);
+  const area=$('#areaRetornos'), inp=$('#arqRetornos');
+  area.addEventListener('click',function(){ inp.click(); });
+  area.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); inp.click(); } });
+  inp.addEventListener('change',function(){ const f=Array.from(inp.files); inp.value=''; importarRetornos(f); });
+  ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
+  ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
+  area.addEventListener('drop',function(ev){ importarRetornos(ev.dataTransfer.files); });
+  $('#tabManif').addEventListener('click',function(ev){ const tr=ev.target.closest('tr[data-chave]'); if(tr) abrirFicha(tr.getAttribute('data-chave')); });
+  $('#btnExportarManif').addEventListener('click',exportarManifestacoes);
+  /* Configurações de armazenamento: valem de imediato, sem recálculo. */
+  $('#cfgDestino').addEventListener('change',function(ev){ E.destinoSessao=ev.target.value; E.destinoFixo=null; });
+  $('#ghRepo').addEventListener('input',function(ev){ E.github.repo=limpo(ev.target.value); });
+  $('#ghBranch').addEventListener('input',function(ev){ E.github.branch=limpo(ev.target.value)||'main'; });
+  $('#ghPasta').addEventListener('input',function(ev){ E.github.pasta=limpo(ev.target.value); });
+  $('#ghToken').addEventListener('input',function(ev){ E.github.token=ev.target.value.trim(); });
+  $('#btnTestarGitHub').addEventListener('click',testarGitHub);
+  sessaoParaTela(); pintarUltimaGravacao(); renderManifestacoes();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ligarManifestacoes); else ligarManifestacoes();
 </script>
 </body>
 </html>
