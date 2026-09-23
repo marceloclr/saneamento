@@ -69,7 +69,10 @@ hr.divisa{border:0;border-top:1px solid var(--linha);margin:16px 0}
 html[data-tema="escuro"] .brasao{color:#14171b}
 .titulo-bloco{display:flex;flex-direction:column;line-height:1.25}
 .titulo-bloco .sub{font-size:11.5px;color:var(--tinta-3)}
-.topo-acoes{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.topo-acoes{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.topo-botoes{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.topo-botoes .btn.discreto{padding:6px 9px}
+.topo-acoes .selo-base{padding:3px 10px;font-size:11.5px}
 .selo-base{
   display:flex;align-items:center;gap:8px;padding:5px 11px;border:1px solid var(--linha);
   border-radius:99px;background:var(--carta-2);font-size:12px;color:var(--tinta-2);
@@ -653,9 +656,11 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
       <span class="sub">Governo do Estado do Ceará · carregar a base, aplicar as Regras 1 a 4, excluir ou retornar MAPPs e gerar a base saneada</span>
     </div>
     <div class="topo-acoes">
+      <div class="topo-botoes">
+        <button class="btn discreto" id="btnManual" data-tip="Abre o manual em nova janela: guia de operação passo a passo desta versão, conceitos e regras. O mesmo manual atende à versão completa e mostra o conteúdo desta versão." data-tip-t="Manual">Manual</button>
+        <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. A ficha aberta é redesenhada com as cores do novo tema.">Tema</button>
+      </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
-      <button class="btn discreto" id="btnManual" data-tip="Abre o manual em nova janela: guia de operação passo a passo desta versão, conceitos e regras. O mesmo manual atende à versão completa e mostra o conteúdo desta versão." data-tip-t="Manual">Manual</button>
-      <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. A ficha aberta é redesenhada com as cores do novo tema.">Tema</button>
     </div>
   </div>
   <nav class="abas" role="tablist" id="abas" aria-label="Etapas">
