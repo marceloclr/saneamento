@@ -762,7 +762,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="grade g4" style="margin-top:12px">
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada.">?</i></span><select id="progFonte"></select></label>
     </div>
-    <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
+    <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade, sob os filtros de fonte e de órgão (este, o do Saldo por exercício) — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
     <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Data de aprovação do MAPP. Referência para avaliar a urgência dos indícios apontados: quanto mais antiga a aprovação, maior o tempo decorrido sem execução." data-tip-t="Aprovação">Aprovação</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th class="num" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028 — coluna totalizadora das duas colunas de Programado anteriores." data-tip-t="Programado total">Programado total</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
   <div id="seg-graficos" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
@@ -3704,6 +3704,8 @@ function ligarEventosSaldo(){
   ['#saldoAgrupamento','#saldoConjunto','#saldoMedida','#saldoOrgao'].forEach(function(s){
     $(s).addEventListener('change',renderSaldo);
   });
+  /* O órgão do Saldo também restringe a grade de Programação, logo abaixo. */
+  $('#saldoOrgao').addEventListener('change',function(){ if(E.fase2) renderFase2(); });
   $('#btnExportarSaldo').addEventListener('click',exportarSaldo);
   ['#tabSaldo','#tabInconsNP'].forEach(function(idT){
     $(idT).addEventListener('click',function(ev){
@@ -4287,10 +4289,10 @@ function renderFase2(){
   const fontesOpcoes=Array.from(fontesSet).sort().map(function(v){ return [v,v]; });
   opcoes('#continFonte',fontesOpcoes,'Todas as fontes'); montarMulti('#continFonte');
   opcoes('#progFonte',fontesOpcoes,'Todas as fontes'); montarMulti('#progFonte');
-  const contFiltro=valoresMulti('#continFonte'), progFiltro=valoresMulti('#progFonte');
+  const contFiltro=valoresMulti('#continFonte');
   const f={
     continuidade: contFiltro.length ? fAll.continuidade.filter(function(c){ return casaFonte(contFiltro,c.m); }) : fAll.continuidade,
-    programacao: progFiltro.length ? fAll.programacao.filter(function(p){ return casaFonte(progFiltro,p.m); }) : fAll.programacao,
+    programacao: programacaoFiltrada(),
     titulos: fAll.titulos, contIni: fAll.contIni, contFim: fAll.contFim
   };
   const orgaosContinuidade=new Set(f.continuidade.map(function(c){ return c.m.orgao; }));
@@ -4333,9 +4335,11 @@ function renderFase2(){
     cartao('Despesas de continuidade',n(f.continuidade.length),'empenho em todos os anos de '+f.contIni+' a '+f.contFim,'var(--petroleo)',
       'Empenho em cada um dos anos da faixa escolhida em Análise, indício de despesa de natureza continuada.');
 
-  $('#programacaoLegenda').textContent = f.programacao.length
+  const orgaosProg=valoresMulti('#saldoOrgao');
+  const notaOrgao=orgaosProg.length ? ' Órgão (filtro do Saldo por exercício): '+orgaosProg.join(', ')+'.' : '';
+  $('#programacaoLegenda').textContent = (f.programacao.length
     ? n(f.programacao.length)+' MAPPs apontados — a grade exibe as 500 primeiras linhas; a exportação contempla a totalidade.'
-    : 'Nenhum apontamento de programação.';
+    : 'Nenhum apontamento de programação.')+notaOrgao;
 
   $('#tabProgramacao').querySelector('tbody').innerHTML = f.programacao.length ? f.programacao.slice(0,500).map(function(p){
     const m=p.m;
@@ -4359,6 +4363,17 @@ function renderFase2(){
   }).join('') : '<tr><td colspan="6" class="vazio">Nenhum apontamento sobre títulos.</td></tr>';
 }
 
+/* Apontamentos de programação sob os filtros da grade: a fonte, próprio do bloco, e o
+   órgão, compartilhado com o Saldo do programado por exercício. */
+function programacaoFiltrada(){
+  if(!E.fase2) return [];
+  const fontes=valoresMulti('#progFonte'), orgaos=valoresMulti('#saldoOrgao');
+  return E.fase2.programacao.filter(function(p){
+    if(orgaos.length && orgaos.indexOf(p.m.orgao)<0) return false;
+    return !fontes.length || casaFonte(fontes,p.m);
+  });
+}
+
 /* Exportação integral da grade de Programação — todas as linhas, todas as colunas. */
 function linhasProgramacao(){
   const cfg=E.cfg;
@@ -4367,7 +4382,7 @@ function linhasProgramacao(){
   const rotEmpPres='EMPENHADO '+cfg.presenteIni+'-'+cfg.presenteFim;
   let rotEmpHist='EMPENHADO '+cfg.histIni+'-'+cfg.histFim;
   if(rotEmpHist===rotEmpPres) rotEmpHist+=' (HISTÓRICO)';
-  return E.fase2.programacao.map(function(p){
+  return programacaoFiltrada().map(function(p){
     const m=p.m, d=m.d||{}, o={};
     o['MAPP']=m.codigo; o['TÍTULO']=m.titulo; o['ÓRGÃO']=m.orgao; o['SECRETARIA']=m.secretaria;
     o['PROGRAMA']=m.programa; o['CHAVE (ÓRGÃO MAPP)']=m.chave;
@@ -4395,12 +4410,13 @@ function linhasProgramacao(){
 }
 
 function exportarProgramacao(){
-  if(!E.fase2 || !E.fase2.programacao.length){ recado('Não há apontamentos de programação a exportar.'); return; }
+  const linhas=linhasProgramacao();
+  if(!linhas.length){ recado('Não há apontamentos de programação a exportar.'); return; }
   try{
     const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasProgramacao()),'PROGRAMACAO');
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas),'PROGRAMACAO');
     XLSX.writeFile(wb,'programacao_'+hojeISO()+'.xlsx');
-    recado('Grade exportada — '+n(E.fase2.programacao.length)+' registros.');
+    recado('Grade exportada — '+n(linhas.length)+' registros.');
   }catch(err){ recado('Falha ao exportar: '+err.message); }
 }
 
