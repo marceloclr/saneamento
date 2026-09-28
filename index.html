@@ -736,7 +736,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span>Secretaria <i class="sigla" tabindex="0" data-tip="Restringe toda a aba às secretarias marcadas. As listas de órgão e de programa passam a mostrar só o que pertence a elas. Sem marcação, não há restrição." data-tip-t="Secretaria">?</i></span><select id="panSecretaria"></select></label>
       <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos órgãos marcados. A lista de programas passa a mostrar só os deles. Sem marcação, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
       <label class="campo"><span>Programa <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos programas do PPA marcados. Sem marcação, não há restrição." data-tip-t="Programa">?</i></span><select id="panPrograma"></select></label>
-      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mantém os MAPPs com ao menos uma linha nas fontes marcadas. Na Carteira por estágio, os valores somam só essas fontes; nos demais blocos, o MAPP entra com o valor inteiro." data-tip-t="Fonte">?</i></span><select id="panFonte"></select></label>
+      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mantém os MAPPs com ao menos uma linha nas fontes marcadas, e todos os valores da aba passam a somar só essas fontes." data-tip-t="Fonte">?</i></span><select id="panFonte"></select></label>
       <label class="campo"><span>Estágio <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos grupos de estágio marcados. Também se marca clicando nos estágios da Carteira por estágio." data-tip-t="Estágio">?</i></span><select id="panEstagio"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa de cada MAPP, e restringe toda a aba aos que casam." data-tip-t="Busca livre">?</i></span><input type="text" id="panBusca" placeholder="código, título, órgão…"></label>
       <div class="campo" style="align-self:end"><button class="btn" id="btnLimparRecortePan" data-tip="Retira o recorte: a aba volta a mostrar a base inteira.">Limpar recorte</button></div>
@@ -793,7 +793,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <header><h2>Programação</h2><span class="legenda">Concentração, programação sem execução e ausência de programação futura.</span></header>
     <div class="cartoes" id="cartoesProgramacao"></div>
     <div class="grade g4" style="margin-top:12px">
-      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada.">?</i></span><select id="progFonte"></select></label>
+      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da grade e os totais passam a somar só as fontes marcadas.">?</i></span><select id="progFonte"></select></label>
     </div>
     <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade, sob o filtro de fonte e o recorte do Panorama — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
     <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Data de aprovação do MAPP. Referência para avaliar a urgência dos indícios apontados: quanto mais antiga a aprovação, maior o tempo decorrido sem execução." data-tip-t="Aprovação">Aprovação</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th class="num" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028 — coluna totalizadora das duas colunas de Programado anteriores." data-tip-t="Programado total">Programado total</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
@@ -896,7 +896,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span><b id="rotFExec" style="font-weight:inherit">Execução no período atual</b> <i class="sigla" tabindex="0" data-tip="Com ou sem execução no período atual resolvido pela âncora, conforme o critério de execução configurado.">?</i></span><select id="fExec"></select></label>
       <label class="campo"><span>Saldo do programado mínimo (R$) <i class="sigla" tabindex="0" data-tip="Considera o saldo do programado do MAPP: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores.">?</i></span><select id="fValorMin"><option value="0" selected>Sem valor mínimo</option><option value="10000">A partir de R$ 10 mil</option><option value="50000">A partir de R$ 50 mil</option><option value="100000">A partir de R$ 100 mil</option><option value="500000">A partir de R$ 500 mil</option><option value="1000000">A partir de R$ 1 milhão</option><option value="5000000">A partir de R$ 5 milhões</option><option value="10000000">A partir de R$ 10 milhões</option><option value="50000000">A partir de R$ 50 milhões</option><option value="100000000">A partir de R$ 100 milhões</option></select></label>
       <label class="campo"><span>Confiança <i class="sigla" tabindex="0" data-tip="Grau de suficiência probatória do enquadramento: alta, média ou baixa.">?</i></span><select id="fConfianca"></select></label>
-      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. O saldo do programado da linha continua somando todas as fontes do MAPP — a ficha mostra a quebra por fonte.">?</i></span><select id="fFonte"></select></label>
+      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da linha e os totais passam a somar só as fontes marcadas; a ficha do MAPP mostra a quebra completa.">?</i></span><select id="fFonte"></select></label>
       <label class="campo"><span>Manifestação do órgão <i class="sigla" tabindex="0" data-tip="Situação do MAPP nas rodadas de manifestação: não enviado, aguardando retorno, prazo vencido sem retorno, de acordo com a ação proposta ou contestando (inclui pedidos de reativação)." data-tip-t="Manifestação do órgão">?</i></span><select id="fManif"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa.">?</i></span><input type="text" id="fBusca" placeholder="código, título, órgão…"></label>
     </div>
@@ -997,7 +997,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
         </select></label>
       <label class="campo"><span>Ano de aprovação</span><select id="sAno"></select></label>
       <label class="campo"><span>Estágio</span><select id="sEstagio"></select></label>
-      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. O saldo do programado da linha continua somando todas as fontes do MAPP — a ficha mostra a quebra por fonte.">?</i></span><select id="sFonte"></select></label>
+      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da linha e os totais passam a somar só as fontes marcadas; a ficha do MAPP mostra a quebra completa.">?</i></span><select id="sFonte"></select></label>
       <label class="campo"><span>Saldo do programado mínimo (R$) <i class="sigla" tabindex="0" data-tip="Considera o saldo do programado do MAPP: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores.">?</i></span><select id="sValorMin"><option value="0" selected>Sem valor mínimo</option><option value="10000">A partir de R$ 10 mil</option><option value="50000">A partir de R$ 50 mil</option><option value="100000">A partir de R$ 100 mil</option><option value="500000">A partir de R$ 500 mil</option><option value="1000000">A partir de R$ 1 milhão</option><option value="5000000">A partir de R$ 5 milhões</option><option value="10000000">A partir de R$ 10 milhões</option><option value="50000000">A partir de R$ 50 milhões</option><option value="100000000">A partir de R$ 100 milhões</option></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa.">?</i></span><input type="text" id="sBusca" placeholder="código, título, órgão…"></label>
     </div>
@@ -1157,7 +1157,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="cartoes" id="cartoesContinuidade" style="margin-bottom:12px"></div>
     <div class="barra-acoes" style="margin-bottom:10px">
       <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Com empenho em todos os anos de <i class="sigla" tabindex="0" data-tip="O MAPP é sinalizado quando tem empenho em cada um dos anos calendário da faixa escolhida — indício de despesa de natureza continuada." data-tip-t="Faixa de continuidade">?</i></span><select id="continIni"></select></label><label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>até</span><select id="continFim"></select></label>
-      <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada.">?</i></span><select id="continFonte"></select></label>
+      <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da grade e os totais passam a somar só as fontes marcadas.">?</i></span><select id="continFonte"></select></label>
       <button class="btn" id="btnRecalcFase2" data-tip="Recalcula os indícios da segunda fase com os limiares informados.">Recalcular indícios</button>
       <button class="btn" id="btnExportContinuidade" data-tip="Exporta os candidatos a despesa de continuidade.">Exportar</button>
     </div>
@@ -2830,6 +2830,55 @@ function avaliar(m){
 
 /* ------------------------ Diagnóstico de toda a base --------------------- */
 
+/* Grandezas monetárias do MAPP (ou da sua visão por fonte), a partir de m.v e m.vp. */
+function calcularValoresMapp(m){
+  const cfg=E.cfg, pos=cfg.baseValor==='positivo';
+  m.programado = soma(m,'Programado',null,null,false);
+  m.empenhado  = somaExec(m,'Empenhado',null,null,false);
+  m.pago       = somaExec(m,'Pago',null,null,false);
+  m.empHist    = somaExec(m,'Empenhado',cfg.histIni,cfg.histFim,pos);
+  m.empPres    = somaExec(m,'Empenhado',cfg.presenteIni,cfg.presenteFim,pos);
+  m.pagoPres   = somaExec(m,'Pago',cfg.presenteIni,cfg.presenteFim,pos);
+  m.empNeg     = somaExec(m,'Empenhado',null,null,true) - m.empenhado;
+  m.progFuturo = soma(m,'Programado',cfg.presenteFim+1,null,false);
+  /* SALDO DO PROGRAMADO — grandeza monetária com que o sistema trabalha:
+     até o exercício corrente, programado − empenhado de cada ano; nos
+     exercícios posteriores ao corrente, o próprio programado. */
+  m.saldoAte   = soma(m,'Programado',null,cfg.presenteFim,false) - soma(m,'Empenhado',null,cfg.presenteFim,false);
+  m.saldo      = m.saldoAte + m.progFuturo;
+}
+
+/* Visão do MAPP restrita às fontes marcadas num filtro: mesmo MAPP (regras,
+   enquadramento, estágio, chave), com os valores recalculados só das linhas
+   dessas fontes. Sem fonte marcada, devolve o próprio MAPP. */
+let cacheFonte={ diag:null, mapa:new Map() };
+function mappNaFonte(m,fontes){
+  if(!fontes || !fontes.length || m.$fontes) return m;
+  if(cacheFonte.diag!==E.diag) cacheFonte={ diag:E.diag, mapa:new Map() };
+  const k=fontes.slice().sort().join('\u0001')+'\u0002'+m.chave;
+  let p=cacheFonte.mapa.get(k);
+  if(p) return p;
+  const v=new Float64Array(m.v.length), vp=new Float64Array(m.v.length);
+  (m.linhas||[]).forEach(function(i){
+    const L=E.linhas[i];
+    if(fontes.indexOf(E.dic.fonte[L.f])<0) return;
+    for(let j=0;j<v.length;j++){ const x=L.v[j]; if(x){ v[j]+=x; if(x>0) vp[j]+=x; } }
+  });
+  p=Object.create(m);
+  p.v=v; p.vp=vp; p.$fontes=fontes.slice(); p.$base=m;
+  p.porFonte=m.porFonte.filter(function(pf){ return fontes.indexOf(pf.fonte)>=0; });
+  p.fontes=p.porFonte.length;
+  calcularValoresMapp(p);
+  cacheFonte.mapa.set(k,p);
+  return p;
+}
+function notaFontes(fontes){
+  return fontes && fontes.length ? ' · valores só das fontes: '+fontes.join(', ') : '';
+}
+function listaNaFonte(lista,fontes){
+  return fontes && fontes.length ? lista.map(function(m){ return mappNaFonte(m,fontes); }) : lista;
+}
+
 function diagnosticar(){
   const cfg=E.cfg;
   const res={
@@ -2839,22 +2888,9 @@ function diagnosticar(){
     cancelados:[], paralisados:[], forade:[], noUniverso:[], divergentes:[],
     totais:{ mapps:0, linhas:E.linhas.length, programado:0, empenhado:0, pago:0 }
   };
-  const pos = cfg.baseValor==='positivo';
   for(let i=0;i<E.mapps.length;i++){
     const m=E.mapps[i];
-    m.programado = soma(m,'Programado',null,null,false);
-    m.empenhado  = somaExec(m,'Empenhado',null,null,false);
-    m.pago       = somaExec(m,'Pago',null,null,false);
-    m.empHist    = somaExec(m,'Empenhado',cfg.histIni,cfg.histFim,pos);
-    m.empPres    = somaExec(m,'Empenhado',cfg.presenteIni,cfg.presenteFim,pos);
-    m.pagoPres   = somaExec(m,'Pago',cfg.presenteIni,cfg.presenteFim,pos);
-    m.empNeg     = somaExec(m,'Empenhado',null,null,true) - m.empenhado;
-    m.progFuturo = soma(m,'Programado',cfg.presenteFim+1,null,false);
-    /* SALDO DO PROGRAMADO — grandeza monetária com que o sistema trabalha:
-       até o exercício corrente, programado − empenhado de cada ano; nos
-       exercícios posteriores ao corrente, o próprio programado. */
-    m.saldoAte   = soma(m,'Programado',null,cfg.presenteFim,false) - soma(m,'Empenhado',null,cfg.presenteFim,false);
-    m.saldo      = m.saldoAte + m.progFuturo;
+    calcularValoresMapp(m);
 
     const dentro=noUniverso(m);
     m.dentroUniverso=dentro;
@@ -3093,10 +3129,10 @@ function aplicarRecortePanorama(){
   const r=recortePanorama();
   const chave=JSON.stringify([r.secretarias,r.orgaos,r.programas,r.fontes,r.estagios,r.busca]);
   if(cacheRecorte.chave===chave && cacheRecorte.diag===E.diag && cacheRecorte.base===E.mapps) return cacheRecorte;
-  const D=E.diag, lista=r.ativo ? E.mapps.filter(function(m){ return noRecorte(m,r); }) : E.mapps;
+  const D=E.diag, lista=r.ativo ? listaNaFonte(E.mapps.filter(function(m){ return noRecorte(m,r); }),r.fontes) : E.mapps;
   let d=D;
   if(D && r.ativo){
-    const f=function(arr){ return arr.filter(function(m){ return noRecorte(m,r); }); };
+    const f=function(arr){ return listaNaFonte(arr.filter(function(m){ return noRecorte(m,r); }),r.fontes); };
     d=Object.assign({},D,{
       regras:{'1a':f(D.regras['1a']), '1b':f(D.regras['1b']), '1.2':f(D.regras['1.2']), '1.3':f(D.regras['1.3'])},
       classes:{'REGRA ÚNICA':f(D.classes['REGRA ÚNICA']), 'MÚLTIPLAS REGRAS':f(D.classes['MÚLTIPLAS REGRAS']),
@@ -3119,7 +3155,7 @@ function legendaRecortePanorama(){
   if(r.secretarias.length) partes.push('secretaria: '+r.secretarias.join(', '));
   if(r.orgaos.length) partes.push('órgão: '+r.orgaos.join(', '));
   if(r.programas.length) partes.push('programa: '+r.programas.join(', '));
-  if(r.fontes.length) partes.push('fonte: '+r.fontes.join(', '));
+  if(r.fontes.length) partes.push('fonte: '+r.fontes.join(', ')+' (valores só dessas fontes)');
   if(r.estagios.length) partes.push('estágio: '+r.estagios.map(function(g){ return GRUPOS_ESTAGIO[g]?GRUPOS_ESTAGIO[g].rotulo:g; }).join(', '));
   if(r.busca) partes.push('busca: “'+$('#panBusca').value.trim()+'”');
   el.textContent = r.ativo
@@ -3176,18 +3212,22 @@ function prepararRecortePanorama(){
   ['#panSecretaria','#panFonte','#panEstagio'].forEach(montarMulti);
   opcoesDependentesRecorte();
 }
-function opcoesDependentesRecorte(){
+/* Filtros encadeados: a secretaria restringe as opções de órgão e de programa;
+   o órgão restringe as de programa. Marcações que deixam de existir caem. */
+function opcoesDependentes(base,idSec,idOrg,idProg){
   const unicos=function(lista,campo){
     return Array.from(new Set(lista.map(function(m){ return m[campo]; }))).filter(Boolean).sort()
       .map(function(v){ return [v,v]; });
   };
-  const secs=valoresMulti('#panSecretaria');
-  const porSec=secs.length ? E.mapps.filter(function(m){ return secs.indexOf(m.secretaria)>=0; }) : E.mapps;
-  opcoes('#saldoOrgao',unicos(porSec,'orgao'),'Todos os órgãos'); montarMulti('#saldoOrgao');
-  const orgs=valoresMulti('#saldoOrgao');
+  const secs=valoresMulti(idSec);
+  const porSec=secs.length ? base.filter(function(m){ return secs.indexOf(m.secretaria)>=0; }) : base;
+  opcoes(idOrg,unicos(porSec,'orgao'),'Todos os órgãos'); montarMulti(idOrg);
+  if(!idProg) return;
+  const orgs=valoresMulti(idOrg);
   const porOrg=orgs.length ? porSec.filter(function(m){ return orgs.indexOf(m.orgao)>=0; }) : porSec;
-  opcoes('#panPrograma',unicos(porOrg,'programa'),'Todos os programas'); montarMulti('#panPrograma');
+  opcoes(idProg,unicos(porOrg,'programa'),'Todos os programas'); montarMulti(idProg);
 }
+function opcoesDependentesRecorte(){ opcoesDependentes(E.mapps,'#panSecretaria','#saldoOrgao','#panPrograma'); }
 function ligarEventosRecortePanorama(){
   ['#panSecretaria','#saldoOrgao'].forEach(function(s){
     $(s).addEventListener('change',function(){ opcoesDependentesRecorte(); renderPanoramaRecortado(); });
@@ -4151,7 +4191,7 @@ function lerFiltros(){
 function filtrar(){
   const f=lerFiltros(); E.filtro=f;
   const base=E.diag.noUniverso;
-  const res=base.filter(function(m){
+  let res=base.filter(function(m){
     if(!casaMulti(f.secretaria,m.secretaria)) return false;
     if(!casaMulti(f.orgao,m.orgao)) return false;
     if(!casaMulti(f.programa,m.programa)) return false;
@@ -4160,7 +4200,7 @@ function filtrar(){
     if(!casaMulti(f.confianca,m.d.confianca)) return false;
     if(!casaFonte(f.fonte,m)) return false;
     if(f.manif.length && f.manif.indexOf(situacaoManif(m.chave))<0) return false;
-    if(f.valorMin && m.saldo<f.valorMin) return false;
+    if(f.valorMin && mappNaFonte(m,f.fonte).saldo<f.valorMin) return false;
     if(f.regra.length){
       const atende=f.regra.some(function(r){
         if(r==='CANCELADO') return m.estagio==='CANCELADO';
@@ -4190,6 +4230,7 @@ function filtrar(){
     }
     return true;
   });
+  if(f.fonte.length) res=listaNaFonte(res,f.fonte);
   const o=E.ordem, s=o.desc?-1:1;
   const chaveOrd={
     codigo:function(m){ const x=parseInt(m.codigo,10); return isNaN(x)?m.codigo:x; },
@@ -4237,7 +4278,7 @@ function renderDiagnostico(){
   const pagina=lista.slice(ini,fim);
 
   $('#contagemFiltro').textContent = n(total)+' de '+n(E.diag.noUniverso.length)+' MAPPs do universo';
-  $('#resumoFiltro').textContent = 'Saldo do programado filtrado: '+rs(somaSaldo(lista));
+  $('#resumoFiltro').textContent = 'Saldo do programado filtrado: '+rs(somaSaldo(lista))+notaFontes(E.filtro.fonte);
   $('#infoPagina').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
 
   let tAte=0,tFut=0,tSaldo=0;
@@ -4658,7 +4699,8 @@ function renderFase2(){
   opcoes('#progFonte',fontesOpcoes,'Todas as fontes'); montarMulti('#progFonte');
   const contFiltro=valoresMulti('#continFonte');
   const f={
-    continuidade: contFiltro.length ? fAll.continuidade.filter(function(c){ return casaFonte(contFiltro,c.m); }) : fAll.continuidade,
+    continuidade: contFiltro.length ? fAll.continuidade.filter(function(c){ return casaFonte(contFiltro,c.m); })
+      .map(function(c){ return { m:mappNaFonte(c.m,contFiltro), anos:c.anos, seq:c.seq }; }) : fAll.continuidade,
     programacao: programacaoFiltrada(),
     titulos: fAll.titulos, contIni: fAll.contIni, contFim: fAll.contFim
   };
@@ -4702,7 +4744,8 @@ function renderFase2(){
     cartao('Despesas de continuidade',n(f.continuidade.length),'empenho em todos os anos de '+f.contIni+' a '+f.contFim,'var(--petroleo)',
       'Empenho em cada um dos anos da faixa escolhida em Análise, indício de despesa de natureza continuada.');
 
-  const notaOrgao=recortePanorama().ativo ? ' Sob o recorte do Panorama.' : '';
+  const fProg=programacaoFiltrada().length && programacaoFiltrada()[0].m.$fontes;
+  const notaOrgao=(recortePanorama().ativo ? ' Sob o recorte do Panorama.' : '')+(fProg?' Valores só das fontes: '+fProg.join(', ')+'.':'');
   $('#programacaoLegenda').textContent = (f.programacao.length
     ? n(f.programacao.length)+' MAPPs apontados — a grade exibe as 500 primeiras linhas; a exportação contempla a totalidade.'
     : 'Nenhum apontamento de programação.')+notaOrgao;
@@ -4733,11 +4776,22 @@ function renderFase2(){
    e o recorte do Panorama (secretaria, órgão e busca). */
 function programacaoFiltrada(){
   if(!E.fase2) return [];
-  const fontes=valoresMulti('#progFonte'), r=recortePanorama();
+  const r=recortePanorama(), prog=valoresMulti('#progFonte');
+  /* Fontes efetivas: as da grade e as do recorte; marcadas nos dois, a interseção. */
+  const fontes = prog.length && r.fontes.length ? prog.filter(function(x){ return r.fontes.indexOf(x)>=0; })
+    : (prog.length ? prog : r.fontes);
+  if((prog.length||r.fontes.length) && !fontes.length) return [];
   return E.fase2.programacao.filter(function(p){
     if(!noRecorte(p.m,r)) return false;
     return !fontes.length || casaFonte(fontes,p.m);
-  });
+  }).map(function(p){ return itemProgramacaoNaFonte(p,fontes); });
+}
+/* Apontamento de programação com os valores das fontes marcadas (os indícios
+   continuam sendo os do MAPP inteiro). */
+function itemProgramacaoNaFonte(p,fontes){
+  if(!fontes.length) return p;
+  const mf=mappNaFonte(p.m,fontes), atual=somaAno(mf,'Programado',E.cfg.presenteFim);
+  return { m:mf, progAtual:atual, participacao: mf.programado?100*atual/mf.programado:0, indicios:p.indicios };
 }
 
 /* Exportação integral da grade de Programação — todas as linhas, todas as colunas. */
@@ -4810,6 +4864,10 @@ function motivoSobrevive(m){
 let cacheNP={ diag:null, anos:null, mapa:new Map() };
 function npDoMapp(m){
   const anos=anosNovoProgramado(), chave=anos.join(',');
+  if(m.$fontes){
+    if(!m.$np || m.$np.anos!==chave || m.$np.diag!==E.diag) m.$np={ anos:chave, diag:E.diag, r:novoProgramadoMapp(m,anos) };
+    return m.$np.r;
+  }
   if(cacheNP.diag!==E.diag || cacheNP.anos!==chave) cacheNP={ diag:E.diag, anos:chave, mapa:new Map() };
   let r=cacheNP.mapa.get(m.chave);
   if(!r){ r=novoProgramadoMapp(m,anos); cacheNP.mapa.set(m.chave,r); }
@@ -4852,7 +4910,7 @@ function filtrarSaneamento(){
     valorMin:parseFloat($('#sValorMin').value)||0, busca:norm($('#sBusca').value)
   };
   E.filtroSan=f;
-  const res=conjuntoEnquadrado().filter(function(m){
+  let res=conjuntoEnquadrado().filter(function(m){
     if(f.regra.length){
       const atende=f.regra.some(function(r){
         return r==='sobre' ? m.d.regras.length>1 : m.d.regras.indexOf(r)>=0;
@@ -4864,7 +4922,7 @@ function filtrarSaneamento(){
     if(!casaMulti(f.ano,String(m.ano))) return false;
     if(!casaMulti(f.estagio,m.estagio)) return false;
     if(!casaFonte(f.fonte,m)) return false;
-    if(f.valorMin && m.saldo<f.valorMin) return false;
+    if(f.valorMin && mappNaFonte(m,f.fonte).saldo<f.valorMin) return false;
     if(f.situacao.length){
       const atende=f.situacao.some(function(r){
         return r==='mantido' ? !estaOculto(m.chave) : estaOculto(m.chave);
@@ -4877,6 +4935,7 @@ function filtrarSaneamento(){
     }
     return true;
   });
+  if(f.fonte.length) res=listaNaFonte(res,f.fonte);
   const o=E.ordemSan, s=o.desc?-1:1;
   const chaveOrd={
     codigo:function(m){ const x=parseInt(m.codigo,10); return isNaN(x)?m.codigo:x; },
@@ -4937,7 +4996,7 @@ function renderSaneamento(){
 
   $('#contagemSaneamento').textContent=n(total)+' de '+n(base.length)+' MAPPs enquadrados';
   $('#resumoSaneamento').textContent='Saldo do programado filtrado: '+rs(somaSaldo(lista))+' · ocultados no filtro: '+
-    n(lista.filter(function(m){ return estaOculto(m.chave); }).length);
+    n(lista.filter(function(m){ return estaOculto(m.chave); }).length)+notaFontes(E.filtroSan.fonte);
   $('#infoPaginaSan').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
   $('#tabSaneamento').querySelector('tfoot').innerHTML = total
     ? '<tr><td colspan="10">Total filtrado ('+n(total)+' MAPPs)</td><td class="num">'+rsCurto(somaSaldo(lista))+'</td><td></td></tr>'
@@ -5212,7 +5271,10 @@ async function exportarResultadoNP(){
 
 function ligarEventosSaneamento(){
   ['#sRegra','#sSecretaria','#sOrgao','#sSituacao','#sAno','#sEstagio','#sFonte'].forEach(function(s){
-    $(s).addEventListener('change',function(){ E.paginaSan=1; renderSaneamento(); });
+    $(s).addEventListener('change',function(){
+      if(s==='#sSecretaria') opcoesDependentes(conjuntoEnquadrado(),'#sSecretaria','#sOrgao');
+      E.paginaSan=1; renderSaneamento();
+    });
   });
   let t=null;
   ['#sBusca','#sValorMin'].forEach(function(s){
@@ -6056,7 +6118,10 @@ function ligarEventos(){
   $('#btnProcessar').addEventListener('click',importarComTrava);
 
   ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte','#fManif'].forEach(function(s){
-    $(s).addEventListener('change',function(){ E.pagina=1; renderDiagnostico(); });
+    $(s).addEventListener('change',function(){
+      if(s==='#fSecretaria'||s==='#fOrgao') opcoesDependentes(E.mapps,'#fSecretaria','#fOrgao','#fPrograma');
+      E.pagina=1; renderDiagnostico();
+    });
   });
   let t=null;
   ['#fBusca','#fValorMin'].forEach(function(s){
