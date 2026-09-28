@@ -1,5 +1,19 @@
 # Backlog
 
+## Lote de 28/09/2026 — resultado centrado no Novo Programado 2027
+
+- Núcleo único de **sobreviventes às regras** (sem regra, ocultados ou com recomendação rejeitada) e
+  `npDoMapp`/`npDaLinha`; `mantidos()` deixou de incluir as rejeitadas.
+- **Prévia do resultado** na Visão Geral; conjunto *Sobreviventes às regras* no Saldo.
+- Análise abre com Revisão da base, **Títulos não comunicativos** e Despesas de continuidade recolhidos.
+- Resultado: botão de exportação em destaque; quadro por órgão com **Programado 2027** antes do NP;
+  **Quadro por MAPP dos ativos depois**; gráficos só se redesenham quando o que mostram muda.
+- Exportações: seis cartões (Resultado, Regras 1 a 4, Situações à margem, Indícios, Exceções, Saldo),
+  sem base original, consolidada, CSV e auditoria; colunas enxutas.
+- Manifestação: PROGRAMADO 2027 e NOVO PROGRAMADO 2027 no lugar do saldo sem ano.
+- **Auditoria removida** do sistema, com o campo de responsável dos diálogos e de Configurações.
+- Manual de uso em seis passos; manual técnico em `manual-tecnico.html`.
+
 ## Pendências decididas — a implementar
 
 ### 3. Fusão verdadeira das abas
@@ -23,7 +37,7 @@ Importação e consolidação; motor de regras com âncora temporal relativa; un
 saneamento; diagnóstico com filtros de seleção múltipla e colunas ordenadoras; ficha
 do MAPP com todas as regras testadas e suas evidências; decisão humana; revisão de
 consistência da base; saneamento final com exclusão individual e exportação em duas
-abas; Antes e Depois; despesas de continuidade; auditoria; exportações; sessão em
+abas; Antes e Depois; despesas de continuidade; exportações; sessão em
 `.json`; tema claro e escuro; sistema de dicas em balão fixo.
 
 ## Lote de 23/09/2026 — concluído

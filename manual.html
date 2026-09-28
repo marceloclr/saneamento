@@ -353,7 +353,7 @@ const PRINCIPIO = [
   ['CÁLCULO','Somatórios por exercício e aferição da execução segundo o critério em vigor.','var(--ardosia)'],
   ['REGRA','Enquadramento nas Regras 1, 2, 3 e 4, com a âncora temporal resolvida.','var(--latao)'],
   ['RECOMENDAÇÃO','Ação que a regra indica para o MAPP, acompanhada de evidência e grau de confiança.','var(--ameixa)'],
-  ['DECISÃO HUMANA','Único ato que produz efeito: na versão completa, registrado com responsável e data na auditoria; na essencial, a exclusão ou o retorno de cada MAPP.','var(--musgo)']
+  ['DECISÃO HUMANA','Único ato que produz efeito: acatar, rejeitar ou ocultar. O que sobrevive às regras leva o Novo Programado 2027.','var(--musgo)']
 ];
 function cadeiaPrincipio(){
   return '<div class="apr-cadeia">'+PRINCIPIO.map(function(p,i){
@@ -373,65 +373,29 @@ const PASSO_PREPARAR = { t:'Preparar a base de execução', cor:'var(--grafite)'
 const GUIA_COMPLETA = [
   PASSO_PREPARAR,
   { t:'Importar a base', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Visão Geral › Importação',
-    fazer:['Clicar na área **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até ela: a importação começa sozinha, sem clique adicional.','Se preciso, acionar **Reprocessar** para refazer a leitura do mesmo arquivo.'],
-    conferir:['O painel de processamento, com cada fase e o percentual concluído.','O selo no alto, que passa a indicar a base carregada.','A aba de dados localizada automaticamente (em regra, “Base de Dados”).'],
-    cautela:['O processamento ocorre na memória do navegador; nada é transmitido a servidor.','Se algum painel falhar, o sistema conclui a composição dos demais e informa qual falhou.'] },
-  { t:'Conferir o retrato da importação', cor:'var(--ardosia)', ir:['panorama','importacao'], onde:'Visão Geral › Importação › Retrato da importação',
-    fazer:['Examinar linhas úteis, colunas reconhecidas e exercícios encontrados.','Consultar a tabela de normalização dos estágios de execução.'],
-    conferir:['Quantidade de MAPPs consolidados coerente com a base de origem.','Colunas não reconhecidas, se houver, e seu eventual impacto.'],
-    cautela:['Conflitos entre linhas da mesma chave são sinalizados, nunca resolvidos pelo sistema.'] },
-  { t:'Identificar o responsável e ajustar parâmetros', cor:'var(--ocre)', ir:null, onde:'Botão Configurações, no alto',
-    fazer:['Preencher **Responsável pelas ações**: o nome acompanha todo lançamento de auditoria.','Conferir critério de execução, âncora temporal, exercícios de execução considerados (régua de/até e anos avulsos), universo e limiares; alterar apenas o necessário e acionar **Aplicar e recalcular**.'],
-    conferir:['Os anos resolvidos pela âncora (ano corrente e anterior).','O quadro “Parâmetros em vigor”, em Visão Geral › Regras aplicadas.'],
-    cautela:['As ações são executadas sem diálogo de confirmação; a justificativa é registrada como “Ação executada diretamente, sem diálogo de confirmação”.','**Restaurar valores oficiais** devolve os parâmetros ao padrão das regras.'] },
-  { t:'Ler o saldo, a programação e os indicadores', cor:'var(--latao)', ir:['panorama','saldo'], onde:'Visão Geral',
-    fazer:['No alto, o **Saldo do programado por exercício**: escolher agrupamento, conjunto e órgão. A grade traz um exercício por coluna e abre mostrando os mais recentes; os antigos ficam à esquerda, atrás da coluna fixa do agrupamento: role a barra horizontal ou, com a grade em foco, use as setas.','Em **Exercícios de execução considerados**, dentro do Saldo, escolher os anos calendário do processamento: arrastar as bolinhas da régua (o recálculo acontece ao soltar) ou clicar na pílula de um ano, logo abaixo da sua marca. Tudo é recalculado (regras, totais, saldo, gráficos e exportações) e a mudança vai à auditoria.','Seguem as inconsistências do Novo Programado, a Programação e os gráficos. Os demais blocos (retrato da importação, três bases, indicadores, populações, universo, interseções e situações à margem) abrem recolhidos: clique no título para expandir.'],
-    conferir:['A união das regras e as sobreposições, em Universo.','A coluna Novo Programado 2027, logo após 2028, e o bloco de inconsistências, se houver.'],
-    cautela:['Os valores monetários são saldo do programado, não programado bruto.','Novo Programado 2027 = VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO_ano − VLR_EMPENHO_ano) de todos os anos anteriores a 2027 marcados na régua; saldo negativo não é somado.','As contagens são por MAPP consolidado, não por linha da planilha.','As populações das quatro regras não são partições do total: um MAPP pode estar em mais de uma regra, e a soma simples não é o conjunto a sanear.','Deixar de fora o período corrente faz a Regra 3 alcançar todo MAPP que executou no histórico; o aviso sob a régua indica isso.','As regras aplicadas e os parâmetros em vigor, com os valores desta sessão, ficam neste manual (Parte II), não mais na tela.'] },
-  { t:'Examinar a programação', cor:'var(--latao)', ir:['panorama','programacao'], onde:'Visão Geral › Programação',
-    fazer:['Consultar os cartões de concentração no exercício corrente, programação sem execução e ausência de programação futura.','Acionar **Exportar grade completa**, se necessário.'],
-    conferir:['O indício atribuído a cada MAPP e os totais da grade.'],
-    cautela:['São apontamentos de acompanhamento: não geram recomendação automática.'] },
-  { t:'Examinar o diagnóstico', cor:'var(--ardosia)', ir:['diagnostico'], onde:'Análise › Diagnóstico',
-    fazer:['Filtrar por secretaria, órgão, programa, ano de aprovação, regra, estágio, situação da revisão, execução, saldo mínimo, confiança, fonte e busca livre.','Ordenar por qualquer coluna, clicando no cabeçalho.','Abrir a ficha do MAPP para ver todas as regras testadas e suas evidências.'],
-    conferir:['A ação recomendada e o grau de confiança de cada MAPP.','Os totais filtrados, na linha totalizadora da grade.'],
-    cautela:['Filtro vazio significa ausência de restrição.','Casos de múltiplas regras, paralisados e dados insuficientes exigem exame manual.'] },
-  { t:'Enviar planilhas aos órgãos', cor:'var(--petroleo)', ir:['manifestacao'], onde:'Manifestação',
-    fazer:['Gravar ou retomar uma sessão: a aba mostra a sessão ativa e só então habilita **Gerar planilhas**. Não é preciso recarregar o .json recém-gravado.','Escolher os órgãos (sem marcação, todos os que têm MAPP enquadrado) e o prazo para resposta.','Acionar **Gerar planilhas**: um órgão gera um .xlsx; vários, um .zip.','Escolher onde gravar a nova versão da sessão e enviar as planilhas pelo canal oficial (SEI ou e-mail).'],
-    conferir:['Os nomes casados: `DDMMAAAA-HHMM-Vnn-ÓRGÃO.xlsx` e `DDMMAAAA-HHMM-Vnn.json`.','A rodada no quadro Rodadas, com a data-limite, e o lançamento na auditoria.'],
-    cautela:['Guarde o .json da rodada: sem ele retomado, os retornos não são aceitos.','Se uma planilha se perder, use **Baixar de novo** no quadro Rodadas: ela sai idêntica, sem rodada nem versão nova.','Na planilha, só as colunas de resposta são editáveis; a proteção evita estragos acidentais, mas não é segurança.','Para cobrar quem não respondeu, marque **Somente MAPPs sem manifestação** e gere nova rodada.'] },
-  { t:'Importar as manifestações dos órgãos', cor:'var(--petroleo)', ir:['manifestacao'], onde:'Manifestação › Retornos dos órgãos',
-    fazer:['Retomar a sessão da rodada (ou posterior) com a mesma base importada.','Soltar as planilhas devolvidas na área de retornos, várias de uma vez.','Examinar a conferência e acionar **Registrar**; depois, gravar a nova versão da sessão.'],
-    conferir:['Por arquivo: respondidas, com pendência, em branco e ignoradas.','A manifestação na ficha do MAPP e no filtro **Manifestação do órgão** do diagnóstico.'],
-    cautela:['O controle interno decide a rodada, não o nome do arquivo; planilha de rodada desconhecida é rejeitada.','Linha com chave alterada é ignorada; resposta incompleta entra com pendência; retorno após a data-limite é marcado como intempestivo.','A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.'] },
-  { t:'Registrar a decisão humana', cor:'var(--ameixa)', ir:['diagnostico'], onde:'Análise › Diagnóstico, ou ficha do MAPP',
-    fazer:['Selecionar um ou mais MAPPs.','Acionar **Acatar recomendação** ou **Rejeitar recomendação**: o registro é imediato.'],
-    conferir:['A situação da revisão atualizada na grade.','O lançamento correspondente no registro de auditoria.'],
-    cautela:['Somente a decisão produz efeito; a recomendação isolada nada altera.'] },
-  { t:'Revisar a consistência da base', cor:'var(--carmim)', ir:['qualidade'], onde:'Análise › Revisão da base',
-    fazer:['Clicar em cada cartão de achado: a lista dos MAPPs envolvidos aparece logo abaixo, com **Fechar**.','Acionar **Exportar achado** ou **Exportar apontamentos**, quando necessário.'],
-    conferir:['Duplicidades, conflitos, divergências de indicador e títulos pouco informativos.'],
-    cautela:['O sistema aponta; jamais corrige a base por conta própria.'] },
-  { t:'Examinar as despesas de continuidade', cor:'var(--petroleo)', ir:['fase2'], onde:'Análise › Despesas de continuidade',
-    fazer:['Escolher a faixa em anos calendário: **Com empenho em todos os anos de** … **até** … (padrão: os cinco exercícios até o corrente). O resultado se refaz ao mudar a faixa.','**Exportar**, se necessário.'],
-    conferir:['Candidatos à migração de investimento para custeio finalístico.'],
-    cautela:['São indícios da segunda fase, sem qualquer efeito automático.'] },
-  { t:'Concluir o saneamento', cor:'var(--sepia)', ir:['saneamento'], onde:'Decisão',
-    fazer:['Examinar a grade do conjunto enquadrado, com seus filtros próprios.','Retirar do resultado o que não deva constar (**Ocultar selecionados** ou coluna Providência).','Acionar **Concluir e exportar resultado**: o sistema pede o responsável (obrigatório) e a observação final, registra a conclusão na auditoria e gera o arquivo.'],
-    conferir:['Mantidos e ocultados, conforme o filtro.','O arquivo exportado em duas abas: RESULTADO DO SANEAMENTO e EXCLUIDOS.'],
-    cautela:['Ocultar retira o MAPP do resultado; a base original permanece intocada e o enquadramento continua registrado.','A exclusão é imediata, reversível (**Restabelecer selecionados** ou **Restabelecer tudo**) e auditada.','**Reabrir**, visível depois da conclusão, desfaz a declaração.'] },
-  { t:'Comparar antes e depois', cor:'var(--ardosia)', ir:['antesdepois'], onde:'Resultado › Antes e depois',
-    fazer:['Escolher base da projeção, medida, agrupamento, conjunto, órgão e busca.','Acionar **Exportar quadro**, se necessário.'],
-    conferir:['A redução do conjunto ativo por situação.','No quadro por órgão, o Novo Programado 2027 dos MAPPs ativos depois do saneamento.'],
-    cautela:['O Novo Programado 2027 usa os anos marcados na régua do Saldo, anteriores a 2027.','“Antes” é a situação registrada na base; “depois” projeta as ações recomendadas sobre os MAPPs mantidos. É projeção: nada é gravado na base.'] },
-  { t:'Exportar relações e a auditoria', cor:'var(--grafite)', ir:['auditoria'], onde:'Resultado › Auditoria e exportações',
-    fazer:['Exportar as relações específicas necessárias, uma a uma, ou a **Base consolidada em CSV**.','Acionar **Exportar auditoria** para o registro integral.'],
-    conferir:['MAPP, regra, campo, valor anterior, valor novo, responsável, data e justificativa em cada lançamento.'],
-    cautela:['A base original exportada é reconstruída a partir dos dicionários, sem alteração.'] },
-  { t:'Guardar e retomar a sessão', cor:'var(--musgo)', ir:null, onde:'Botões Guardar sessão e Retomar sessão, no alto; Configurações › Sessão e armazenamento',
-    fazer:['Acionar **Guardar sessão** ao fim de cada jornada e escolher onde gravar: no computador, no GitHub ou nos dois.','Para usar o GitHub, informar em Configurações o repositório privado, a branch, a pasta e o token, e acionar **Testar conexão**.','Em nova jornada, importar a mesma base e acionar **Retomar sessão**, a partir do computador ou do GitHub.'],
-    conferir:['O nome versionado `DDMMAAAA-HHMM-Vnn.json`: a versão sobe a cada gravação e a mais recente é a de maior número.','A mensagem de retomada com decisões, exclusões, rodadas e manifestações restauradas.'],
-    cautela:['O .json guarda decisões, exclusões, configurações (inclusive os anos da régua), rodadas, manifestações e auditoria, mas não a base de dados.','O token fica na memória desta janela; marque **Lembrar neste computador** para não informá-lo a cada abertura (nunca em computador compartilhado). Use repositório privado, pois a sessão traz nomes e manifestações.','Nada fica gravado no navegador: sem a sessão guardada, o trabalho se perde ao fechar a página.'] }
+    fazer:['Clicar em **Escolha ou arraste a planilha de execução**, ou arrastar o arquivo até lá: a importação e as regras são aplicadas sozinhas.'],
+    conferir:['O selo no alto, com MAPPs, linhas e o nome do arquivo.','Se um painel falhar, o sistema avisa qual; os demais são compostos normalmente.'],
+    cautela:['Tudo é processado no navegador; nada é enviado a servidor.'] },
+  { t:'Ler a Visão Geral e a prévia do resultado', cor:'var(--musgo)', ir:['panorama'], onde:'Visão Geral',
+    fazer:['Usar o **Recorte do Panorama** (secretaria, órgão, programa, fonte, estágio e busca) para restringir toda a aba.','Ler a **Prévia do resultado**: universo, sobreviventes às regras e retirados, com o **Programado 2027** contra o **Novo Programado 2027**.','Em **Exercícios de execução considerados**, no Saldo, marcar na régua os anos que entram no processamento e no Novo Programado.'],
+    conferir:['O Saldo por exercício, com o conjunto **Sobreviventes às regras**, e as inconsistências do Novo Programado, se houver.','A Carteira por estágio e a Programação.'],
+    cautela:['A prévia é preliminar: muda com as decisões e exceções até o saneamento ser concluído.','Blocos secundários abrem recolhidos: clique no título para expandir.'] },
+  { t:'Analisar', cor:'var(--ardosia)', ir:['diagnostico'], onde:'Análise',
+    fazer:['No **Quadro de diagnóstico**, filtrar e abrir a ficha de cada MAPP para ver as regras testadas e a evidência.','Expandir, quando útil, **Revisão da base**, **Títulos não comunicativos** e **Despesas de continuidade**.'],
+    conferir:['A ação recomendada e o grau de confiança.','Sobreposições, paralisados e dados insuficientes, que pedem exame manual.'],
+    cautela:['O sistema aponta; nunca corrige a base por conta própria.'] },
+  { t:'Ouvir os órgãos', cor:'var(--petroleo)', ir:['manifestacao'], onde:'Manifestação',
+    fazer:['Com uma sessão gravada ou retomada, escolher órgãos e prazo e acionar **Gerar planilhas**.','Enviar as planilhas pelo canal oficial; na volta, soltá-las em **Retornos dos órgãos** e acionar **Registrar**.'],
+    conferir:['Cada planilha traz, por MAPP, o **Programado 2027** e o **Novo Programado 2027**.','A manifestação aparece na ficha e no filtro do diagnóstico.'],
+    cautela:['Guarde o .json da rodada: sem ele, os retornos não são aceitos.','A manifestação não decide: acatar ou rejeitar continua sendo ato humano.'] },
+  { t:'Decidir', cor:'var(--ameixa)', ir:['saneamento'], onde:'Análise › Diagnóstico e Decisão',
+    fazer:['Selecionar MAPPs e **Acatar** ou **Rejeitar** a recomendação, com justificativa.','Na Decisão, **Ocultar** do saneamento o enquadrado que não deve sair.'],
+    conferir:['Rejeitado ou ocultado volta a **sobreviver** às regras e passa a levar o Novo Programado 2027.'],
+    cautela:['Ocultar e rejeitar são reversíveis; a base original nunca é alterada.'] },
+  { t:'Exportar o resultado', cor:'var(--musgo)', ir:['antesdepois'], onde:'Resultado',
+    fazer:['Conferir o **Quadro por órgão** (Programado 2027 e Novo Programado 2027) e o **Quadro por MAPP dos ativos depois**.','Acionar **Exportar resultado — Novo Programado 2027**, no alto da aba, ou **Concluir e exportar resultado**, na Decisão, para declarar o saneamento concluído.'],
+    conferir:['O arquivo traz as abas NP 2027 POR MAPP (MAPP, órgão, fonte, Programado 2027, Novo Programado 2027), QUADRO POR MAPP, QUADRO POR ORGAO e PARAMETROS.'],
+    cautela:['As demais relações (regras, situações à margem, indícios, exceções e saldo) ficam no box **Exportações**, no fim da aba.','Guarde a sessão (.json) ao fim da jornada: sem ela, o trabalho se perde ao fechar a página.'] }
 ];
 
 const GUIA_ESSENCIAL = [
@@ -503,12 +467,12 @@ const COMPARATIVO = [
   ['Filtros e ficha do MAPP','sim','sim'],
   ['Indicadores, universo, saldo por exercício e programação','sim','—'],
   ['Novo Programado 2027','sim','—'],
-  ['Decisão humana (acatar ou rejeitar)','sim, com auditoria','—'],
-  ['Retirada de MAPPs do resultado','ocultar e restabelecer, auditado','excluir e retornar, sem registro'],
+  ['Decisão humana (acatar ou rejeitar)','sim, com justificativa','—'],
+  ['Retirada de MAPPs do resultado','ocultar e restabelecer','excluir e retornar'],
   ['Revisão de consistência da base','sim','—'],
   ['Despesas de continuidade (segunda fase)','sim','—'],
   ['Antes e depois','sim','—'],
-  ['Exportação do resultado','resultado, relações e auditoria','base saneada'],
+  ['Exportação do resultado','sobreviventes com Novo Programado 2027 e relações','base saneada'],
   ['Manifestação dos órgãos (planilhas por órgão)','sim','—'],
   ['Guardar e retomar sessão (.json)','no computador ou no GitHub','—']
 ];
@@ -527,15 +491,24 @@ const GLOSSARIO = [
   ['Sobreposição','MAPP enquadrado em mais de uma regra; exige exame manual.','ambas'],
   ['Confiança','Alta, média ou baixa, conforme a completude e a coerência dos dados.','ambas'],
   ['Novo Programado 2027','VLR_PLANEJADO_27 somado aos saldos (programado − empenhado) de todos os exercícios anteriores a 2027 marcados na régua; saldo negativo não é somado e o MAPP é apontado como inconsistente.','completa'],
-  ['Providência','Coluna que retira um MAPP do resultado ou o devolve a ele, de imediato e de forma reversível. Na versão completa, o ato é auditado.','ambas'],
+  ['Providência','Coluna que retira um MAPP do resultado ou o devolve a ele, de imediato e de forma reversível.','ambas'],
+  ['Sobrevivente','MAPP do universo que não atende a regra alguma, ou enquadrado que foi ocultado ou teve a recomendação rejeitada. Leva o Novo Programado 2027.','completa'],
   ['Excluído do saneamento','Na versão essencial, MAPP alcançado por regra que não recebe a ação da regra e permanece na base como está.','essencial'],
-  ['Responsável pelas ações','Nome informado em Configurações e lançado em cada registro de auditoria.','completa'],
   ['Rodada','Envio de planilhas protegidas aos órgãos, com identificador próprio, data-limite e a versão da sessão em que foi gerada.','completa'],
   ['Manifestação do órgão','Resposta do órgão na planilha da rodada: de acordo com a ação proposta, ou contestação (inclui pedido de reativação), com justificativa e previsão de execução.','completa'],
   ['Intempestiva','Manifestação com data posterior à data-limite da rodada; é aceita e sinalizada.','completa'],
   ['Versão da sessão','Número Vnn no nome do .json (DDMMAAAA-HHMM-Vnn); sobe a cada gravação.','completa']
 ];
 
+function htmlNovoProgramado(){
+  return '<p>'+fmtTexto('A finalidade do sistema é entregar os MAPPs que **sobrevivem às Regras 1 a 4**, cada um com o **Novo Programado 2027**:')+'</p>'+
+    '<ul>'+[
+      '**Sobrevive** o MAPP do universo que não atende a regra alguma, ou que, enquadrado, foi ocultado do saneamento ou teve a recomendação rejeitada.',
+      '**Novo Programado 2027** = `VLR_PLANEJADO_27` + Σ (`VLR_PLANEJADO` − `VLR_EMPENHO`) dos anos anteriores marcados na régua.',
+      'Ano com empenho acima do programado não é somado nem subtraído; o MAPP é sinalizado como inconsistente.',
+      'Por fonte, o cálculo usa os mesmos anos do MAPP, e a soma das fontes reproduz o valor do MAPP.'
+    ].map(function(x){ return '<li>'+fmtTexto(x)+'</li>'; }).join('')+'</ul>';
+}
 function htmlSaldo(){
   return '<p>'+fmtTexto('Depois de aplicadas as regras, os valores monetários exibidos são **saldo do programado**, não programado bruto:')+'</p>'+
     '<ul>'+[
@@ -571,6 +544,7 @@ function htmlGlossario(){
 }
 
 const CONCEITOS = [
+  { id:'c-np', t:'Sobreviventes e Novo Programado 2027', cor:'var(--musgo)', v:'completa', html:htmlNovoProgramado },
   { id:'c-regras', t:'As Regras 1 a 4', cor:'var(--latao)', v:'ambas', html:htmlRegras },
   { id:'c-saldo', t:'Saldo do programado', cor:'var(--petroleo)', v:'ambas', html:htmlSaldo },
   { id:'c-versoes', t:'Versão completa e versão essencial', cor:'var(--ameixa)', v:'ambas', html:htmlComparativo },
@@ -601,8 +575,8 @@ const BLOCOS_SCRIPT = [
   ['2','Regras','Aferição da execução, universo, avaliação de cada MAPP, diagnóstico, revisão de consistência, segunda fase e textos explicativos.','`executou` `noUniverso` `avaliar` `diagnosticar` `calcularQualidade` `calcularFase2` `composicaoUniverso` `dicaRegra`'],
   ['3','Painel','Cartões, orquestração da renderização e gráficos.','`cartao` `renderTudo` `renderPainel` `renderSaldoPorRegra` `desenharGraficos`'],
   ['4','Saldo','Saldo do programado por exercício, filtros, Novo Programado 2027 e exportação.','`periodosSaldo` `apurarSaldo` `renderSaldo` `exportarSaldo`'],
-  ['5','Diagnóstico','Filtros, grade, decisão humana e ficha do MAPP.','`prepararFiltros` `filtrar` `renderDiagnostico` `registrarDecisao` `auditar` `abrirFicha`'],
-  ['6','Universo, revisão e auditoria','Demonstração do universo, regras aplicadas, achados de consistência, segunda fase e registro de auditoria.','`renderUniverso` `renderRegrasAplicadas` `renderQualidade` `mostrarAchado` `renderFase2` `renderAuditoria`'],
+  ['5','Diagnóstico','Filtros, grade, decisão humana e ficha do MAPP.','`prepararFiltros` `filtrar` `renderDiagnostico` `registrarDecisao` `abrirFicha`'],
+  ['6','Universo e revisão','Demonstração do universo, regras aplicadas, achados de consistência, segunda fase.','`renderUniverso` `renderRegrasAplicadas` `renderQualidade` `mostrarAchado` `renderFase2`'],
   ['7','Saneamento final','Conjunto enquadrado, exclusão individual, encerramento e exportação do resultado.','`conjuntoEnquadrado` `celulaProvidencia` `ocultarMapps` `restabelecerMapps` `finalizarSaneamento` `exportarResultadoFinal`'],
   ['8','Antes e Depois','Situação antes e depois das decisões, por medida e por órgão (ou outro agrupamento).','`situacaoAntes` `situacaoDepois` `apurarAntesDepois` `renderAntesDepois`'],
   ['9','Exportações e ligações','Relações exportáveis, configurações, sessão em .json, ligação de eventos e inicialização.','`linhasMapp` `conjuntos` `exportar` `cfgParaTela` `aplicarConfig` `guardarSessao` `retomarSessao` `ligarEventos` `iniciar`'],
@@ -619,7 +593,7 @@ const CHAVES_E = [
   ['cfg','Parâmetros em vigor, partindo de `CFG_OFICIAL` e resolvidos por `aplicarAncora`.'],
   ['diag','Resultado de `diagnosticar`: `regras`, `classes`, `noUniverso`, `forade`, `cancelados`, `paralisados`, `divergentes`, `totais`.'],
   ['decisoes · exclusoes · encerramento','Decisões humanas por chave, exclusões individuais do saneamento final e declaração de conclusão.'],
-  ['auditoria · seq · responsavel','Registro integral das alterações, sequencial e último responsável informado.'],
+  ['seq · responsavel','Sequencial das sessões e responsável do encerramento.'],
   ['qualidade · fase2 · saldo · ad','Achados de consistência, indícios da segunda fase, saldo por exercício e quadro Antes e Depois.'],
   ['filtro · ordem · pagina · porPagina','Estado da grade do diagnóstico; os equivalentes com sufixo `San` servem ao saneamento final.'],
   ['passo','Etapa corrente do rito, pintada por `pintarFluxo`.'],
@@ -658,14 +632,14 @@ const TECNICO = [
         ['diagnosticar','Soma séries, aplica o universo e avalia cada MAPP.','var(--latao)'],
         ['avaliar','Testa as quatro regras, classifica e atribui confiança.','var(--latao)'],
         ['renderTudo','Renderiza todas as abas a partir do estado.','var(--ameixa)'],
-        ['registrarDecisao','Grava a decisão humana e o lançamento de auditoria.','var(--ameixa)'],
+        ['registrarDecisao','Grava a decisão humana com data e justificativa.','var(--ameixa)'],
         ['exportar','Gera as pastas de trabalho a partir de conjuntos().','var(--musgo)']
       ])+
       '<p>'+fmtTexto('`diagnosticar` chama, ao final, `calcularQualidade` e `calcularFase2`. `renderTudo` chama, em ordem, as funções de renderização de cada aba, depois `prepararCabecalhos` e, por último, `enviarEstadoManual`, que atualiza o manual se ele estiver aberto.')+'</p>';
   }},
   { id:'t-regras', t:'Motor de regras e parâmetros em vigor', cor:'var(--latao)', html:htmlParametros },
   { id:'t-rotulos', t:'Rótulos e identificadores', cor:'var(--ameixa)', html:function(){
-    return '<p>'+fmtTexto('Rótulo e identificador são coisas distintas. Quando só o texto exibido muda, altera-se o mapa de rótulo; **nunca** o identificador, que é referenciado em filtros, exportações, sessão e auditoria. Assim, `p-qualidade` exibe “Revisão da base” e `p-fase2` exibe “Despesas de continuidade”.')+'</p>'+
+    return '<p>'+fmtTexto('Rótulo e identificador são coisas distintas. Quando só o texto exibido muda, altera-se o mapa de rótulo; **nunca** o identificador, que é referenciado em filtros, exportações e sessão. Assim, `p-qualidade` exibe “Revisão da base” e `p-fase2` exibe “Despesas de continuidade”.')+'</p>'+
       tabela(['Mapa','Uso'],MAPAS_ROTULO,'manTabRotulos');
   }},
   { id:'t-comp', t:'Componentes comuns', cor:'var(--musgo)', html:function(){
@@ -689,9 +663,9 @@ const TECNICO = [
   }},
   { id:'t-manif', t:'Manifestações, sessão versionada e GitHub', cor:'var(--petroleo)', html:function(){
     return '<p>'+fmtTexto('**Rodada.** `gerarRodada` agrupa por órgão os MAPPs de `conjuntoEnquadrado()` não ocultados e chama `montarPlanilhaOrgao` (ExcelJS) para cada um. Cada planilha tem as abas INSTRUÇÕES, MAPPS e CONTROLE (`veryHidden`). Na aba MAPPS, só as colunas H a L têm `protection.locked=false`; as listas de manifestação vêm de `RESPOSTAS[regra]` e a coluna oculta CONTROLE traz `cyrb53(rodada|órgão|chave)`. As planilhas vão num .zip (JSZip) quando há mais de um órgão.')+'</p>'+
-      '<p>'+fmtTexto('**Retorno.** `importarRetornos` lê cada arquivo com o SheetJS, localiza a rodada pelo CONTROLE (nunca pelo nome), confere o token de cada linha e as exigências da regra, mostra a conferência em `perguntar` e, confirmada, `aplicarRetornos` grava `E.manifestacoes`, lança na auditoria e atualiza os retornos da rodada.')+'</p>'+
+      '<p>'+fmtTexto('**Retorno.** `importarRetornos` lê cada arquivo com o SheetJS, localiza a rodada pelo CONTROLE (nunca pelo nome), confere o token de cada linha e as exigências da regra, mostra a conferência em `perguntar` e, confirmada, `aplicarRetornos` grava `E.manifestacoes` e atualiza os retornos da rodada.')+'</p>'+
       '<p>'+fmtTexto('**Sessão formato 2.** `gravarSessao` incrementa `E.versaoSessao`, nomeia `DDMMAAAA-HHMM-Vnn.json` e grava no destino escolhido; `aplicarSessao` aceita os formatos 1 e 2 e avisa quando `assinaturaBase` não bate com a base importada.')+'</p>'+
-      codigo("{ formato:2, versao:3, nome:'23092026-1435-V03.json', assinaturaBase:'…',\n  cfg, decisoes, exclusoes, encerramento, auditoria, responsavel, seq, npAnos,\n  rodadas:[{ id, versao, geradaEm, prazoDias, dataLimite,\n    orgaos:[{ orgao, arquivo, itens:{ chave: regra }, hash, retornos:[] }] }],\n  manifestacoes:{ chave:{ rodada, orgao, regra, resposta, sentido, justificativa,\n    previsao, responsavelOrgao, dataOrgao, arquivo, intempestiva, pendencias, historico } },\n  cfgSessao:{ destino, github:{ repo, branch, pasta } } }")+
+      codigo("{ formato:2, versao:3, nome:'23092026-1435-V03.json', assinaturaBase:'…',\n  cfg, decisoes, exclusoes, encerramento, responsavel, seq, npAnos,\n  rodadas:[{ id, versao, geradaEm, prazoDias, dataLimite,\n    orgaos:[{ orgao, arquivo, itens:{ chave: regra }, hash, retornos:[] }] }],\n  manifestacoes:{ chave:{ rodada, orgao, regra, resposta, sentido, justificativa,\n    previsao, responsavelOrgao, dataOrgao, arquivo, intempestiva, pendencias, historico } },\n  cfgSessao:{ destino, github:{ repo, branch, pasta } } }")+
       '<p>'+fmtTexto('**GitHub.** `githubGravar` usa `PUT /repos/{dono}/{repo}/contents/{pasta}/{arquivo}` com o conteúdo em base64; cada versão é um arquivo novo. `githubListar` e `githubLer` (`Accept: application/vnd.github.raw`) servem a **Retomar sessão**. O token vem de Configurações ou do diálogo `pedirAcessoGitHub`, fica em `E.github.token` e, só se o usuário marcar, em `localStorage` (`webmapp-saneamento-github`). A geração exige sessão ativa (`sessaoAtiva`); **Baixar de novo** (`reemitirRodada`) refaz as planilhas de uma rodada com as regras gravadas nela.')+'</p>';
   }},
   { id:'t-conv', t:'Convenções de trabalho e de interface', cor:'var(--sepia)', html:function(){
@@ -756,7 +730,10 @@ function parte(cor,ic,titulo,texto){
   return '<div class="man-parte" style="--cor:'+cor+'"><span class="icone-fase">'+icone(ic,24)+'</span><div>'+
     '<h2>'+esc(titulo)+'</h2><p>'+esc(texto)+'</p></div></div>';
 }
-function tecnicoAtual(){ return VERSAO==='completa' ? TECNICO : []; }
+/* O manual de uso e o técnico são páginas distintas: manual.html (uso) e
+   manual-tecnico.html, que abre este arquivo com ?parte=tecnico. */
+const PARTE = new URLSearchParams(location.search).get('parte')==='tecnico' ? 'tecnico' : 'uso';
+function tecnicoAtual(){ return PARTE==='tecnico' ? TECNICO : []; }
 function conceitosAtuais(){ return CONCEITOS.filter(function(s){ return s.v==='ambas'||s.v===VERSAO; }); }
 
 function renderManual(){
@@ -766,20 +743,35 @@ function renderManual(){
   $('#versaoNome').textContent=V.nome;
   $$('.versoes button').forEach(function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-versao')===VERSAO?'true':'false'); });
 
-  const guia=guiaAtual(), tec=tecnicoAtual(), conc=conceitosAtuais();
+  const tec=tecnicoAtual(), guia=PARTE==='tecnico'?[]:guiaAtual(), conc=PARTE==='tecnico'?[]:conceitosAtuais();
+  if(PARTE==='tecnico'){
+    document.title='Manual técnico · Saneamento de MAPPs';
+    $('#versaoNome').textContent='Manual técnico';
+    $('#manualConteudo').innerHTML=
+      parte('var(--ferrugem)','codigo','Manual técnico','Referência para evolução e manutenção da versão completa: arquitetura, estado, fluxo de funções, motor de regras, componentes, receitas de extensão, convenções e ensaios. O manual de uso está em manual.html.')+
+      tec.map(function(s){ return secao(s,'tecnico'); }).join('');
+    $('#manualIndice').innerHTML=
+      '<input type="search" class="busca" id="manualBusca" placeholder="Localizar no manual…" aria-label="Localizar no manual">'+
+      '<div class="grupo" style="--cor:var(--ferrugem)"><h4>'+icone('codigo',14)+'Manual técnico</h4>'+tec.map(function(s,i){
+        return '<button type="button" class="ind-item" style="--cor:var(--ferrugem)" data-man-alvo="man-'+s.id+'"><span class="n">T'+(i+1)+'</span>'+esc(s.t)+'</button>'; }).join('')+
+      '<a class="ind-item" href="manual.html" style="--cor:var(--ferrugem)">← Manual de uso</a></div>';
+    vigiarSecoes();
+    return;
+  }
   $('#manualConteudo').innerHTML=
     '<div class="bloco man-secao" id="man-situacao" data-man-grupo="abertura" style="--acento:var(--cor-versao)">'+
       '<header><h2>Situação desta sessão</h2><span class="legenda" id="manualVivoLegenda"></span></header>'+
       '<div id="manualVivo"></div>'+
       '<div style="margin-top:12px">'+cadeiaPrincipio()+'</div>'+
     '</div>'+
-    parte('var(--ardosia)','bussola','Parte I · Guia de operação',
+    parte('var(--ardosia)','bussola','Guia de uso',
       VERSAO==='essencial'
         ? 'Passo a passo da versão essencial, na ordem das três etapas do sistema, com o que fazer, o que conferir e as cautelas de cada uma.'
         : 'Passo a passo do trabalho de saneamento na versão completa, na ordem do rito, com o que fazer, o que conferir e as cautelas de cada etapa.')+
     guia.map(htmlPasso).join('')+
-    parte('var(--latao)','balanca','Parte II · Conceitos e regras','As regras de saneamento, a grandeza monetária com que o sistema trabalha, a comparação entre as versões e o glossário.')+
+    parte('var(--latao)','balanca','Conceitos','O que sobrevive às regras e o Novo Programado 2027, as Regras 1 a 4, a comparação entre as versões e o glossário.')+
     conc.map(function(s){ return secao(s,'conceitos'); }).join('')+
+    '<p class="pequeno tenue" style="margin:18px 4px">Detalhes de arquitetura e manutenção: <a href="manual-tecnico.html">manual técnico</a>.</p>'+
     (tec.length
       ? parte('var(--ferrugem)','codigo','Parte III · Manual técnico','Referência para evolução e manutenção: arquitetura, estado, fluxo de funções, motor de regras, componentes, receitas de extensão, convenções e ensaios.')+
         tec.map(function(s){ return secao(s,'tecnico'); }).join('')
@@ -795,8 +787,8 @@ function renderManual(){
     '<input type="search" class="busca" id="manualBusca" placeholder="Localizar no manual…" aria-label="Localizar no manual"'+
       tip('Filtra as seções do manual que contêm o termo digitado. Apague o termo para exibir todas.','Localizar')+'>'+
     grupo('Abertura','var(--cor-versao)','livro',[['man-situacao','Situação desta sessão','']])+
-    grupo('Parte I · Guia de operação','var(--ardosia)','bussola',guia.map(function(p,i){ return ['man-g'+(i+1),p.t,String(i+1).padStart(2,'0')]; }))+
-    grupo('Parte II · Conceitos e regras','var(--latao)','balanca',conc.map(function(s,i){ return ['man-'+s.id,s.t,'C'+(i+1)]; }))+
+    grupo('Guia de uso','var(--ardosia)','bussola',guia.map(function(p,i){ return ['man-g'+(i+1),p.t,String(i+1).padStart(2,'0')]; }))+
+    grupo('Conceitos','var(--latao)','balanca',conc.map(function(s,i){ return ['man-'+s.id,s.t,'C'+(i+1)]; }))+
     (tec.length?grupo('Parte III · Manual técnico','var(--ferrugem)','codigo',tec.map(function(s,i){ return ['man-'+s.id,s.t,'T'+(i+1)]; })):'');
   renderSituacao();
   renderRegrasVivas();

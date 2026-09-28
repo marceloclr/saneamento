@@ -21,7 +21,7 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    `faixaSelecionada` só deixa usar o indicador “Sem Exec” com a faixa inteira
    escolhida. A régua (`montarReguaExec`) e `avisosExecAnos` são as mesmas nas duas
    versões; na completa, fica no bloco do Saldo e aplica na hora (`aplicarExecAnos`,
-   com auditoria); na essencial, em Regras aplicadas, também na hora.
+   na hora); na essencial, em Regras aplicadas, também na hora.
 2. **Regras** — `executou`, `noUniverso`, `avaliar`, `diagnosticar`,
    `calcularQualidade`, `calcularFase2`, `composicaoUniverso`, e os textos
    explicativos `dicaRegra`, `dicaEstagio`, `dicaAcao`, `dicaConfianca`.
@@ -31,13 +31,17 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    `exportarSaldo`.
 5. **Diagnóstico** — filtros, `renderDiagnostico`, `marcarOrdem`,
    `registrarDecisao`, `abrirFicha`.
-6. **Universo, qualidade e auditoria** — `renderUniverso`, `renderQualidade`,
-   `mostrarAchado`, `renderFase2`, `renderAuditoria`.
+6. **Universo e qualidade** — `renderUniverso`, `renderQualidade`,
+   `mostrarAchado`, `renderFase2`.
 7. **Saneamento final** — grade do conjunto enquadrado, `ocultarMapps`,
-   `restabelecerMapps`, `finalizarSaneamento`, `exportarResultadoFinal`.
+   `restabelecerMapps`, `finalizarSaneamento`; núcleo do resultado: `sobrevive`,
+   `sobreviventes`, `retiradosPelasRegras`, `excecaoRegra`, `npDoMapp` (cache de
+   `novoProgramadoMapp`), `npDaLinha`, `totaisNP` e `exportarResultadoNP`.
 8. **Antes e Depois** — `situacaoAntes`, `situacaoDepois`, `apurarAntesDepois`,
-   `renderAntesDepois`, `desenharAntesDepois`.
-9. **Exportações e ligações** — `linhasMapp`, `conjuntos()`, `exportar`,
+   `renderAntesDepois`, `desenharAntesDepois`, `renderQuadroMapp` (linhas originais
+   dos sobreviventes com o Novo Programado 2027 após `VLR_PLANEJADO_27`).
+9. **Exportações e ligações** — `linhasMapp` (colunas comuns enxutas + contexto de
+   cada aba), `conjuntos()` (seis cartões, um arquivo com várias abas cada), `exportar`, `exportarAbas`,
    configurações (`cfgParaTela`, `aplicarConfig`), sessão em `.json`,
    `ligarEventos`, `iniciar`.
 10. **Boas-vindas, apresentação e manual** — `ICONES`/`icone`, `APR_FASES`,
@@ -55,7 +59,7 @@ GitHub quando o usuário marca *Lembrar neste computador*.
 
 `arquivo`, `buffer`, `colunas`, `anos`, `metricas`, `dic` (dicionários de strings),
 `linhas` (registros dicionarizados, valores em `Float64Array`), `mapps`
-(consolidados), `indice`, `cfg`, `decisoes`, `exclusoes`, `auditoria`,
+(consolidados), `indice`, `cfg`, `decisoes`, `exclusoes`,
 `encerramento`, `diag`, `qualidade`, `fase2`, `saldo`, `ad`, filtros, paginação e
 gráficos; no bloco 11, `versaoSessao`, `rodadas`, `manifestacoes`, `destinoSessao` e
 `github` (o token nunca vai ao `.json`; vai ao `localStorage` só se o usuário marcar). A base original é reconstruída para exportação a partir dos dicionários.
@@ -64,7 +68,7 @@ gráficos; no bloco 11, `versaoSessao`, `rodadas`, `manifestacoes`, `destinoSess
 
 `p-panorama` (segmentos `seg-importacao`, `seg-indicadores`, `seg-universo`,
 `seg-saldo`), `p-diagnostico`, `p-qualidade` (rótulo “Revisão”), `p-saneamento`,
-`p-antesdepois`, `p-fase2` (rótulo “Despesas de continuidade”), `p-auditoria` e
+`p-antesdepois` (Resultado, com o box Exportações), `p-fase2` (rótulo “Despesas de continuidade”) e
 `p-manifestacao` (aba própria “Manifestação”, entre Análise e Decisão; habilita a geração
 só com sessão ativa, `sessaoAtiva()`).
 Boas-vindas de abertura `modalBV` (véu `veuBV`), exibidas só no carregamento;
