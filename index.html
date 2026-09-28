@@ -286,6 +286,16 @@ td.titulo-mapp .cod{font-family:"IBM Plex Mono",monospace;color:var(--tinta-3);f
 .grafico-caixa header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .grafico-caixa header h4{color:var(--cor,var(--tinta))}
 .grafico-caixa .ferramentas{margin-left:auto;display:flex;gap:4px}
+.car-estagios{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}
+.car-estagios .etq{cursor:pointer;font-size:12px;padding:3px 10px}
+.car-estagios .etq i{width:8px;height:8px;border-radius:50%;background:var(--cor)}
+.car-estagios .etq[aria-pressed="true"]{background:var(--cor);color:var(--carta)}
+.car-estagios .etq[aria-pressed="true"] i{background:var(--carta)}
+.car-sub{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 8px}
+.car-sub h4{margin:0}
+.car-sub .campo{flex-direction:row;align-items:center;gap:6px;margin-left:auto}
+.mini-barra{display:inline-block;width:44px;height:6px;border-radius:3px;background:var(--linha);overflow:hidden;vertical-align:middle;margin-right:8px}
+.mini-barra i{display:block;height:100%;background:var(--cor)}
 .tela{position:relative;height:250px}
 
 /* ---------- Passo a passo do fluxo ---------- */
@@ -720,8 +730,11 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 <div class="bloco oculto" id="blocoRecortePanorama" style="--acento:var(--grafite)">
     <header><h2>Recorte do Panorama</h2><span class="legenda" id="recortePanLegenda"></span></header>
     <div class="grade g4">
-      <label class="campo"><span>Secretaria <i class="sigla" tabindex="0" data-tip="Restringe toda a aba às secretarias marcadas: indicadores, saldo, programação, universo e gráficos. Sem marcação, não há restrição." data-tip-t="Secretaria">?</i></span><select id="panSecretaria"></select></label>
-      <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos órgãos marcados: indicadores, saldo, programação, universo e gráficos. Sem marcação, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
+      <label class="campo"><span>Secretaria <i class="sigla" tabindex="0" data-tip="Restringe toda a aba às secretarias marcadas. As listas de órgão e de programa passam a mostrar só o que pertence a elas. Sem marcação, não há restrição." data-tip-t="Secretaria">?</i></span><select id="panSecretaria"></select></label>
+      <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos órgãos marcados. A lista de programas passa a mostrar só os deles. Sem marcação, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
+      <label class="campo"><span>Programa <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos programas do PPA marcados. Sem marcação, não há restrição." data-tip-t="Programa">?</i></span><select id="panPrograma"></select></label>
+      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mantém os MAPPs com ao menos uma linha nas fontes marcadas. Na Carteira por estágio, os valores somam só essas fontes; nos demais blocos, o MAPP entra com o valor inteiro." data-tip-t="Fonte">?</i></span><select id="panFonte"></select></label>
+      <label class="campo"><span>Estágio <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos grupos de estágio marcados. Também se marca clicando nos estágios da Carteira por estágio." data-tip-t="Estágio">?</i></span><select id="panEstagio"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa de cada MAPP, e restringe toda a aba aos que casam." data-tip-t="Busca livre">?</i></span><input type="text" id="panBusca" placeholder="código, título, órgão…"></label>
       <div class="campo" style="align-self:end"><button class="btn" id="btnLimparRecortePan" data-tip="Retira o recorte: a aba volta a mostrar a base inteira.">Limpar recorte</button></div>
     </div>
@@ -783,6 +796,27 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="grafico-caixa" style="--cor:var(--ferrugem)"><header><h4>MAPPs por secretaria</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores secretarias por quantidade de MAPPs. Alterne para ver por saldo do programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="secretarias" data-tipo="valor" data-tip="Ordena pelo saldo do programado.">Saldo</button></div></header><div class="tela"><canvas id="gSecretarias"></canvas></div></div>
     <div class="grafico-caixa" style="--cor:var(--grafite)"><header><h4>MAPPs por órgão</h4><i class="sigla" tabindex="0" data-tip="Quinze maiores órgãos por quantidade de MAPPs. Alterne para ver por saldo do programado.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="qtd" data-tip="Ordena pela quantidade de MAPPs.">Quantidade</button><button class="btn pequeno discreto" data-graf="orgaos" data-tipo="valor" data-tip="Ordena pelo saldo do programado.">Saldo</button></div></header><div class="tela"><canvas id="gOrgaos"></canvas></div></div>
   </div>
+  </div>
+<div class="bloco oculto" id="blocoCarteira" style="--acento:var(--ameixa);--acento-tenue:rgba(101,80,112,.10);--acento-medio:rgba(101,80,112,.3)">
+    <header><h2>Carteira por estágio</h2><span class="legenda" id="carteiraLegenda"></span></header>
+    <div class="grade g4">
+      <label class="campo"><span>Medida <i class="sigla" tabindex="0" data-tip="Série somada nos cartões, nos gráficos e na lista dos maiores MAPPs: programado (VLR_PLANEJADO), empenhado (VLR_EMPENHO) ou pago (VLR_PAGO)." data-tip-t="Medida">?</i></span>
+        <select id="carMetrica"><option value="Programado">Programado</option><option value="Empenhado">Empenhado</option><option value="Pago">Pago</option></select></label>
+      <label class="campo"><span>De <i class="sigla" tabindex="0" data-tip="Primeiro exercício somado. Só aparecem os exercícios marcados na régua de anos." data-tip-t="De">?</i></span><select id="carDe"></select></label>
+      <label class="campo"><span>Até <i class="sigla" tabindex="0" data-tip="Último exercício somado." data-tip-t="Até">?</i></span><select id="carAte"></select></label>
+      <div class="campo" style="align-self:end"><label class="chk" data-tip="Com a opção marcada, só entram os MAPPs com valor diferente de zero na medida e no período escolhidos."><input type="checkbox" id="carComValor"> Contar só MAPPs com valor no período</label></div>
+    </div>
+    <div class="car-estagios" id="carEstagios"></div>
+    <div class="cartoes" id="cartoesCarteira" style="margin-top:12px"></div>
+    <div class="grade g2" style="margin-top:12px">
+      <div class="grafico-caixa" style="--cor:var(--ameixa)"><header><h4>MAPPs por estágio</h4><i class="sigla" tabindex="0" data-tip="Quantidade de MAPPs do recorte em cada grupo de estágio, na ordem do ciclo de execução. Clique num estágio para incluí-lo ou retirá-lo do recorte.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="carEstagios" data-tipo="bar" data-tip="Exibe em barras horizontais.">Barras</button><button class="btn pequeno discreto" data-graf="carEstagios" data-tipo="doughnut" data-tip="Exibe em rosca.">Rosca</button></div></header><div class="tela" style="height:340px"><canvas id="gCarEstagios"></canvas></div></div>
+      <div class="grafico-caixa" style="--cor:var(--latao)"><header><h4 id="carTituloAnos">Valor por exercício</h4><i class="sigla" tabindex="0" data-tip="Soma, por exercício, da medida escolhida nos MAPPs do recorte.">?</i><div class="ferramentas"><button class="btn pequeno discreto" data-graf="carAnos" data-tipo="bar" data-tip="Barras com o total de cada exercício.">Barras</button><button class="btn pequeno discreto" data-graf="carAnos" data-tipo="line" data-tip="Linha com o total de cada exercício.">Linha</button><button class="btn pequeno discreto" data-graf="carAnos" data-tipo="stack" data-tip="Barras empilhadas, decompondo cada exercício pelo estágio atual dos MAPPs.">Por estágio</button></div></header><div class="tela" style="height:340px"><canvas id="gCarAnos"></canvas></div></div>
+    </div>
+    <div class="car-sub"><h4>Estágio × quantidade e valor programado</h4><i class="sigla" tabindex="0" data-tip="MAPPs do recorte com valor programado diferente de zero no exercício escolhido, por grupo de estágio. Tem filtro de exercício próprio; a medida e o período acima não se aplicam aqui.">?</i>
+      <label class="campo"><span>Exercício</span><select id="carXAno"></select></label></div>
+    <div class="tabela-caixa" style="max-height:none"><table id="tabCarCruzada"><thead><tr><th>Estágio</th><th class="num">Quantidade</th><th class="num">% qtd.</th><th class="num">Valor programado</th><th class="num">% valor</th><th class="num">Média por MAPP</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <div class="car-sub"><h4>MAPPs de maior volume</h4><span class="legenda" id="carTopNota"></span></div>
+    <div class="tabela-caixa" style="max-height:48vh"><table id="tabCarTop"><thead><tr><th>MAPP</th><th>Título</th><th>Secretaria</th><th>Órgão</th><th>Estágio</th><th class="num" id="carTopValor">Valor no período</th><th class="num">Participação</th></tr></thead><tbody></tbody></table></div>
   </div>
 <div class="bloco oculto recolhivel" id="blocoResumoImport" style="--acento:var(--grafite)">
     <header><h2>Retrato da importação</h2><span class="legenda" id="carimboImport"></span></header>
@@ -3033,21 +3067,27 @@ function calcularFase2(){
    devolvem a base e o diagnóstico inteiros quando não há recorte. */
 function recortePanorama(){
   const r={ secretarias:valoresMulti('#panSecretaria'), orgaos:valoresMulti('#saldoOrgao'),
-            busca:norm($('#panBusca')?$('#panBusca').value:'') };
-  r.ativo=!!(r.secretarias.length||r.orgaos.length||r.busca);
+            programas:valoresMulti('#panPrograma'), fontes:valoresMulti('#panFonte'),
+            estagios:valoresMulti('#panEstagio'), busca:norm($('#panBusca')?$('#panBusca').value:'') };
+  r.ativo=!!(r.secretarias.length||r.orgaos.length||r.programas.length||r.fontes.length||r.estagios.length||r.busca);
   return r;
 }
-function noRecorte(m,r){
+/* semEstagio: ignora o filtro de estágio (a Carteira conta todos os estágios e só
+   esmaece os que estão fora do recorte). */
+function noRecorte(m,r,semEstagio){
   if(!r.ativo) return true;
   if(r.secretarias.length && r.secretarias.indexOf(m.secretaria)<0) return false;
   if(r.orgaos.length && r.orgaos.indexOf(m.orgao)<0) return false;
+  if(r.programas.length && r.programas.indexOf(m.programa)<0) return false;
+  if(r.fontes.length && !casaFonte(r.fontes,m)) return false;
+  if(!semEstagio && r.estagios.length && r.estagios.indexOf(m.estagio)<0) return false;
   if(r.busca && norm(m.chave+' '+m.codigo+' '+m.titulo+' '+m.orgao+' '+m.secretaria+' '+m.programa).indexOf(r.busca)<0) return false;
   return true;
 }
 let cacheRecorte={ chave:null, diag:null, base:null };
 function aplicarRecortePanorama(){
   const r=recortePanorama();
-  const chave=JSON.stringify([r.secretarias,r.orgaos,r.busca]);
+  const chave=JSON.stringify([r.secretarias,r.orgaos,r.programas,r.fontes,r.estagios,r.busca]);
   if(cacheRecorte.chave===chave && cacheRecorte.diag===E.diag && cacheRecorte.base===E.mapps) return cacheRecorte;
   const D=E.diag, lista=r.ativo ? E.mapps.filter(function(m){ return noRecorte(m,r); }) : E.mapps;
   let d=D;
@@ -3074,6 +3114,9 @@ function legendaRecortePanorama(){
   const c=aplicarRecortePanorama(), r=c.r, partes=[];
   if(r.secretarias.length) partes.push('secretaria: '+r.secretarias.join(', '));
   if(r.orgaos.length) partes.push('órgão: '+r.orgaos.join(', '));
+  if(r.programas.length) partes.push('programa: '+r.programas.join(', '));
+  if(r.fontes.length) partes.push('fonte: '+r.fontes.join(', '));
+  if(r.estagios.length) partes.push('estágio: '+r.estagios.map(function(g){ return GRUPOS_ESTAGIO[g]?GRUPOS_ESTAGIO[g].rotulo:g; }).join(', '));
   if(r.busca) partes.push('busca: “'+$('#panBusca').value.trim()+'”');
   el.textContent = r.ativo
     ? n(c.mapps.length)+' de '+n(E.mapps.length)+' MAPPs · '+partes.join(' · ')
@@ -3084,14 +3127,223 @@ function renderPanoramaRecortado(){
   const etapas=[legendaRecortePanorama,renderPainel,renderUniverso,renderSaldo,renderFase2,desenharGraficos];
   etapas.forEach(function(fn){ try{ fn(); }catch(err){ console.error('Recorte do Panorama:',err); } });
 }
+const FILTROS_RECORTE_PAN=['#panSecretaria','#saldoOrgao','#panPrograma','#panFonte','#panEstagio'];
+/* Opções do recorte. Secretaria restringe as listas de órgão e programa; órgão
+   restringe a de programa. Marcações que deixam de existir são descartadas. */
+function prepararRecortePanorama(){
+  const unicos=function(lista,campo){
+    return Array.from(new Set(lista.map(function(m){ return m[campo]; }))).filter(Boolean).sort()
+      .map(function(v){ return [v,v]; });
+  };
+  opcoes('#panSecretaria',unicos(E.mapps,'secretaria'),'Todas as secretarias');
+  const fontes=new Set(); E.mapps.forEach(function(m){ m.porFonte.forEach(function(pf){ fontes.add(pf.fonte); }); });
+  opcoes('#panFonte',Array.from(fontes).filter(Boolean).sort().map(function(v){ return [v,v]; }),'Todas as fontes');
+  const presentes=new Set(E.mapps.map(function(m){ return m.estagio; }));
+  opcoes('#panEstagio',ORDEM_ESTAGIO.filter(function(g){ return presentes.has(g); })
+    .map(function(g){ return [g,GRUPOS_ESTAGIO[g].rotulo]; }),'Todos os estágios');
+  ['#panSecretaria','#panFonte','#panEstagio'].forEach(montarMulti);
+  opcoesDependentesRecorte();
+}
+function opcoesDependentesRecorte(){
+  const unicos=function(lista,campo){
+    return Array.from(new Set(lista.map(function(m){ return m[campo]; }))).filter(Boolean).sort()
+      .map(function(v){ return [v,v]; });
+  };
+  const secs=valoresMulti('#panSecretaria');
+  const porSec=secs.length ? E.mapps.filter(function(m){ return secs.indexOf(m.secretaria)>=0; }) : E.mapps;
+  opcoes('#saldoOrgao',unicos(porSec,'orgao'),'Todos os órgãos'); montarMulti('#saldoOrgao');
+  const orgs=valoresMulti('#saldoOrgao');
+  const porOrg=orgs.length ? porSec.filter(function(m){ return orgs.indexOf(m.orgao)>=0; }) : porSec;
+  opcoes('#panPrograma',unicos(porOrg,'programa'),'Todos os programas'); montarMulti('#panPrograma');
+}
 function ligarEventosRecortePanorama(){
-  ['#panSecretaria','#saldoOrgao'].forEach(function(s){ $(s).addEventListener('change',renderPanoramaRecortado); });
+  ['#panSecretaria','#saldoOrgao'].forEach(function(s){
+    $(s).addEventListener('change',function(){ opcoesDependentesRecorte(); renderPanoramaRecortado(); });
+  });
+  ['#panPrograma','#panFonte','#panEstagio'].forEach(function(s){ $(s).addEventListener('change',renderPanoramaRecortado); });
   let t=null;
   $('#panBusca').addEventListener('input',function(){ clearTimeout(t); t=setTimeout(renderPanoramaRecortado,260); });
   $('#btnLimparRecortePan').addEventListener('click',function(){
-    limparMulti('#panSecretaria'); limparMulti('#saldoOrgao'); $('#panBusca').value='';
-    renderPanoramaRecortado();
+    FILTROS_RECORTE_PAN.forEach(limparMulti); $('#panBusca').value='';
+    opcoesDependentesRecorte(); renderPanoramaRecortado();
   });
+  ['#carMetrica','#carDe','#carAte','#carComValor','#carXAno'].forEach(function(s){
+    $(s).addEventListener('change',function(){
+      if(s==='#carDe' && +$('#carDe').value>+$('#carAte').value) $('#carAte').value=$('#carDe').value;
+      if(s==='#carAte' && +$('#carAte').value<+$('#carDe').value) $('#carDe').value=$('#carAte').value;
+      renderCarteira();
+    });
+  });
+  $('#carEstagios').addEventListener('click',function(ev){
+    const b=ev.target.closest('[data-estagio]'); if(b) alternarEstagioRecorte(b.getAttribute('data-estagio'));
+  });
+  $('#tabCarTop').addEventListener('click',function(ev){
+    const tr=ev.target.closest('tr[data-chave]'); if(tr) abrirFicha(tr.getAttribute('data-chave'));
+  });
+}
+function alternarEstagioRecorte(g){
+  const st=MULTIS['panEstagio']; if(!st) return;
+  if(st.escolha.has(g)) st.escolha.delete(g); else st.escolha.add(g);
+  rotularMulti('panEstagio');
+  renderPanoramaRecortado();
+}
+
+/* ------------------------- Carteira por estágio -------------------------
+   Descreve a base integral sob o recorte, inclusive concluídos e cancelados:
+   quantidade por grupo de estágio, série anual da medida escolhida, cruzamento
+   estágio × programado de um exercício e os MAPPs de maior volume. */
+const ORDEM_ESTAGIO=['PREPARATORIAS','LICITACAO','NAO_INICIADO','EM_EXECUCAO','PARALISADO',
+  'CONCLUIDO_FISICO','CONCLUIDO_FISICO_FINANCEIRO','CANCELADO','NAO_DEFINIDO','DESCONHECIDO'];
+const COR_ESTAGIO_CARTEIRA={ PREPARATORIAS:'--ocre', LICITACAO:'--petroleo', NAO_INICIADO:'--ameixa',
+  EM_EXECUCAO:'--ardosia', PARALISADO:'--ferrugem', CONCLUIDO_FISICO:'--musgo',
+  CONCLUIDO_FISICO_FINANCEIRO:'--neutro', CANCELADO:'--carmim', NAO_DEFINIDO:'--sepia', DESCONHECIDO:'--grafite' };
+function corEstagioCarteira(g){ return corVar(COR_ESTAGIO_CARTEIRA[g]||'--tinta-3'); }
+function rotuloEstagio(g){ return GRUPOS_ESTAGIO[g]?GRUPOS_ESTAGIO[g].rotulo:g; }
+
+function prepararCarteira(){
+  const anos=anosExec();
+  const de=$('#carDe').value, ate=$('#carAte').value, xa=$('#carXAno').value;
+  const opt=anos.map(function(a){ return '<option value="'+a+'">'+a+'</option>'; }).join('');
+  $('#carDe').innerHTML=opt; $('#carAte').innerHTML=opt;
+  $('#carDe').value = de && anos.indexOf(+de)>=0 ? de : String(anos[0]);
+  $('#carAte').value = ate && anos.indexOf(+ate)>=0 ? ate : String(anos[anos.length-1]);
+  $('#carXAno').innerHTML='<option value="">Todos os exercícios</option>'+opt;
+  $('#carXAno').value = xa!=='' && anos.indexOf(+xa)>=0 ? xa
+    : (anos.indexOf(E.cfg.presenteFim)>=0 ? String(E.cfg.presenteFim) : '');
+  $('#blocoCarteira').classList.remove('oculto');
+}
+
+/* Valor do MAPP num exercício; com fonte no recorte, só as linhas dessas fontes. */
+function valorCarteira(m,met,a,fontes){
+  if(!fontes.length) return somaAno(m,met,a);
+  let t=0;
+  m.porFonte.forEach(function(pf){ if(fontes.indexOf(pf.fonte)>=0) t+=somaAnoArray(pf.serie,met,a); });
+  return t;
+}
+
+function apurarCarteira(){
+  const r=recortePanorama(), met=$('#carMetrica').value;
+  const de=+$('#carDe').value, ate=+$('#carAte').value;
+  const anos=anosExec().filter(function(a){ return a>=de && a<=ate; });
+  const comValor=$('#carComValor').checked;
+  const cont={}, porEst={}, anual=new Float64Array(anos.length), lista=[];
+  E.mapps.forEach(function(m){
+    if(!noRecorte(m,r,true)) return;
+    const serie=new Float64Array(anos.length); let v=0;
+    for(let i=0;i<anos.length;i++){ serie[i]=valorCarteira(m,met,anos[i],r.fontes); v+=serie[i]; }
+    if(comValor && Math.abs(v)<0.005) return;
+    cont[m.estagio]=(cont[m.estagio]||0)+1;
+    if(r.estagios.length && r.estagios.indexOf(m.estagio)<0) return;
+    lista.push({m:m,v:v});
+    if(!porEst[m.estagio]) porEst[m.estagio]=new Float64Array(anos.length);
+    for(let i=0;i<anos.length;i++){ anual[i]+=serie[i]; porEst[m.estagio][i]+=serie[i]; }
+  });
+  return { r:r, met:met, anos:anos, cont:cont, porEst:porEst, anual:anual, lista:lista, comValor:comValor };
+}
+
+function renderCarteira(){
+  if(!E.diag || !$('#carDe').options.length) return;
+  const C=apurarCarteira(), r=C.r, nm=C.met.toLowerCase();
+  const per=C.anos.length ? C.anos[0]+'–'+C.anos[C.anos.length-1] : 'nenhum exercício';
+  $('#carteiraLegenda').textContent='Base integral sob o recorte, inclusive concluídos e cancelados · '+nm+' · '+per+
+    (r.fontes.length?' · valores só das fontes marcadas':'');
+
+  const presentes=ORDEM_ESTAGIO.filter(function(g){ return C.cont[g] || r.estagios.indexOf(g)>=0; });
+  $('#carEstagios').innerHTML='<span class="pequeno tenue">Estágios</span>'+presentes.map(function(g){
+    return '<button type="button" class="etq" data-estagio="'+g+'" aria-pressed="'+(r.estagios.indexOf(g)>=0)+'" style="--cor:'+
+      corEstagioCarteira(g)+'"'+tip('Inclui ou retira “'+rotuloEstagio(g)+'” do recorte de toda a aba. Sem estágio marcado, todos entram.',rotuloEstagio(g))+
+      '><i></i>'+esc(rotuloEstagio(g))+' · '+n(C.cont[g]||0)+'</button>';
+  }).join('');
+
+  let tot=0, pico=-1;
+  for(let i=0;i<C.anos.length;i++){ tot+=C.anual[i]; if(pico<0 || C.anual[i]>C.anual[pico]) pico=i; }
+  const secs=new Set(C.lista.map(function(x){ return x.m.secretaria; })).size;
+  $('#cartoesCarteira').innerHTML=
+    cartao('MAPPs no recorte',n(C.lista.length),n(secs)+(secs===1?' secretaria':' secretarias'),'var(--musgo)',
+      'MAPPs consolidados (órgão + MAPP) que atendem a todo o recorte, inclusive os estágios marcados'+(C.comValor?', com valor no período':'')+
+      '. A chave difere da do painel avulso “Panorama dos MAPPs” (secretaria + órgão + MAPP), por isso as contagens não coincidem.')+
+    cartao('Valor no período',rsCurto(tot),nm+' · '+per,'var(--latao)',
+      'Soma do '+nm+' dos MAPPs do recorte nos exercícios de '+per+'. Valor exato: '+rs(tot)+'.',true)+
+    cartao('Média anual',rsCurto(C.anos.length?tot/C.anos.length:0),n(C.anos.length)+(C.anos.length===1?' exercício':' exercícios'),'var(--ardosia)',
+      'Valor no período dividido pela quantidade de exercícios do período. Exercícios sem valor também entram no divisor.',true)+
+    cartao('Exercício de maior volume',pico>=0&&C.anual[pico]>0?String(C.anos[pico]):'—',pico>=0&&C.anual[pico]>0?rsCurto(C.anual[pico]):'sem valores no recorte','var(--ameixa)',
+      'Exercício com a maior soma do '+nm+' dentro do período.');
+
+  $('#carTituloAnos').textContent=C.met+' por exercício';
+  $('#carTopValor').textContent=C.met+' no período';
+  desenharCarteira(C);
+  renderCarteiraCruzada(r);
+
+  const top=C.lista.slice().sort(function(a,b){ return b.v-a.v; }).slice(0,100);
+  $('#tabCarTop').querySelector('tbody').innerHTML = top.length ? top.map(function(x){
+    const m=x.m;
+    return '<tr class="linha-clicavel" data-chave="'+esc(m.chave)+'"><td class="mono">'+esc(m.codigo)+'</td><td class="titulo-mapp">'+esc(m.titulo)+
+      '</td><td>'+esc(m.secretaria)+'</td><td>'+esc(m.orgao)+'</td><td><span class="etq" style="--cor:'+corEstagioCarteira(m.estagio)+'">'+
+      esc(rotuloEstagio(m.estagio))+'</span></td><td class="num" title="'+rs(x.v)+'">'+rsCurto(x.v)+'</td><td class="num">'+pct(x.v,tot)+'</td></tr>';
+  }).join('') : '<tr><td colspan="7" class="vazio">Nenhum MAPP corresponde ao recorte. Amplie o período ou limpe o recorte.</td></tr>';
+  $('#carTopNota').textContent = C.lista.length>100 ? 'Os 100 maiores de '+n(C.lista.length)+', em ordem decrescente de '+nm
+    : (C.lista.length ? n(C.lista.length)+' MAPPs, em ordem decrescente de '+nm : '');
+}
+
+function desenharCarteira(C){
+  if(typeof Chart==='undefined') return;
+  const r=C.r;
+  const ids=ORDEM_ESTAGIO.filter(function(g){ return C.cont[g] || r.estagios.indexOf(g)>=0; });
+  const total=ids.reduce(function(t,g){ return t+(C.cont[g]||0); },0);
+  const esmaece=function(g){ const c=corEstagioCarteira(g); return r.estagios.length && r.estagios.indexOf(g)<0 && /^#[0-9a-f]{6}$/i.test(c) ? c+'55' : c; };
+  const rosca=tiposGrafico.carEstagios==='doughnut';
+  grafico('gCarEstagios',{ type:rosca?'doughnut':'bar',
+    data:{labels:ids.map(rotuloEstagio),datasets:[{label:'MAPPs',data:ids.map(function(g){ return C.cont[g]||0; }),
+      backgroundColor:ids.map(esmaece),borderWidth:0}]},
+    options:{indexAxis:rosca?'x':'y',
+      onClick:function(e,els){ if(els.length) alternarEstagioRecorte(ids[els[0].index]); },
+      onHover:function(e,els){ e.native.target.style.cursor=els.length?'pointer':'default'; },
+      plugins:{legend:{display:rosca,position:'bottom'},
+        tooltip:{callbacks:{label:function(c){ return n(c.raw)+' MAPPs · '+pct(c.raw,total); },
+          afterLabel:function(){ return 'Clique para incluir ou retirar do recorte'; }}}},
+      scales:rosca?{}:{x:{beginAtZero:true,grid:{color:corGrade()}},y:{grid:{display:false}}}}});
+
+  const tipo=tiposGrafico.carAnos, empilha=tipo==='stack';
+  let datasets;
+  if(empilha){
+    datasets=ORDEM_ESTAGIO.filter(function(g){ return C.porEst[g] && C.porEst[g].some(function(v){ return v!==0; }); })
+      .map(function(g){ return {label:rotuloEstagio(g),data:Array.from(C.porEst[g]),backgroundColor:corEstagioCarteira(g),stack:'t',borderWidth:0}; });
+  } else {
+    datasets=[{label:C.met,data:Array.from(C.anual),backgroundColor:PALETA[1],borderColor:PALETA[1],
+      borderWidth:tipo==='line'?2:0,tension:.25,pointRadius:2}];
+  }
+  grafico('gCarAnos',{ type:empilha?'bar':tipo,
+    data:{labels:C.anos,datasets:datasets},
+    options:{interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:empilha,position:'bottom',labels:{boxWidth:10,boxHeight:10,font:{size:10}}},
+        tooltip:{filter:function(it){ return it.raw!==0; },
+          callbacks:{label:function(c){ return c.dataset.label+': '+rs(c.raw); },
+            footer:function(its){ return empilha?'Total do exercício: '+rs(its.reduce(function(t,i){ return t+i.raw; },0)):''; }}}},
+      scales:{x:{stacked:empilha,grid:{display:false}},
+        y:{stacked:empilha,beginAtZero:true,grid:{color:corGrade()},ticks:{callback:function(v){ return rsCurto(v); }}}}}});
+}
+
+function renderCarteiraCruzada(r){
+  const xa=$('#carXAno').value, anos=xa==='' ? anosExec() : [+xa];
+  const q={}, v={};
+  E.mapps.forEach(function(m){
+    if(!noRecorte(m,r)) return;
+    let t=0; anos.forEach(function(a){ t+=valorCarteira(m,'Programado',a,r.fontes); });
+    if(Math.abs(t)<0.005) return;
+    q[m.estagio]=(q[m.estagio]||0)+1; v[m.estagio]=(v[m.estagio]||0)+t;
+  });
+  const ids=ORDEM_ESTAGIO.filter(function(g){ return q[g]; });
+  const tq=ids.reduce(function(t,g){ return t+q[g]; },0), tv=ids.reduce(function(t,g){ return t+v[g]; },0);
+  const barra=function(a,b,c){ return '<span class="mini-barra" style="--cor:'+c+'"><i style="width:'+(b?Math.max(0,Math.min(100,100*a/b)):0)+'%"></i></span>'; };
+  const tab=$('#tabCarCruzada');
+  tab.querySelector('tbody').innerHTML = ids.length ? ids.map(function(g){
+    const c=corEstagioCarteira(g);
+    return '<tr><td><span class="etq" style="--cor:'+c+'">'+esc(rotuloEstagio(g))+'</span></td><td class="num">'+n(q[g])+
+      '</td><td class="num">'+barra(q[g],tq,c)+pct(q[g],tq)+'</td><td class="num" title="'+rs(v[g])+'">'+rsCurto(v[g])+
+      '</td><td class="num">'+barra(v[g],tv,c)+pct(v[g],tv)+'</td><td class="num" title="'+rs(v[g]/q[g])+'">'+rsCurto(v[g]/q[g])+'</td></tr>';
+  }).join('') : '<tr><td colspan="6" class="vazio">Não há valor programado no exercício escolhido.</td></tr>';
+  tab.querySelector('tfoot').innerHTML = ids.length
+    ? '<tr><td>Total</td><td class="num">'+n(tq)+'</td><td class="num">100,0%</td><td class="num" title="'+rs(tv)+'">'+rsCurto(tv)+'</td><td class="num">100,0%</td><td class="num">'+rsCurto(tq?tv/tq:0)+'</td></tr>' : '';
 }
 
 function composicaoUniverso(){
@@ -3348,6 +3600,7 @@ function grafico(id,cfg){
 }
 
 const tiposGrafico = { regrasQtd:'bar', regrasVal:'bar', anos:'line', estagios:'bar', secretarias:'qtd', orgaos:'qtd',
+  carEstagios:'bar', carAnos:'bar',
   adSituacao:'bar', adRegras:'bar', adEstrato:'bar', adAnos:'line' };
 
 function desenharGraficos(){
@@ -3400,6 +3653,7 @@ function desenharGraficos(){
 
   desenharAgregado('gSecretarias','secretaria',tiposGrafico.secretarias);
   desenharAgregado('gOrgaos','orgao',tiposGrafico.orgaos);
+  renderCarteira();
 }
 
 function desenharAgregado(id,campo,modo){
@@ -3809,9 +4063,8 @@ function prepararFiltros(){
     return Array.from(new Set(E.mapps.map(function(m){ return m[campo]; }))).filter(Boolean).sort()
       .map(function(v){ return [v,v]; });
   };
-  opcoes('#saldoOrgao',unicos('orgao'),'Todos os órgãos');
-  opcoes('#panSecretaria',unicos('secretaria'),'Todas as secretarias');
-  ['#saldoOrgao','#panSecretaria'].forEach(montarMulti);
+  prepararRecortePanorama();
+  prepararCarteira();
   $('#blocoRecortePanorama').classList.remove('oculto');
   legendaRecortePanorama();
 
