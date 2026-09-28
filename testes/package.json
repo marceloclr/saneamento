@@ -1,0 +1,13 @@
+{
+  "name": "saneamento-testes",
+  "private": true,
+  "description": "Testes sem navegador do index.html (jsdom + planilha real)",
+  "scripts": {
+    "filtros": "node --max-old-space-size=4096 teste_filtros.js",
+    "todas-fontes": "node --max-old-space-size=4096 teste_todas_fontes.js"
+  },
+  "dependencies": {
+    "jsdom": "^24.0.0",
+    "xlsx": "0.18.5"
+  }
+}
