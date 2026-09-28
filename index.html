@@ -202,6 +202,7 @@ html[data-tema="escuro"] .btn.principal{color:#14171b}
 .btn.principal:hover{filter:brightness(1.08)}
 .btn.discreto{border-color:transparent;background:transparent;color:var(--tinta-2);padding:5px 8px}
 .btn.discreto:hover{background:var(--papel-2);color:var(--tinta)}
+a.btn{text-decoration:none}
 .ferramentas .btn[aria-pressed="true"]{background:var(--papel-2);color:var(--tinta);font-weight:600}
 .btn.destaque{font-size:14px;padding:10px 18px}
 .btn.risco{border-color:var(--risco);color:var(--risco)}
@@ -685,7 +686,8 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
         <button class="btn discreto" id="btnSessaoSalvar" data-tip="Grava uma nova versão da sessão (DDMMAAAA-HHMM-Vnn.json) com decisões, exclusões, configurações, rodadas e manifestações dos órgãos — no computador, no GitHub ou nos dois, à sua escolha. A base de dados não é incluída." data-tip-t="Guardar sessão">Guardar sessão</button>
         <button class="btn discreto" id="btnSessaoAbrir" data-tip="Restaura uma versão da sessão a partir de um arquivo do computador ou do repositório GitHub configurado. Importe antes a mesma base de execução." data-tip-t="Retomar sessão">Retomar sessão</button>
         <button class="btn discreto" id="btnApresentacao" data-tip="Abre a apresentação completa: resumo técnico, fluxo de trabalho do saneamento com acesso direto a cada etapa, cadeia de fundamentação e regras em vigor." data-tip-t="Apresentação completa">Apresentação</button>
-        <button class="btn discreto" id="btnManual" data-tip="Abre o manual em nova janela: guia de operação passo a passo, conceitos e regras e manual técnico. O mesmo manual atende à versão essencial e mostra o conteúdo desta versão." data-tip-t="Manual">Manual</button>
+        <button class="btn discreto" id="btnManual" data-tip="Abre o manual de uso em nova janela: guia passo a passo, conceitos e regras. O mesmo manual atende à versão essencial e mostra o conteúdo desta versão." data-tip-t="Manual">Manual</button>
+        <a class="btn discreto" id="lnkManualTecnico" href="manual-tecnico.html" target="_blank" rel="noopener" data-tip="Abre em nova aba o manual técnico: arquitetura, estado, fluxo de funções, motor de regras, componentes, convenções e ensaios. Para quem mantém o sistema." data-tip-t="Manual técnico">Manual técnico</a>
         <button class="btn discreto" id="btnConfig" data-tip="Abre o painel de parâmetros: âncora temporal, critério de execução, universo de análise, prazos e limiares. Toda alteração é aplicada de imediato e obriga o recálculo." data-tip-t="Configurações">Configurações</button>
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. Gráficos, cartões e a ficha aberta são redesenhados com as cores do novo tema.">Tema</button>
       </div>
