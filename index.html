@@ -717,6 +717,16 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     </div>
     <div class="pequeno tenue" id="progressoTexto" style="margin-top:8px"></div>
   </div>
+<div class="bloco oculto" id="blocoRecortePanorama" style="--acento:var(--grafite)">
+    <header><h2>Recorte do Panorama</h2><span class="legenda" id="recortePanLegenda"></span></header>
+    <div class="grade g4">
+      <label class="campo"><span>Secretaria <i class="sigla" tabindex="0" data-tip="Restringe toda a aba às secretarias marcadas: indicadores, saldo, programação, universo e gráficos. Sem marcação, não há restrição." data-tip-t="Secretaria">?</i></span><select id="panSecretaria"></select></label>
+      <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos órgãos marcados: indicadores, saldo, programação, universo e gráficos. Sem marcação, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
+      <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa de cada MAPP, e restringe toda a aba aos que casam." data-tip-t="Busca livre">?</i></span><input type="text" id="panBusca" placeholder="código, título, órgão…"></label>
+      <div class="campo" style="align-self:end"><button class="btn" id="btnLimparRecortePan" data-tip="Retira o recorte: a aba volta a mostrar a base inteira.">Limpar recorte</button></div>
+    </div>
+    <p class="pequeno tenue" style="margin-top:8px">O recorte vale só para esta aba. O rito, a importação e o retrato da importação descrevem a planilha inteira e não mudam.</p>
+  </div>
 <div class="bloco" id="seg-saldo" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
     <header><h2>Saldo do programado por exercício</h2><span class="legenda" id="saldoLegenda"></span></header>
     <div class="grade g4">
@@ -739,7 +749,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
           <option value="programado">Programado</option>
           <option value="empenhado">Empenhado</option>
         </select></label>
-      <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe a apuração aos órgãos marcados. Sem marcação alguma, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
     </div>
     <div class="saldo-exec">
       <h4>Exercícios de execução considerados <i class="sigla" tabindex="0" data-tip="Escolha os anos calendário que o sistema considera em todo o processamento: regras, totais, saldo, gráficos e exportações. Arraste as bolinhas, use De/Até ou clique num ano para tirá-lo ou incluí-lo. A mudança recalcula tudo e vai à auditoria." data-tip-t="Exercícios de execução">?</i></h4>
@@ -762,7 +771,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="grade g4" style="margin-top:12px">
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada.">?</i></span><select id="progFonte"></select></label>
     </div>
-    <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade, sob os filtros de fonte e de órgão (este, o do Saldo por exercício) — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
+    <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade, sob o filtro de fonte e o recorte do Panorama — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
     <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Data de aprovação do MAPP. Referência para avaliar a urgência dos indícios apontados: quanto mais antiga a aprovação, maior o tempo decorrido sem execução." data-tip-t="Aprovação">Aprovação</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th class="num" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028 — coluna totalizadora das duas colunas de Programado anteriores." data-tip-t="Programado total">Programado total</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
   <div id="seg-graficos" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
@@ -3018,8 +3027,75 @@ function calcularFase2(){
 
 /* --------------------------- Composição do universo ---------------------- */
 
+/* ------------------------- Recorte do Panorama --------------------------
+   Secretaria, órgão e busca livre restringem toda a aba Panorama. Os painéis
+   leem a base por mappsPanorama() e o diagnóstico por diagPanorama(), que
+   devolvem a base e o diagnóstico inteiros quando não há recorte. */
+function recortePanorama(){
+  const r={ secretarias:valoresMulti('#panSecretaria'), orgaos:valoresMulti('#saldoOrgao'),
+            busca:norm($('#panBusca')?$('#panBusca').value:'') };
+  r.ativo=!!(r.secretarias.length||r.orgaos.length||r.busca);
+  return r;
+}
+function noRecorte(m,r){
+  if(!r.ativo) return true;
+  if(r.secretarias.length && r.secretarias.indexOf(m.secretaria)<0) return false;
+  if(r.orgaos.length && r.orgaos.indexOf(m.orgao)<0) return false;
+  if(r.busca && norm(m.chave+' '+m.codigo+' '+m.titulo+' '+m.orgao+' '+m.secretaria+' '+m.programa).indexOf(r.busca)<0) return false;
+  return true;
+}
+let cacheRecorte={ chave:null, diag:null, base:null };
+function aplicarRecortePanorama(){
+  const r=recortePanorama();
+  const chave=JSON.stringify([r.secretarias,r.orgaos,r.busca]);
+  if(cacheRecorte.chave===chave && cacheRecorte.diag===E.diag && cacheRecorte.base===E.mapps) return cacheRecorte;
+  const D=E.diag, lista=r.ativo ? E.mapps.filter(function(m){ return noRecorte(m,r); }) : E.mapps;
+  let d=D;
+  if(D && r.ativo){
+    const f=function(arr){ return arr.filter(function(m){ return noRecorte(m,r); }); };
+    d=Object.assign({},D,{
+      regras:{'1a':f(D.regras['1a']), '1b':f(D.regras['1b']), '1.2':f(D.regras['1.2']), '1.3':f(D.regras['1.3'])},
+      classes:{'REGRA ÚNICA':f(D.classes['REGRA ÚNICA']), 'MÚLTIPLAS REGRAS':f(D.classes['MÚLTIPLAS REGRAS']),
+               'SEM REGRA':f(D.classes['SEM REGRA']), 'DADOS INSUFICIENTES':f(D.classes['DADOS INSUFICIENTES'])},
+      cancelados:f(D.cancelados), paralisados:f(D.paralisados), forade:f(D.forade),
+      noUniverso:f(D.noUniverso), divergentes:f(D.divergentes)
+    });
+    d.totais={ mapps:d.noUniverso.length, linhas:lista.reduce(function(t,m){ return t+(m.nLinhas||0); },0),
+      programado:somaProgramado(d.noUniverso), empenhado:somaEmpenhado(d.noUniverso),
+      pago:d.noUniverso.reduce(function(t,m){ return t+m.pago; },0) };
+  }
+  cacheRecorte={ chave:chave, diag:E.diag, base:E.mapps, mapps:lista, d:d, r:r };
+  return cacheRecorte;
+}
+function diagPanorama(){ return aplicarRecortePanorama().d; }
+function mappsPanorama(){ return aplicarRecortePanorama().mapps; }
+function legendaRecortePanorama(){
+  const el=$('#recortePanLegenda'); if(!el) return;
+  const c=aplicarRecortePanorama(), r=c.r, partes=[];
+  if(r.secretarias.length) partes.push('secretaria: '+r.secretarias.join(', '));
+  if(r.orgaos.length) partes.push('órgão: '+r.orgaos.join(', '));
+  if(r.busca) partes.push('busca: “'+$('#panBusca').value.trim()+'”');
+  el.textContent = r.ativo
+    ? n(c.mapps.length)+' de '+n(E.mapps.length)+' MAPPs · '+partes.join(' · ')
+    : 'Sem recorte: a aba mostra a base inteira ('+n(E.mapps.length)+' MAPPs).';
+}
+function renderPanoramaRecortado(){
+  if(!E.diag) return;
+  const etapas=[legendaRecortePanorama,renderPainel,renderUniverso,renderSaldo,renderFase2,desenharGraficos];
+  etapas.forEach(function(fn){ try{ fn(); }catch(err){ console.error('Recorte do Panorama:',err); } });
+}
+function ligarEventosRecortePanorama(){
+  ['#panSecretaria','#saldoOrgao'].forEach(function(s){ $(s).addEventListener('change',renderPanoramaRecortado); });
+  let t=null;
+  $('#panBusca').addEventListener('input',function(){ clearTimeout(t); t=setTimeout(renderPanoramaRecortado,260); });
+  $('#btnLimparRecortePan').addEventListener('click',function(){
+    limparMulti('#panSecretaria'); limparMulti('#saldoOrgao'); $('#panBusca').value='';
+    renderPanoramaRecortado();
+  });
+}
+
 function composicaoUniverso(){
-  const d=E.diag, U=d.noUniverso;
+  const d=diagPanorama(), U=d.noUniverso;
   const conj = {
     '1a':d.regras['1a'], '1b':d.regras['1b'], '1.2':d.regras['1.2'], '1.3':d.regras['1.3']
   };
@@ -3035,7 +3111,7 @@ function composicaoUniverso(){
     }
   }
   return {
-    total:E.mapps.length, universo:U.length, uniao:uniao.size, conj:conj, pares:pares,
+    total:mappsPanorama().length, universo:U.length, uniao:uniao.size, conj:conj, pares:pares,
     somaSimples: conj['1a'].length+conj['1b'].length+conj['1.2'].length+conj['1.3'].length
   };
 }
@@ -3144,16 +3220,16 @@ function renderResumoImport(){
 }
 
 function renderPainel(){
-  const d=E.diag, t=d.totais;
+  const d=diagPanorama(), t=d.totais, base=mappsPanorama();
   $('#painelCriterio').textContent = 'Critério de execução: '+d.criterio+
-    ' · universo: '+rotuloUniverso()+' ('+n(d.noUniverso.length)+' de '+n(E.mapps.length)+' MAPPs) · '+textoAncora();
+    ' · universo: '+rotuloUniverso()+' ('+n(d.noUniverso.length)+' de '+n(base.length)+' MAPPs) · '+textoAncora();
 
   let bProg=0,bEmp=0,bPago=0;
-  E.mapps.forEach(function(m){ bProg+=m.saldo; bEmp+=m.progFuturo; bPago+=m.saldoAte; });
-  const fora=E.mapps.length-d.noUniverso.length;
+  base.forEach(function(m){ bProg+=m.saldo; bEmp+=m.progFuturo; bPago+=m.saldoAte; });
+  const fora=base.length-d.noUniverso.length;
 
   $('#cartoesGerais').innerHTML =
-    cartao('MAPPs no universo', n(d.noUniverso.length), 'de '+n(E.mapps.length)+' na base integral', 'var(--ardosia)',
+    cartao('MAPPs no universo', n(d.noUniverso.length), 'de '+n(base.length)+' na base integral', 'var(--ardosia)',
       'MAPPs que entram no enquadramento, conforme o recorte configurado.\nFora do universo: '+n(fora)+
       ' — concluídos físico-financeiros e cancelados, que nada têm a sanear.')+
     cartao('Fora do universo', n(fora), 'concluídos e cancelados', 'var(--neutro)',
@@ -3198,7 +3274,8 @@ function renderPainel(){
 /* Saldo do programado (programado − empenhado) por conjunto de regra, com o
    desdobramento por exercício na dica de cada cartão. */
 function renderSaldoPorRegra(){
-  const d=E.diag; if(!d) return;
+  if(!E.diag) return;
+  const d=diagPanorama();
   const per=periodosSaldo();
   const uniao=d.noUniverso.filter(function(m){ return m.d.regras.length>0; });
   const conjuntos=[
@@ -3275,7 +3352,7 @@ const tiposGrafico = { regrasQtd:'bar', regrasVal:'bar', anos:'line', estagios:'
 
 function desenharGraficos(){
   if(!E.diag || typeof Chart==='undefined') return;
-  const d=E.diag;
+  const d=diagPanorama();
   const rotulos=['1a','1b','1.2','1.3'].map(function(r){ return REGRAS[r].nome; })
     .concat(['Sobreposição','Cancelados','Paralisados','Dados insuficientes']);
   const qtds=['1a','1b','1.2','1.3'].map(function(r){ return d.regras[r].length; })
@@ -3327,7 +3404,7 @@ function desenharGraficos(){
 
 function desenharAgregado(id,campo,modo){
   const mapa=new Map();
-  E.diag.noUniverso.forEach(function(m){
+  diagPanorama().noUniverso.forEach(function(m){
     const k=m[campo]||'(não informado)';
     if(!mapa.has(k)) mapa.set(k,{q:0,v:0});
     const o=mapa.get(k); o.q++; o.v+=m.saldo;
@@ -3374,22 +3451,20 @@ function periodosSaldo(){
 
 function conjuntoSaldo(){
   const modo=$('#saldoConjunto')?$('#saldoConjunto').value:'universo';
-  if(modo==='base') return E.mapps;
-  return E.diag ? E.diag.noUniverso : E.mapps;
+  if(modo==='base') return mappsPanorama();
+  return E.diag ? diagPanorama().noUniverso : mappsPanorama();
 }
 
 function apurarSaldo(){
   const per=periodosSaldo();
   const campo=$('#saldoAgrupamento')?$('#saldoAgrupamento').value:'orgao';
   const busca=norm($('#saldoBusca')?$('#saldoBusca').value:'');
-  const orgaos=valoresMulti('#saldoOrgao');
   const anosNovo=anosNovoProgramado('#saldoNovoAnos');
   const grupos=new Map();
   const totalProg=new Float64Array(per.length), totalEmp=new Float64Array(per.length);
   const np={ total:0, base:0, incorporado:0, inconsistentes:[] };
 
   conjuntoSaldo().forEach(function(m){
-    if(orgaos.length && orgaos.indexOf(m.orgao)<0) return;
     const npm=novoProgramadoMapp(m,anosNovo);
     let npRegistrado=false;
     /* Fonte é N-para-1 com o MAPP: cada MAPP contribui para um grupo por fonte que tiver,
@@ -3701,11 +3776,10 @@ function exportarSaldo(){
 }
 
 function ligarEventosSaldo(){
-  ['#saldoAgrupamento','#saldoConjunto','#saldoMedida','#saldoOrgao'].forEach(function(s){
+  ['#saldoAgrupamento','#saldoConjunto','#saldoMedida'].forEach(function(s){
     $(s).addEventListener('change',renderSaldo);
   });
-  /* O órgão do Saldo também restringe a grade de Programação, logo abaixo. */
-  $('#saldoOrgao').addEventListener('change',function(){ if(E.fase2) renderFase2(); });
+  ligarEventosRecortePanorama();
   $('#btnExportarSaldo').addEventListener('click',exportarSaldo);
   ['#tabSaldo','#tabInconsNP'].forEach(function(idT){
     $(idT).addEventListener('click',function(ev){
@@ -3736,7 +3810,10 @@ function prepararFiltros(){
       .map(function(v){ return [v,v]; });
   };
   opcoes('#saldoOrgao',unicos('orgao'),'Todos os órgãos');
-  montarMulti('#saldoOrgao');
+  opcoes('#panSecretaria',unicos('secretaria'),'Todas as secretarias');
+  ['#saldoOrgao','#panSecretaria'].forEach(montarMulti);
+  $('#blocoRecortePanorama').classList.remove('oculto');
+  legendaRecortePanorama();
 
   montarFiltroAnosNP('#saldoNovoAnos');
   opcoes('#fSecretaria',unicos('secretaria'),'Todas as secretarias');
@@ -4142,11 +4219,11 @@ function degrau(rotulo,qtd,max,cor,dica,recuo,titulo){
 }
 
 function renderUniverso(){
-  const d=E.diag, u=composicaoUniverso(), max=E.mapps.length;
+  const d=diagPanorama(), u=composicaoUniverso(), max=u.total, nLin=d.totais.linhas;
   let h='';
-  h+=degrau('Linhas importadas da planilha',E.linhas.length,E.linhas.length,'var(--grafite)',
+  h+=degrau('Linhas importadas da planilha',nLin,nLin,'var(--grafite)',
     'Total de registros lidos, já descontadas as linhas de subtotal. Uma linha não corresponde a um MAPP.');
-  h+=degrau('MAPPs consolidados na base',E.mapps.length,E.linhas.length,'var(--ardosia)',
+  h+=degrau('MAPPs consolidados na base',u.total,nLin,'var(--ardosia)',
     'Consolidação pela chave ÓRGÃO + MAPP.');
   h+=degrau('Universo submetido às regras ('+rotuloUniverso()+')',u.universo,max,'var(--musgo)',
     'Recorte configurado na aba de configurações. O padrão não presume nenhum recorte.');
@@ -4335,8 +4412,7 @@ function renderFase2(){
     cartao('Despesas de continuidade',n(f.continuidade.length),'empenho em todos os anos de '+f.contIni+' a '+f.contFim,'var(--petroleo)',
       'Empenho em cada um dos anos da faixa escolhida em Análise, indício de despesa de natureza continuada.');
 
-  const orgaosProg=valoresMulti('#saldoOrgao');
-  const notaOrgao=orgaosProg.length ? ' Órgão (filtro do Saldo por exercício): '+orgaosProg.join(', ')+'.' : '';
+  const notaOrgao=recortePanorama().ativo ? ' Sob o recorte do Panorama.' : '';
   $('#programacaoLegenda').textContent = (f.programacao.length
     ? n(f.programacao.length)+' MAPPs apontados — a grade exibe as 500 primeiras linhas; a exportação contempla a totalidade.'
     : 'Nenhum apontamento de programação.')+notaOrgao;
@@ -4363,13 +4439,13 @@ function renderFase2(){
   }).join('') : '<tr><td colspan="6" class="vazio">Nenhum apontamento sobre títulos.</td></tr>';
 }
 
-/* Apontamentos de programação sob os filtros da grade: a fonte, próprio do bloco, e o
-   órgão, compartilhado com o Saldo do programado por exercício. */
+/* Apontamentos de programação sob os filtros da grade: a fonte, próprio do bloco,
+   e o recorte do Panorama (secretaria, órgão e busca). */
 function programacaoFiltrada(){
   if(!E.fase2) return [];
-  const fontes=valoresMulti('#progFonte'), orgaos=valoresMulti('#saldoOrgao');
+  const fontes=valoresMulti('#progFonte'), r=recortePanorama();
   return E.fase2.programacao.filter(function(p){
-    if(orgaos.length && orgaos.indexOf(p.m.orgao)<0) return false;
+    if(!noRecorte(p.m,r)) return false;
     return !fontes.length || casaFonte(fontes,p.m);
   });
 }
