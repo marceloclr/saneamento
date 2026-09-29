@@ -65,6 +65,18 @@ carregar(process.argv[2]).then(async win=>{
   R.restabelecer={ sobreviventes:cods(win.sobreviventes()), np:npSEPA() };
   R.restabelecer.ok=ok(R.restabelecer.sobreviventes==='2' && R.restabelecer.np===9668515);
 
+  /* ---------- nomes e botões (etapa 2) ---------- */
+  win.eval("MULTIS.sRegra.escolha=new Set(); aplicarMulti('sRegra');");
+  win.renderSaneamento();
+  const botoes=Array.from(doc.querySelectorAll('#tabSaneamento tbody [data-ocultar]')).map(b=>b.textContent);
+  win.abrirFicha(porCod('18').chave);
+  const ficha=doc.getElementById('fichaCorpo');
+  R.nomes={ lote:doc.getElementById('btnOcultarLote').textContent, botoes:Array.from(new Set(botoes)).join(','),
+    fichaBotoes:ficha.querySelectorAll('button[data-ficha]').length, fichaMostraExclusao:/Excluído pelo usuário/.test(ficha.textContent),
+    ocultarVisivel:/Ocultar/.test(doc.getElementById('p-saneamento').textContent) };
+  R.nomes.ok=ok(R.nomes.lote==='Excluir selecionados' && /Excluir/.test(R.nomes.botoes) && !/Ocultar/.test(R.nomes.botoes) &&
+    R.nomes.fichaBotoes===0 && R.nomes.fichaMostraExclusao && !R.nomes.ocultarVisivel);
+
   R.erros=win.__erros.slice(0,5);
   console.log(JSON.stringify(R,null,1));
   console.log('FIM exclusao'); process.exit(0);
