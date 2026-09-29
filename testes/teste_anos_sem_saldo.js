@@ -36,7 +36,17 @@ carregar().then(win=>{
     const secoes=[...document.querySelectorAll('#fichaCorpo .ficha-secao')];
     const sec=secoes.find(s=>/Saldo do programado por exercício/.test(s.querySelector('h4').textContent));
     const anosFicha=[...sec.querySelectorAll('tbody tr td.mono')].map(td=>+td.textContent);
+    prepararCarteira(); $('#carXAno').value=''; renderCarteira();
+    const C=apurarCarteira();
+    const opcoesDe=[...$('#carDe').options].map(o=>+o.value);
+    const gAnos=(typeof Chart!=='undefined' && Chart.getChart && Chart.getChart('gAnos')) ? Chart.getChart('gAnos').data.labels : null;
+    const anosGraf=anosComSaldo(diagPanorama().noUniverso);
     return JSON.stringify({ conjuntos,
+      carteira:{ opcoesDe:faixasTexto(opcoesDe), anos:faixasTexto(C.anos), ocultos:faixasTexto(C.anosSemSaldo),
+        anoSemSaldoNaSerie:C.anos.filter(a=>!E.mapps.some(m=>Math.abs(saldoDoAno(m,a))>=0.005)),
+        legenda:$('#carteiraLegenda').textContent,
+        cruzadaLinhas:document.querySelectorAll('#tabCarCruzada tbody tr').length },
+      graficoEvolucao:{ anos:faixasTexto(anosGraf), rotulosNoGrafico:gAnos?faixasTexto(gAnos.map(Number)):'(Chart indisponível no jsdom)' },
       dicaRegraUniverso:dicaUniverso.split('\\n').filter(l=>/^\\s+\\d{4}:/.test(l)).map(l=>l.trim().slice(0,4)).join(','),
       ficha:{ mapp:m.codigo+' '+m.titulo, anos:anosFicha.join(','), anoSemSaldoNaFicha:anosFicha.filter(a=>Math.abs(saldoDoAno(m,a))<0.005),
               nota:sec.querySelector('p').textContent },

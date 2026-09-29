@@ -815,7 +815,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="grade g4">
       <label class="campo"><span>Medida <i class="sigla" tabindex="0" data-tip="Série somada nos cartões, nos gráficos e na lista dos maiores MAPPs: programado (VLR_PLANEJADO), empenhado (VLR_EMPENHO) ou pago (VLR_PAGO)." data-tip-t="Medida">?</i></span>
         <select id="carMetrica"><option value="Programado">Programado</option><option value="Empenhado">Empenhado</option><option value="Pago">Pago</option></select></label>
-      <label class="campo"><span>De <i class="sigla" tabindex="0" data-tip="Primeiro exercício somado. Só aparecem os exercícios marcados na régua de anos." data-tip-t="De">?</i></span><select id="carDe"></select></label>
+      <label class="campo"><span>De <i class="sigla" tabindex="0" data-tip="Primeiro exercício somado. Só aparecem os exercícios marcados na régua de anos que têm saldo do programado (programado − empenhado ≠ 0) em algum MAPP." data-tip-t="De">?</i></span><select id="carDe"></select></label>
       <label class="campo"><span>Até <i class="sigla" tabindex="0" data-tip="Último exercício somado." data-tip-t="Até">?</i></span><select id="carAte"></select></label>
       <div class="campo" style="align-self:end"><label class="chk" data-tip="Com a opção marcada, só entram os MAPPs com valor diferente de zero na medida e no período escolhidos."><input type="checkbox" id="carComValor"> Contar só MAPPs com valor no período</label></div>
     </div>
@@ -3283,7 +3283,7 @@ function corEstagioCarteira(g){ return corVar(COR_ESTAGIO_CARTEIRA[g]||'--tinta-
 function rotuloEstagio(g){ return GRUPOS_ESTAGIO[g]?GRUPOS_ESTAGIO[g].rotulo:g; }
 
 function prepararCarteira(){
-  const anos=anosExec();
+  const anos=anosComSaldo(E.mapps);   /* exercícios sem saldo do programado na base não são oferecidos */
   const de=$('#carDe').value, ate=$('#carAte').value, xa=$('#carXAno').value;
   const opt=anos.map(function(a){ return '<option value="'+a+'">'+a+'</option>'; }).join('');
   $('#carDe').innerHTML=opt; $('#carAte').innerHTML=opt;
@@ -3302,15 +3302,23 @@ function valorCarteira(m,met,a,fontes){
   m.porFonte.forEach(function(pf){ if(fontes.indexOf(pf.fonte)>=0) t+=somaAnoArray(pf.serie,met,a); });
   return t;
 }
+function saldoCarteira(m,a,fontes){
+  const p=valorCarteira(m,'Programado',a,fontes);
+  return a>E.cfg.presenteFim ? p : p-valorCarteira(m,'Empenhado',a,fontes);
+}
 
 function apurarCarteira(){
   const r=recortePanorama(), met=$('#carMetrica').value;
   const de=+$('#carDe').value, ate=+$('#carAte').value;
-  const anos=anosExec().filter(function(a){ return a>=de && a<=ate; });
+  const noRec=E.mapps.filter(function(m){ return noRecorte(m,r,true); });
+  /* só os exercícios com saldo do programado em algum MAPP do recorte (nas fontes marcadas) */
+  const faixa=anosExec().filter(function(a){ return a>=de && a<=ate; });
+  const anos=faixa.filter(function(a){
+    return noRec.some(function(m){ return Math.abs(saldoCarteira(m,a,r.fontes))>=0.005; }); });
+  const anosSemSaldo=faixa.filter(function(a){ return anos.indexOf(a)<0; });
   const comValor=$('#carComValor').checked;
   const cont={}, porEst={}, anual=new Float64Array(anos.length), lista=[];
-  E.mapps.forEach(function(m){
-    if(!noRecorte(m,r,true)) return;
+  noRec.forEach(function(m){
     const serie=new Float64Array(anos.length); let v=0;
     for(let i=0;i<anos.length;i++){ serie[i]=valorCarteira(m,met,anos[i],r.fontes); v+=serie[i]; }
     if(comValor && Math.abs(v)<0.005) return;
@@ -3320,7 +3328,7 @@ function apurarCarteira(){
     if(!porEst[m.estagio]) porEst[m.estagio]=new Float64Array(anos.length);
     for(let i=0;i<anos.length;i++){ anual[i]+=serie[i]; porEst[m.estagio][i]+=serie[i]; }
   });
-  return { r:r, met:met, anos:anos, cont:cont, porEst:porEst, anual:anual, lista:lista, comValor:comValor };
+  return { r:r, met:met, anos:anos, anosSemSaldo:anosSemSaldo, cont:cont, porEst:porEst, anual:anual, lista:lista, comValor:comValor };
 }
 
 function renderCarteira(){
@@ -3328,7 +3336,8 @@ function renderCarteira(){
   const C=apurarCarteira(), r=C.r, nm=C.met.toLowerCase();
   const per=C.anos.length ? C.anos[0]+'–'+C.anos[C.anos.length-1] : 'nenhum exercício';
   $('#carteiraLegenda').textContent='Base integral sob o recorte, inclusive concluídos e cancelados · '+nm+' · '+per+
-    (r.fontes.length?' · valores só das fontes marcadas':'');
+    (r.fontes.length?' · valores só das fontes marcadas':'')+
+    (C.anosSemSaldo.length?' · exercícios sem saldo do programado ocultos: '+faixasTexto(C.anosSemSaldo):'');
 
   const presentes=ORDEM_ESTAGIO.filter(function(g){ return C.cont[g] || r.estagios.indexOf(g)>=0; });
   $('#carEstagios').innerHTML='<span class="pequeno tenue">Estágios</span>'+presentes.map(function(g){
@@ -3347,7 +3356,7 @@ function renderCarteira(){
     cartao('Valor no período',rsCurto(tot),nm+' · '+per,'var(--latao)',
       'Soma do '+nm+' dos MAPPs do recorte nos exercícios de '+per+'. Valor exato: '+rs(tot)+'.',true)+
     cartao('Média anual',rsCurto(C.anos.length?tot/C.anos.length:0),n(C.anos.length)+(C.anos.length===1?' exercício':' exercícios'),'var(--ardosia)',
-      'Valor no período dividido pela quantidade de exercícios do período. Exercícios sem valor também entram no divisor.',true)+
+      'Valor no período dividido pela quantidade de exercícios exibidos do período. Exercícios sem saldo do programado (ocultos) não entram no divisor.',true)+
     cartao('Exercício de maior volume',pico>=0&&C.anual[pico]>0?String(C.anos[pico]):'—',pico>=0&&C.anual[pico]>0?rsCurto(C.anual[pico]):'sem valores no recorte','var(--ameixa)',
       'Exercício com a maior soma do '+nm+' dentro do período.');
 
@@ -3406,10 +3415,12 @@ function desenharCarteira(C){
 }
 
 function renderCarteiraCruzada(r){
-  const xa=$('#carXAno').value, anos=xa==='' ? anosExec() : [+xa];
+  const xa=$('#carXAno').value;
+  const noRec=E.mapps.filter(function(m){ return noRecorte(m,r); });
+  const anos=(xa==='' ? anosExec() : [+xa]).filter(function(a){
+    return noRec.some(function(m){ return Math.abs(saldoCarteira(m,a,r.fontes))>=0.005; }); });
   const q={}, v={};
-  E.mapps.forEach(function(m){
-    if(!noRecorte(m,r)) return;
+  noRec.forEach(function(m){
     let t=0; anos.forEach(function(a){ t+=valorCarteira(m,'Programado',a,r.fontes); });
     if(Math.abs(t)<0.005) return;
     q[m.estagio]=(q[m.estagio]||0)+1; v[m.estagio]=(v[m.estagio]||0)+t;
@@ -3719,7 +3730,7 @@ function desenharGraficos(){
       scales:tiposGrafico.regrasVal==='bar'?{y:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:function(v){return rsCurto(v);}}},x:{grid:{display:false}}}:{}}});
 
   const serieProg=[],serieEmp=[],seriePago=[];
-  const anosGraf=anosExec();
+  const anosGraf=anosComSaldo(d.noUniverso);   /* exercícios sem saldo do programado ficam fora */
   anosGraf.forEach(function(a){
     let p=0,e=0,g=0;
     d.noUniverso.forEach(function(m){ p+=somaAno(m,'Programado',a); e+=somaAno(m,'Empenhado',a); g+=somaAno(m,'Pago',a); });
