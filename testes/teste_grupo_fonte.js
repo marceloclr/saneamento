@@ -116,9 +116,15 @@ carregar().then(async win=>{
   win.eval('diagnosticar=function(){}; renderTudo=function(){};');
   const s=JSON.parse(JSON.stringify(win.montarSessao('x.json')));
   win.aplicarSessao(Object.assign({},s,{gruposFonte:null}),'teste');
-  const semGrupos=!win.temGruposFonte() && M['fGrupoFonte'].bt.disabled;
+  /* sessão sem grupos: valem os embutidos na página; sem embutidos, o filtro fica desabilitado */
+  const padrao=JSON.parse(win.document.getElementById('gruposFontePadrao').textContent||'{}');
+  const temPadrao=!!(padrao.grupos && Object.keys(padrao.grupos).length);
+  const semGrupos = temPadrao
+    ? !E.gruposFonte && win.temGruposFonte() && win.gruposVigentes().hash===padrao.hash && !M['fGrupoFonte'].bt.disabled
+    : !win.temGruposFonte() && M['fGrupoFonte'].bt.disabled;
   win.aplicarSessao(s,'teste');
-  R.sessao={ grava:!!s.gruposFonte, semGruposDesabilita:semGrupos, retomada:win.temGruposFonte(), ok:ok(!!s.gruposFonte && semGrupos && win.temGruposFonte()) };
+  const retomada=win.temGruposFonte() && win.gruposVigentes().hash===s.gruposFonte.hash;
+  R.sessao={ grava:!!s.gruposFonte, embutidos:temPadrao, semGruposNaSessao:semGrupos, retomada, ok:ok(!!s.gruposFonte && semGrupos && retomada) };
 
   R.erros=win.__erros.slice(0,5);
   console.log(JSON.stringify(R,null,1));
