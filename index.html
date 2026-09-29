@@ -241,6 +241,12 @@ label.campo > span{display:flex;align-items:center;gap:5px}
 .multi-lista label:hover{background:var(--acento-tenue)}
 .multi-lista input{margin-top:2px}
 .multi-rodape{padding:6px 8px;border-top:1px solid var(--linha);display:flex;gap:6px;align-items:center}
+/* Seleção de colunas das tabelas */
+.cols-barra{display:flex;justify-content:flex-end;margin:0 0 4px}
+.cols-bt{font-size:11.5px;padding:2px 9px;display:inline-flex;gap:6px;align-items:center}
+.cols-bt.ativa{border-color:var(--acento);box-shadow:inset 0 0 0 1px var(--acento-medio)}
+.cols-painel .multi-lista label.fixa{opacity:.6;cursor:default}
+.col-oculta{display:none !important}
 .multi-rodape .conta{margin-left:auto;font-size:11px;color:var(--tinta-3)}
 
 /* ---------- Etiquetas ---------- */
@@ -1923,7 +1929,7 @@ function casaMulti(valores,valor){ return !valores.length || valores.indexOf(val
    contra um único valor "moda" como os demais filtros (órgão, secretaria, programa). */
 function casaFonte(selecionadas,m){ return !selecionadas.length || m.porFonte.some(function(pf){ return selecionadas.indexOf(pf.fonte)>=0; }); }
 
-/* MODELO-GRUPOS-FONTE:INICIO — trecho também executado por ferramentas/gerar-modelo-grupos-fonte.js,
+/* MODELO-GRUPOS-FONTE:INICIO — trecho também executado por testes/gerar_modelo_grupos_fonte.js,
    para que o arquivo do repositório e o baixado no sistema sejam o mesmo modelo. */
 /* Código da fonte: "(500)-(501) Tesouro", "(500)-(501)", "500-501" e "500501" → "500-501";
    "(700)-(311.82) Emenda…" → "700-311.82". */
@@ -4238,9 +4244,10 @@ function linhasSaldo(){
 function exportarSaldo(){
   if(!E.mapps.length){ recado('Importe a base primeiro.'); return; }
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasSaldo()),'SALDO POR EXERCICIO');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(colunasExportaveis('tabSaldo',linhasSaldo())),'SALDO POR EXERCICIO');
   const inc=linhasInconsNP();
   if(inc.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(inc),'INCONSISTENCIAS NP 2027');
+  anexarColunasOcultas(wb,['tabSaldo']);
   XLSX.writeFile(wb,'saldo_por_exercicio_'+hojeISO()+'.xlsx');
 }
 
@@ -4820,6 +4827,12 @@ function mostrarAchado(id){
 
 /* ------------------------------ Segunda fase ----------------------------- */
 
+/* Despesas de continuidade no filtro Grupo de fonte / Fonte da tela (também na exportação). */
+function continuidadeFiltrada(){
+  const fAll=E.fase2, contFiltro=fontesDoFiltro('#continFonte');
+  return contFiltro.length ? fAll.continuidade.filter(function(c){ return casaFonte(contFiltro,c.m); })
+    .map(function(c){ return { m:mappNaFonte(c.m,contFiltro), anos:c.anos, seq:c.seq }; }) : fAll.continuidade;
+}
 function renderFase2(){
   const fAll=E.fase2;
   const fontesSet=new Set();
@@ -4829,8 +4842,7 @@ function renderFase2(){
   opcoes('#progFonte',fontesOpcoes,'Todas as fontes'); montarMulti('#progFonte');
   const contFiltro=fontesDoFiltro('#continFonte');
   const f={
-    continuidade: contFiltro.length ? fAll.continuidade.filter(function(c){ return casaFonte(contFiltro,c.m); })
-      .map(function(c){ return { m:mappNaFonte(c.m,contFiltro), anos:c.anos, seq:c.seq }; }) : fAll.continuidade,
+    continuidade: continuidadeFiltrada(),
     programacao: programacaoFiltrada(),
     titulos: fAll.titulos, contIni: fAll.contIni, contFim: fAll.contFim
   };
@@ -4938,7 +4950,8 @@ function exportarProgramacao(){
   if(!linhas.length){ recado('Não há apontamentos de programação a exportar.'); return; }
   try{
     const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas),'PROGRAMACAO');
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(colunasExportaveis('tabProgramacao',linhas)),'PROGRAMACAO');
+    anexarColunasOcultas(wb,['tabProgramacao']);
     XLSX.writeFile(wb,'programacao_'+hojeISO()+'.xlsx');
     recado('Grade exportada — '+n(linhas.length)+' registros.');
   }catch(err){ recado('Falha ao exportar: '+err.message); }
@@ -5332,7 +5345,7 @@ function linhasExcecoes(){
 /* Arquivo do resultado: os sobreviventes às regras com o Novo Programado 2027,
    nos filtros do Cenário projetado (conjunto, grupo de fonte, fonte, órgão, busca). */
 function universoResultado(){
-  return universoAntesDepois().filter(function(m){ return m.dentroUniverso; }).filter(passaFiltroAntesDepois);
+  return universoAntesDepois().filter(function(m){ return m.dentroUniverso; }).filter(filtroAntesDepois());
 }
 /* NP e Programado 2027 do MAPP somados só nas fontes dadas (anos excluídos apurados no MAPP inteiro). */
 function npNasFontes(m,fontes){
@@ -5382,6 +5395,7 @@ function linhasParametrosResultado(anosOcultos){
     ['Resultado gerado em', new Date().toLocaleString('pt-BR')],
     ['Situação do saneamento', E.encerramento?'Concluído':'Em curso (resultado preliminar)'],
     ['Filtros aplicados (Cenário projetado)', textoFiltrosResultado()||'nenhum — todos os sobreviventes, todas as fontes'],
+    ['Colunas ocultas no QUADRO POR MAPP', (typeof textoColunasOcultas==='function'&&textoColunasOcultas('tabQuadroMapp'))||'nenhuma'],
     ['Sobrevivente', 'MAPP do universo sem regra alguma, ou enquadrado que foi ocultado do saneamento ou teve a recomendação rejeitada'],
     ['Novo Programado 2027', 'VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO − VLR_EMPENHO) dos anos incorporados'],
     ['Anos incorporados', rotuloAnosNP(anosNovoProgramado())],
@@ -5404,7 +5418,8 @@ async function exportarResultadoNP(){
     const q=linhasQuadroMapp(false);   /* segue os filtros do Cenário projetado */
     const wb=XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasNPPorFonte()),'NP 2027 POR MAPP');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([q.cab].concat(q.linhas)),'QUADRO POR MAPP');
+    const qv=colunasExportaveisAoa('tabQuadroMapp',q.cab,q.linhas);
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([qv.cab].concat(qv.linhas)),'QUADRO POR MAPP');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasResultadoPorOrgao()),'QUADRO POR ORGAO');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasParametrosResultado(q.anosOcultos)),'PARAMETROS');
     XLSX.writeFile(wb,'resultado_np2027_'+hojeISO()+'.xlsx');
@@ -5586,24 +5601,27 @@ function universoAntesDepois(){
   return modo==='base' ? E.mapps : (E.diag && E.diag.noUniverso ? E.diag.noUniverso : E.mapps);
 }
 
-function passaFiltroAntesDepois(m){
-  const orgaos=valoresMulti('#adOrgao');
-  if(orgaos.length && orgaos.indexOf(m.orgao)<0) return false;
-  if(!casaFonte(fontesDoFiltro('#adFonte'),m)) return false;
-
+/* Teste dos filtros do Cenário. Lê a tela uma vez e devolve a função aplicada a cada
+   MAPP: ler os filtros a cada MAPP multiplicava as consultas ao DOM pelo universo. */
+function filtroAntesDepois(){
+  const orgaos=valoresMulti('#adOrgao'), fontes=fontesDoFiltro('#adFonte');
   const busca=norm($('#adBusca') ? $('#adBusca').value : '');
-  if(busca){
-    const texto=[m.codigo,m.titulo,m.orgao,m.secretaria,m.programa]
-      .concat((m.porFonte||[]).map(function(p){ return p.fonte; }))
-      .join(' ');
-    if(norm(texto).indexOf(busca)<0) return false;
-  }
-  return true;
+  return function(m){
+    if(orgaos.length && orgaos.indexOf(m.orgao)<0) return false;
+    if(!casaFonte(fontes,m)) return false;
+    if(busca){
+      const texto=[m.codigo,m.titulo,m.orgao,m.secretaria,m.programa]
+        .concat((m.porFonte||[]).map(function(p){ return p.fonte; }))
+        .join(' ');
+      if(norm(texto).indexOf(busca)<0) return false;
+    }
+    return true;
+  };
 }
 
 /* Apuração completa do comparativo. */
 function apurarAntesDepois(){
-  const universo=listaNaFonte(universoAntesDepois().filter(passaFiltroAntesDepois),fontesDoFiltro('#adFonte'));
+  const universo=listaNaFonte(universoAntesDepois().filter(filtroAntesDepois()),fontesDoFiltro('#adFonte'));
   const antes={}, depois={};
   SITUACOES.forEach(function(s){ antes[s]={q:0,v:0}; depois[s]={q:0,v:0}; });
   const porRegra={'1a':{q:0,v:0},'1b':{q:0,v:0},'1.2':{q:0,v:0},'1.3':{q:0,v:0}};
@@ -5936,7 +5954,8 @@ function linhasAntesDepois(){
 function exportarAntesDepois(){
   if(!E.diag){ recado('Importe a base primeiro.'); return; }
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasAntesDepois()),'ANTES E DEPOIS');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(colunasExportaveis('tabAntesDepois',linhasAntesDepois())),'ANTES E DEPOIS');
+  anexarColunasOcultas(wb,['tabAntesDepois']);
   XLSX.writeFile(wb,'antes_e_depois_'+hojeISO()+'.xlsx');
 }
 
@@ -6008,7 +6027,7 @@ function colunaProgramado2027(){
    em todas as linhas) saem do quadro: não somam nada ao NP 2027. */
 function linhasQuadroMapp(todos){
   const lista=todos ? sobreviventes()
-    : sobreviventes(universoAntesDepois().filter(function(m){ return m.dentroUniverso; })).filter(passaFiltroAntesDepois);
+    : sobreviventes(universoAntesDepois().filter(function(m){ return m.dentroUniverso; })).filter(filtroAntesDepois());
   /* com Grupo de fonte ou Fonte no cenário, só as linhas dessas fontes */
   const fontes=todos ? [] : fontesDoFiltro('#adFonte');
   const brutas=[], nps=[];
@@ -6092,11 +6111,11 @@ function conjuntos(){
       : m.estagio==='PARALISADO' ? 'Paralisado: necessita análise, sem alteração automática'
       : 'Dados insuficientes: '+(m.d.motivoConfianca||'enquadramento suspenso') };
   };
-  const abaContin={ aba:'CONTINUIDADE', dados:function(){
-    const idx=new Map(f.continuidade.map(function(c){ return [c.m.chave,c]; }));
-    return linhasMapp(f.continuidade.map(function(c){ return c.m; }),function(m){
+  const abaContin={ aba:'CONTINUIDADE', tabela:'tabContinuidade', dados:function(){
+    const cont=continuidadeFiltrada(), idx=new Map(cont.map(function(c){ return [c.m.chave,c]; }));
+    return linhasMapp(cont.map(function(c){ return c.m; }),function(m){
       const c=idx.get(m.chave); return { 'ANOS COM EMPENHO':c.anos, 'SEQUÊNCIA MÁXIMA':c.seq }; }); } };
-  const abaTitulos={ aba:'TITULOS NAO COMUNICATIVOS', dados:function(){ return f.titulos.map(function(t){ return {
+  const abaTitulos={ aba:'TITULOS NAO COMUNICATIVOS', tabela:'tabTitulos', dados:function(){ return f.titulos.map(function(t){ return {
     'MAPP':t.m.codigo,'ÓRGÃO':t.m.orgao,'TÍTULO':t.m.titulo,'APONTAMENTO':t.apontamentos.join(' · '),'SUGESTÃO':t.sugestao }; }); } };
   return [
     { id:'resultado', nome:'Resultado — Novo Programado 2027', destaque:true, arquivo:'resultado_np2027',
@@ -6117,7 +6136,7 @@ function conjuntos(){
     { id:'indicios', nome:'Indícios da análise', arquivo:'indicios_da_analise',
       dica:'Despesas de continuidade, programação e títulos não comunicativos, cada um em sua aba.',
       contagem:function(){ return f.continuidade.length+f.programacao.length+f.titulos.length; },
-      abas:[abaContin, { aba:'PROGRAMACAO', dados:linhasProgramacao }, abaTitulos] },
+      abas:[abaContin, { aba:'PROGRAMACAO', tabela:'tabProgramacao', dados:linhasProgramacao }, abaTitulos] },
     { id:'excecoes', nome:'Exceções', arquivo:'excecoes',
       dica:'Enquadrados que voltam a sobreviver: ocultados do saneamento ou com a recomendação rejeitada.',
       contagem:function(){ return sobreviventes().filter(function(m){ return !!excecaoRegra(m); }).length; },
@@ -6125,7 +6144,7 @@ function conjuntos(){
     { id:'saldo', nome:'Saldo por exercício', arquivo:'saldo_por_exercicio',
       dica:'Saldo do programado por exercício e Novo Programado 2027, no agrupamento e no conjunto em vigor no Panorama.',
       contagem:function(){ return apurarSaldo().grupos.length; },
-      abas:[{ aba:'SALDO', dados:linhasSaldo }] }
+      abas:[{ aba:'SALDO', tabela:'tabSaldo', dados:linhasSaldo }] }
   ].map(function(c){ c._abaContin=abaContin; c._abaTitulos=abaTitulos; return c; });
 }
 
@@ -6152,8 +6171,10 @@ async function exportarAbas(arquivo,abas,nome){
     const wb=XLSX.utils.book_new();
     abas.forEach(function(a){
       const dados=a.dados();
-      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(dados.length?dados:[{'MAPP':'(nenhum registro)'}]),a.aba.slice(0,31));
+      const lin=a.tabela ? colunasExportaveis(a.tabela,dados) : dados;
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(lin.length?lin:[{'MAPP':'(nenhum registro)'}]),a.aba.slice(0,31));
     });
+    anexarColunasOcultas(wb,abas.map(function(a){ return a.tabela; }).filter(Boolean));
     XLSX.writeFile(wb,arquivo+'_'+hojeISO()+'.xlsx');
     recado('Arquivo gerado.');
   }catch(err){ recado('Falha ao exportar: '+err.message); }
@@ -6162,10 +6183,11 @@ async function exportarAbas(arquivo,abas,nome){
 
 
 
-function exportarLista(lista,nome){
-  const ws=XLSX.utils.json_to_sheet(linhasMapp(lista));
+function exportarLista(lista,nome,tabela){
+  const ws=XLSX.utils.json_to_sheet(tabela?colunasExportaveis(tabela,linhasMapp(lista)):linhasMapp(lista));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'SELEÇÃO');
+  if(tabela) anexarColunasOcultas(wb,[tabela]);
   XLSX.writeFile(wb,nome+'_'+hojeISO()+'.xlsx');
 }
 
@@ -6319,7 +6341,7 @@ function ligarEventos(){
   });
   $('#btnExportarFiltro').addEventListener('click',function(){
     if(!E.listaFiltrada||!E.listaFiltrada.length){ recado('Nada a exportar.'); return; }
-    exportarLista(E.listaFiltrada,'saneamento_selecao');
+    exportarLista(E.listaFiltrada,'saneamento_selecao','tabDiag');
   });
 
   $$('#tabDiag thead th.ordenavel').forEach(function(th){
@@ -6384,7 +6406,7 @@ function ligarEventos(){
   $('#btnExportarAchado').addEventListener('click',function(){
     const a=E.qualidade.find(function(x){ return x.id===E.achadoAtual; });
     if(!a||!a.itens.length){ recado('Selecione um achado com ocorrências.'); return; }
-    exportarLista(a.itens,'qualidade_'+a.id);
+    exportarLista(a.itens,'qualidade_'+a.id,'tabAchado');
   });
   $('#btnExportarProgramacao').addEventListener('click',exportarProgramacao);
 
@@ -7670,7 +7692,8 @@ function exportarManifestacoes(){
       'DECISÃO':dec?(dec.situacao==='acatada'?'Acatada':'Rejeitada'):'Pendente' };
   });
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas.length?linhas:[{ 'CHAVE':'Nenhuma manifestação registrada' }]),'MANIFESTACOES');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas.length?colunasExportaveis('tabManif',linhas):[{ 'CHAVE':'Nenhuma manifestação registrada' }]),'MANIFESTACOES');
+  anexarColunasOcultas(wb,['tabManif']);
   if(envios.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(envios),'ENVIOS POR EMAIL');
   XLSX.writeFile(wb,'manifestacoes_'+hojeISO()+'.xlsx');
 }
@@ -8317,7 +8340,193 @@ function aoMudarGruposFonte(){
   if(E.diag && typeof renderTudo==='function') renderTudo();
 }
 
+/* ==========================================================================
+   Seleção de colunas. Cada tabela abre com todas as colunas; o botão Colunas
+   oculta ou mostra cada uma na hora. As colunas são identificadas pelo rótulo
+   do cabeçalho, de modo que a escolha resiste a redesenhos e a colunas
+   variáveis. A escolha vale enquanto a janela estiver aberta e é respeitada
+   pelas exportações da tabela (colunasExportaveis).
+   ========================================================================== */
+const TABELAS_COLUNAS=['tabSaldo','tabInconsNP','tabProgramacao','tabCarCruzada','tabCarTop','tabEstagios',
+  'tabIntersecoes','tabClassificacao','tabDiag','tabAchado','tabTitulos','tabSaneamento','tabRodadas','tabManif',
+  'tabAntesDepois','tabQuadroMapp','tabContinuidade'];
+E.colunasOcultas={};   /* idTabela → Set(rótulo normalizado) */
+const _colsInfo={};    /* idTabela → { cols:[{chave,rot,fixa}], ... } */
+
+function rotuloTh(th){
+  const c=th.cloneNode(true);
+  c.querySelectorAll('.sigla,.seta,input,button').forEach(function(x){ x.remove(); });
+  return limpo(c.textContent);
+}
+/* Colunas lógicas pela última linha do cabeçalho (com colspan). */
+function colunasDaTabela(tab){
+  const linhas=tab.tHead ? tab.tHead.rows : [];
+  if(!linhas.length) return [];
+  const cols=[], vistos={};
+  Array.prototype.forEach.call(linhas[linhas.length-1].cells,function(th,k){
+    const rot=rotuloTh(th), span=th.colSpan||1;
+    const temCaixa=!!th.querySelector('input[type=checkbox]');
+    for(let s=0;s<span;s++){
+      let chave=norm(rot)||('#'+cols.length);
+      vistos[chave]=(vistos[chave]||0)+1; if(vistos[chave]>1) chave+='#'+vistos[chave];
+      cols.push({ chave:chave, rot:rot||(temCaixa?'(seleção)':'(ações)'), fixa: !rot || temCaixa || /^PROVIDENCIA$/.test(chave) });
+    }
+  });
+  /* a coluna MAPP (ou Código) identifica a linha; sem ela, a primeira com rótulo. Fica sempre */
+  const ident=cols.find(function(c){ return !c.fixa && /^(MAPP|CODIGO)\b/.test(c.chave); }) || cols.find(function(c){ return !c.fixa; });
+  if(ident) ident.fixa=true;
+  return cols;
+}
+function aplicarColunas(tab){
+  const id=tab.id, cols=colunasDaTabela(tab);
+  _colsInfo[id]={ cols:cols };
+  const oc=E.colunasOcultas[id]||new Set();
+  const oculta=cols.map(function(c){ return !c.fixa && oc.has(c.chave); });
+  Array.prototype.forEach.call(tab.rows,function(tr){
+    let pos=0;
+    Array.prototype.forEach.call(tr.cells,function(td){
+      let orig=+td.getAttribute('data-cs')||0;
+      if(!orig){ orig=td.colSpan||1; if(orig>1) td.setAttribute('data-cs',orig); }
+      let esc=0; for(let s=0;s<orig;s++) if(oculta[pos+s]) esc++;
+      pos+=orig;
+      td.classList.toggle('col-oculta',esc===orig);
+      if(orig>1) td.colSpan=Math.max(1,orig-esc);
+    });
+  });
+  pintarBotaoColunas(id);
+}
+let _colsPend=new Set(), _colsQuadro=0;
+function agendarColunas(tab){
+  _colsPend.add(tab);
+  if(_colsQuadro) return;
+  _colsQuadro=requestAnimationFrame(function(){ _colsQuadro=0; const l=Array.from(_colsPend); _colsPend.clear(); l.forEach(aplicarColunas); });
+}
+function pintarBotaoColunas(id){
+  const bt=document.querySelector('.cols-bt[data-cols="'+id+'"]'); if(!bt) return;
+  const info=_colsInfo[id]||{cols:[]}, oc=E.colunasOcultas[id]||new Set();
+  const vis=info.cols.filter(function(c){ return c.fixa || !oc.has(c.chave); }).length;
+  bt.querySelector('.c').textContent='('+vis+'/'+info.cols.length+')';
+  bt.classList.toggle('ativa',vis<info.cols.length);
+}
+function abrirPainelColunas(id,bt){
+  let p=document.getElementById('painelColunas');
+  if(!p){
+    p=document.createElement('div'); p.id='painelColunas'; p.className='multi-painel cols-painel';
+    p.innerHTML='<div class="busca pequeno" style="font-weight:600"></div><div class="multi-lista"></div>'+
+      '<div class="multi-rodape"><button type="button" class="btn pequeno discreto" data-cols-todas>Marcar todas</button>'+
+      '<button type="button" class="btn pequeno discreto" data-cols-padrao>Restaurar padrão</button><span class="conta"></span></div>';
+    document.body.appendChild(p);
+    p.addEventListener('change',function(ev){
+      const cx=ev.target; if(cx.type!=='checkbox') return;
+      const tid=p.getAttribute('data-tabela'), oc=E.colunasOcultas[tid]=E.colunasOcultas[tid]||new Set();
+      if(cx.checked) oc.delete(cx.value); else oc.add(cx.value);
+      aplicarColunas(document.getElementById(tid)); desenharPainelColunas();
+    });
+    p.addEventListener('click',function(ev){
+      const tid=p.getAttribute('data-tabela');
+      if(ev.target.hasAttribute('data-cols-todas')||ev.target.hasAttribute('data-cols-padrao')){
+        E.colunasOcultas[tid]=new Set(); aplicarColunas(document.getElementById(tid)); desenharPainelColunas();
+        if(ev.target.hasAttribute('data-cols-padrao')) fecharPainelColunas();
+      }
+    });
+  }
+  if(p.classList.contains('aberto') && p.getAttribute('data-tabela')===id){ fecharPainelColunas(); return; }
+  p.setAttribute('data-tabela',id);
+  aplicarColunas(document.getElementById(id));
+  desenharPainelColunas();
+  p.classList.add('aberto');
+  const r=bt.getBoundingClientRect(), larg=280;
+  p.style.width=larg+'px';
+  const alt=p.getBoundingClientRect().height;
+  let topo=r.bottom+4; if(topo+alt>window.innerHeight-8) topo=Math.max(8,r.top-alt-4);
+  p.style.top=topo+'px'; p.style.left=Math.max(8,Math.min(r.right-larg,window.innerWidth-larg-8))+'px';
+}
+function desenharPainelColunas(){
+  const p=document.getElementById('painelColunas'); if(!p) return;
+  const id=p.getAttribute('data-tabela'), info=_colsInfo[id]||{cols:[]}, oc=E.colunasOcultas[id]||new Set();
+  const tit=document.getElementById(id).closest('.bloco'); const h=tit&&tit.querySelector('h2');
+  p.querySelector('.busca').textContent='Colunas — '+(h?h.textContent:id);
+  p.querySelector('.multi-lista').innerHTML=info.cols.map(function(c){
+    const marc=c.fixa||!oc.has(c.chave);
+    return '<label'+(c.fixa?' class="fixa"':'')+'><input type="checkbox" value="'+esc(c.chave)+'"'+(marc?' checked':'')+(c.fixa?' disabled':'')+'><span>'+esc(c.rot)+(c.fixa?' <span class="tenue">(fixa)</span>':'')+'</span></label>';
+  }).join('');
+  const vis=info.cols.filter(function(c){ return c.fixa||!oc.has(c.chave); }).length;
+  p.querySelector('.conta').textContent=vis+' de '+info.cols.length;
+}
+function fecharPainelColunas(){ const p=document.getElementById('painelColunas'); if(p) p.classList.remove('aberto'); }
+/* Vigia só a troca de linhas (filhos diretos de tbody/tfoot e as linhas do cabeçalho),
+   nunca a subárvore inteira: observar subtree faz cada troca de uma tabela grande
+   registrar milhares de nós removidos. */
+function vigiarTabela(tab){
+  if(tab._colsObs) tab._colsObs.disconnect();
+  const obs=new MutationObserver(function(recs){
+    if(recs.some(function(r){ return r.target===tab || r.target.tagName==='THEAD'; })) vigiarTabela(tab);   /* seções ou cabeçalho trocados */
+    agendarColunas(tab);
+  });
+  obs.observe(tab,{ childList:true });
+  Array.prototype.forEach.call(tab.children,function(sec){
+    if(sec.tagName==='THEAD'){ obs.observe(sec,{ childList:true }); Array.prototype.forEach.call(sec.rows,function(tr){ obs.observe(tr,{ childList:true }); }); }
+    else if(sec.tagName==='TBODY'||sec.tagName==='TFOOT') obs.observe(sec,{ childList:true });
+  });
+  tab._colsObs=obs;
+}
+function prepararColunas(){
+  TABELAS_COLUNAS.forEach(function(id){
+    const tab=document.getElementById(id); if(!tab || tab._colsLigada) return;
+    tab._colsLigada=true;
+    const caixa=tab.closest('.tabela-caixa')||tab;
+    const barra=document.createElement('div'); barra.className='cols-barra';
+    barra.innerHTML='<button type="button" class="btn pequeno discreto cols-bt" data-cols="'+id+'" data-tip="Escolhe as colunas desta tabela. A escolha vale na hora, também para a exportação correspondente, e dura até fechar a janela." data-tip-t="Colunas">☰ Colunas <span class="c"></span></button>';
+    caixa.parentNode.insertBefore(barra,caixa);
+    barra.querySelector('button').addEventListener('click',function(ev){ ev.preventDefault(); ev.stopPropagation(); abrirPainelColunas(id,ev.currentTarget); });
+    vigiarTabela(tab);
+    aplicarColunas(tab);
+  });
+  document.addEventListener('click',function(ev){
+    if(!ev.target.closest('#painelColunas') && !ev.target.closest('.cols-bt')) fecharPainelColunas();
+  });
+}
+/* Rótulos de coluna ocultos de uma tabela (normalizados). */
+function colunasOcultasDe(id){
+  const info=_colsInfo[id], oc=E.colunasOcultas[id];
+  if(!info || !oc || !oc.size) return [];
+  return info.cols.filter(function(c){ return !c.fixa && oc.has(c.chave); });
+}
+/* Nome de coluna do arquivo → rótulo equivalente na tela, quando diferem. */
+const ALIAS_COLUNAS={
+  tabSaldo:function(k){ const m=/^EXERC\. (\d{4})/.exec(k); return m ? m[1] : (/^NP — /.test(k) ? 'NOVO PROGRAMADO 2027' : k); }
+};
+/* Aba COLUNAS OCULTAS no arquivo, quando a tela tem colunas ocultas: rastreabilidade. */
+function anexarColunasOcultas(wb,ids){
+  const linhas=[];
+  (ids||[]).forEach(function(id){
+    const oc=colunasOcultasDe(id); if(!oc.length) return;
+    const tab=document.getElementById(id), bl=tab&&tab.closest('.bloco'), h=bl&&bl.querySelector('h2');
+    linhas.push({ 'TABELA NA TELA':h?h.textContent:id, 'COLUNAS OCULTAS (fora deste arquivo)':oc.map(function(c){ return c.rot; }).join(', ') });
+  });
+  if(linhas.length && wb.SheetNames.indexOf('COLUNAS OCULTAS')<0) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas),'COLUNAS OCULTAS');
+}
+/* Tira das linhas exportadas as colunas ocultas na tabela da tela. `linhas`:
+   lista de objetos (json_to_sheet). Devolve as linhas e os rótulos retirados. */
+function colunasExportaveis(id,linhas){
+  const ocultas=colunasOcultasDe(id); if(!ocultas.length || !linhas.length) return linhas;
+  const alvo=new Set(ocultas.map(function(c){ return c.chave.replace(/#\d+$/,''); }));
+  const alias=ALIAS_COLUNAS[id]||function(k){ return k; };
+  const tirar=Object.keys(linhas[0]).filter(function(k){ return alvo.has(norm(k)) || alvo.has(norm(alias(k))); });
+  if(!tirar.length) return linhas;
+  return linhas.map(function(l){ const o={}; Object.keys(l).forEach(function(k){ if(tirar.indexOf(k)<0) o[k]=l[k]; }); return o; });
+}
+/* Mesmo, para matriz com cabeçalho (aoa_to_sheet). */
+function colunasExportaveisAoa(id,cab,linhas){
+  const ocultas=colunasOcultasDe(id); if(!ocultas.length) return { cab:cab, linhas:linhas };
+  const alvo=new Set(ocultas.map(function(c){ return c.chave.replace(/#\d+$/,''); }));
+  const manter=cab.map(function(c,i){ return alvo.has(norm(c)) ? -1 : i; }).filter(function(i){ return i>=0; });
+  return { cab:manter.map(function(i){ return cab[i]; }), linhas:linhas.map(function(l){ return manter.map(function(i){ return l[i]; }); }) };
+}
+function textoColunasOcultas(id){ return colunasOcultasDe(id).map(function(c){ return c.rot; }).join(', '); }
+
 function ligarGruposEColunas(){
+  prepararColunas();
   const b=$('#btnModeloGruposFonte'); if(b) b.addEventListener('click',baixarModeloGruposFonte);
   const bj=$('#btnJsonGruposFonte'); if(bj) bj.addEventListener('click',baixarJsonGruposFonte);
   const area=$('#areaGruposFonte'), inp=$('#arqGruposFonte');

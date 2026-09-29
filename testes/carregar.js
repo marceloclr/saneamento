@@ -4,10 +4,11 @@ const { JSDOM }=require('jsdom');
 const XLSX=require('xlsx');
 const RAIZ=path.resolve(__dirname,'..');
 
-async function carregar(){
-  let html=fs.readFileSync(path.join(RAIZ,'index.html'),'utf8');
+async function carregar(pagina){
+  pagina=pagina||'index.html';
+  let html=fs.readFileSync(path.join(RAIZ,pagina),'utf8');
   html=html.replace(/<script src="[^"]*"><\/script>/g,'');
-  const dom=new JSDOM(html,{ runScripts:'dangerously', pretendToBeVisual:true, url:'http://127.0.0.1/index.html',
+  const dom=new JSDOM(html,{ runScripts:'dangerously', pretendToBeVisual:true, url:'http://127.0.0.1/'+pagina,
     beforeParse(w){
       const X=Object.create(XLSX);
       X.read=function(d,o){
@@ -25,6 +26,10 @@ async function carregar(){
       w.matchMedia=w.matchMedia||function(){ return { matches:false, addEventListener(){}, removeEventListener(){}, addListener(){}, removeListener(){} }; };
       w.IntersectionObserver=function(){ return { observe(){}, disconnect(){}, unobserve(){} }; };
       w.ResizeObserver=function(){ return { observe(){}, disconnect(){}, unobserve(){} }; };
+      /* No jsdom, querySelector('#id') percorre a página inteira a cada chamada; com a página
+         cheia, as leituras por MAPP levavam minutos. Vai direto ao getElementById. */
+      const qs=w.Document.prototype.querySelector;
+      w.Document.prototype.querySelector=function(s){ return /^#[\w-]+$/.test(s) ? this.getElementById(s.slice(1)) : qs.call(this,s); };
       w.HTMLElement.prototype.scrollIntoView=function(){};
       w.scrollTo=function(){}; w.scrollBy=function(){};
       w.__erros=[];
