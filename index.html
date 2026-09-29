@@ -989,14 +989,15 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   <div class="bloco">
     <header><h2>Filtros do conjunto</h2><span class="legenda" id="contagemSaneamento"></span></header>
     <div class="grade g4">
-      <label class="campo"><span>Regra <i class="sigla" tabindex="0" data-tip="Por padrão, todos os MAPPs alcançados por ao menos uma regra. Cada MAPP é contado uma única vez, mesmo quando há sobreposição.">?</i></span>
+      <label class="campo"><span>Regra <i class="sigla" tabindex="0" data-tip="Por padrão, todos os MAPPs que saem do conjunto ativo: alcançados por ao menos uma regra ou excluídos pelo usuário. Cada MAPP é contado uma única vez, mesmo quando há sobreposição.">?</i></span>
         <select id="sRegra">
-          <option value="">Todas as regras (união)</option>
+          <option value="">Todas (regras e exclusões)</option>
           <option value="1a">Somente regra 1</option>
           <option value="1b">Somente regra 2</option>
           <option value="1.2">Somente regra 3</option>
           <option value="1.3">Somente regra 4</option>
           <option value="sobre">Somente sobreposições</option>
+          <option value="excluido">Excluído pelo usuário</option>
         </select></label>
       <label class="campo"><span>Secretaria</span><select id="sSecretaria"></select></label>
       <label class="campo"><span>Órgão</span><select id="sOrgao"></select></label>
@@ -1114,11 +1115,6 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   <div class="bloco">
     <header><h2>Cenário projetado</h2><span class="legenda" id="cenarioLegenda"></span></header>
     <div class="grade g3">
-      <label class="campo"><span>Base da projeção <i class="sigla" tabindex="0" data-tip="“Todas as recomendações” projeta o efeito de todo o conjunto enquadrado que permanece no saneamento. “Somente decisões acatadas” restringe a projeção ao que já passou pela revisão humana." data-tip-t="Base da projeção">?</i></span>
-        <select id="adBase">
-          <option value="recomendacoes">Todas as recomendações mantidas no saneamento</option>
-          <option value="decisoes">Somente as decisões humanas acatadas</option>
-        </select></label>
       <label class="campo"><span>Medida <i class="sigla" tabindex="0" data-tip="Alterna todos os gráficos e a tabela entre quantidade de MAPPs e saldo do programado somado." data-tip-t="Medida">?</i></span>
         <select id="adMedida">
           <option value="qtd">Quantidade de MAPPs</option>
@@ -3276,20 +3272,20 @@ function legendaRecortePanorama(){
    regras depois, com o Programado 2027 contra o Novo Programado 2027. */
 function renderPrevia(){
   if(!E.diag || !$('#cartoesPrevia')) return;
-  const U=diagPanorama().noUniverso, S=sobreviventes(U), R=retiradosPelasRegras(U);
+  const U=diagPanorama().noUniverso, S=sobreviventes(U), R=retirados(U);
   const tU=totaisNP(U), tS=totaisNP(S), tR=totaisNP(R);
   $('#seloPrevia').style.display = E.encerramento ? 'none' : '';
   $('#previaLegenda').textContent='NP 2027 = programado 2027 + saldos de '+rotuloAnosNP(anosNovoProgramado())+
-    (recortePanorama().ativo?' · sob o recorte do Panorama':'')+(E.encerramento?' · saneamento concluído':' · muda com as decisões e exceções');
+    (recortePanorama().ativo?' · sob o recorte do Panorama':'')+(E.encerramento?' · saneamento concluído':' · muda com as exclusões pelo usuário');
   $('#cartoesPrevia').innerHTML=
     cartao('Universo',n(U.length)+' MAPPs','Programado 2027: '+rsCurto(tU.p27),'var(--grafite)',
       'MAPPs submetidos às regras. Programado 2027 somado de todos eles: '+rs(tU.p27)+'.')+
     cartao('Sobreviventes às regras',n(S.length)+' MAPPs','NP 2027: '+rsCurto(tS.np),'var(--musgo)',
-      'Sem regra alguma, ou enquadrados que são exceção (ocultados ou com recomendação rejeitada).\n'+
+      'Sem regra alguma e não excluídos pelo usuário.\n'+
       'Programado 2027: '+rs(tS.p27)+'\nNovo Programado 2027: '+rs(tS.np)+
       (tS.incons?'\n'+n(tS.incons)+' MAPP(s) com saldo negativo em ano incorporado (não somado).':''))+
-    cartao('Retirados pelas regras',n(R.length)+' MAPPs','Programado 2027: '+rsCurto(tR.p27),'var(--carmim)',
-      'Enquadrados nas Regras 1 a 4 sem exceção. Programado 2027 que deixam de levar: '+rs(tR.p27)+'.')+
+    cartao('Retirados',n(R.length)+' MAPPs','Programado 2027: '+rsCurto(tR.p27),'var(--carmim)',
+      'Enquadrados nas Regras 1 a 4, com ou sem decisão, e excluídos pelo usuário. Programado 2027 que deixam de levar: '+rs(tR.p27)+'.')+
     cartao('NP 2027 − Programado 2027',(tS.np-tU.p27>=0?'+':'')+rsCurto(tS.np-tU.p27),'sobreviventes × universo','var(--latao)',
       'Novo Programado 2027 dos sobreviventes ('+rs(tS.np)+') menos o Programado 2027 do universo ('+rs(tU.p27)+').');
   if(typeof Chart==='undefined') return;
@@ -4349,8 +4345,8 @@ function filtrar(){
     if(f.revisao.length){
       const dec=E.decisoes[m.chave];
       const atende=f.revisao.some(function(r){
-        if(r==='excluido') return estaOculto(m.chave);
-        if(r==='pendente') return !dec && !estaOculto(m.chave);
+        if(r==='excluido') return estaExcluido(m.chave);
+        if(r==='pendente') return !dec && !estaExcluido(m.chave);
         return !!dec && dec.situacao===r;
       });
       if(!atende) return false;
@@ -4379,7 +4375,7 @@ function filtrar(){
     confianca:function(m){return {'Alta':1,'Média':2,'Baixa':3}[m.d.confianca]||9;},
     acao:function(m){return m.d.acao;},
     revisao:function(m){
-      if(estaOculto(m.chave)) return 3;
+      if(estaExcluido(m.chave)) return 3;
       const dec=E.decisoes[m.chave];
       return dec?(dec.situacao==='acatada'?1:2):0;
     }
@@ -4443,15 +4439,15 @@ function renderDiagnostico(){
         : '');
     const conf = d.confianca==='Alta'?'alta':(d.confianca==='Média'?'media':'baixa');
     const ex=E.exclusoes[m.chave];
-    const revisao = estaOculto(m.chave)
+    const revisao = estaExcluido(m.chave)
       ? '<span class="etq excluido"'+tip('Retirado do resultado do saneamento na área Decisão.\nMotivo: '+
           (ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—'),'Ocultado do saneamento')+'>Ocultado</span>'
       : (dec
         ? '<span class="etq '+(dec.situacao==='acatada'?'alta':'baixa')+'">'+(dec.situacao==='acatada'?'Acatada':'Rejeitada')+'</span>'
         : '<span class="etq sem">Pendente</span>');
-    return '<tr class="linha-clicavel'+(E.selecionados.has(m.chave)?' selecionada':'')+(estaOculto(m.chave)?' ocultada':'')+'" data-chave="'+esc(m.chave)+'">'+
+    return '<tr class="linha-clicavel'+(E.selecionados.has(m.chave)?' selecionada':'')+(estaExcluido(m.chave)?' ocultada':'')+'" data-chave="'+esc(m.chave)+'">'+
       '<td><input type="checkbox" class="sel" data-chave="'+esc(m.chave)+'"'+(E.selecionados.has(m.chave)?' checked':'')+'></td>'+
-      celulaProvidencia(m,estaOculto(m.chave))+
+      celulaProvidencia(m,estaExcluido(m.chave))+
       '<td class="mono">'+esc(m.codigo)+'</td>'+
       '<td>'+esc(m.orgao)+'</td>'+
       '<td>'+esc(m.secretaria)+'</td>'+
@@ -4630,10 +4626,10 @@ function abrirFicha(chave){
     '<div class="barra-acoes" style="margin-top:10px">'+
       '<button class="btn principal" data-ficha="acatar" data-tip="Registra de imediato, sem diálogo, a ação recomendada como decisão humana para este MAPP.">Acatar recomendação</button>'+
       '<button class="btn risco" data-ficha="rejeitar" data-tip="Registra de imediato, sem diálogo, a rejeição da recomendação para este MAPP.">Rejeitar recomendação</button>'+
-      '<button class="btn" data-ficha="ocultar" data-tip="'+(estaOculto(m.chave)
+      '<button class="btn" data-ficha="ocultar" data-tip="'+(estaExcluido(m.chave)
         ? 'Devolve este MAPP ao resultado do saneamento.'
         : 'Retira de imediato este MAPP do resultado do saneamento. A remoção é individual, reversível e auditada.')+'">'+
-        (estaOculto(m.chave)?'Restabelecer no saneamento':'Ocultar do saneamento')+'</button>'+
+        (estaExcluido(m.chave)?'Restabelecer no saneamento':'Ocultar do saneamento')+'</button>'+
     '</div></div>';
 
   $('#fichaCorpo').innerHTML=html;
@@ -4962,44 +4958,42 @@ function exportarProgramacao(){
 <script>
 "use strict";
 /* ==========================================================================
-   Saneamento final: grid do conjunto enquadrado, exclusão individual de
-   MAPPs e exportação do resultado. Ocultar não apaga registro algum.
+   Saneamento final: grid do conjunto que sai (regras e exclusões), exclusão
+   individual de MAPPs e exportação do resultado. Excluir não apaga registro algum.
    ========================================================================== */
 
-function estaOculto(chave){ return !!E.exclusoes[chave]; }
+function estaExcluido(chave){ return !!E.exclusoes[chave]; }
 
+/* Enquadrados pelas regras (base da Manifestação aos órgãos). */
 function conjuntoEnquadrado(){
   if(!E.diag) return [];
   return E.diag.noUniverso.filter(function(m){ return m.d.regras.length>0; });
+}
+/* Conjunto da Decisão: enquadrados pelas regras e excluídos pelo usuário, com ou sem regra. */
+function conjuntoSaneamento(){
+  if(!E.diag) return [];
+  return E.diag.noUniverso.filter(function(m){ return m.d.regras.length>0 || estaExcluido(m.chave); });
 }
 
 /* ------------------ Sobreviventes às regras e NP 2027 --------------------
    Finalidade do sistema: os MAPPs do universo que sobrevivem às Regras 1 a 4,
    cada um com o Novo Programado 2027. Sobrevive quem não atende a regra alguma
-   ou quem, enquadrado, é exceção (ocultado do saneamento ou com a recomendação
-   rejeitada). Os demais enquadrados são retirados pelas regras. */
-function excecaoRegra(m){
-  if(estaOculto(m.chave)) return 'Ocultado do saneamento';
-  const dec=E.decisoes[m.chave];
-  if(dec && dec.situacao==='rejeitada') return 'Recomendação rejeitada';
-  return null;
-}
-function sobrevive(m){ return !m.d.regras.length || !!excecaoRegra(m); }
+   e não foi excluído pelo usuário. Acatar ou rejeitar a recomendação é registro
+   da revisão: não muda quem sai. A exclusão tem o mesmo efeito de uma regra. */
+function sobrevive(m){ return !m.d.regras.length && !estaExcluido(m.chave); }
 function sobreviventes(lista){
   if(!E.diag) return [];
   return (lista||E.diag.noUniverso).filter(sobrevive);
 }
-function retiradosPelasRegras(lista){
+function retirados(lista){
   if(!E.diag) return [];
   return (lista||E.diag.noUniverso).filter(function(m){ return !sobrevive(m); });
 }
 function motivoSobrevive(m){
-  if(!m.d.regras.length){
-    if(m.estagio==='PARALISADO') return 'Sem regra (paralisado)';
-    if(m.d.classificacao==='DADOS INSUFICIENTES') return 'Sem regra (dados insuficientes)';
-    return 'Sem regra';
-  }
-  return excecaoRegra(m)||'';
+  if(!sobrevive(m)) return '';
+  if(m.estagio==='PARALISADO') return 'Sem regra (paralisado)';
+  if(m.d.classificacao==='DADOS INSUFICIENTES') return 'Sem regra (dados insuficientes)';
+  return 'Sem regra';
 }
 
 /* NP 2027 do MAPP, em cache por diagnóstico e anos incorporados: telas e arquivos
@@ -5028,7 +5022,7 @@ function totaisNP(lista){
 }
 
 function prepararFiltrosSaneamento(){
-  const base=conjuntoEnquadrado();
+  const base=conjuntoSaneamento();
   const unicos=function(campo){
     return Array.from(new Set(base.map(function(m){ return m[campo]; }))).filter(Boolean).sort()
       .map(function(v){ return [v,v]; });
@@ -5053,9 +5047,10 @@ function filtrarSaneamento(){
     valorMin:parseFloat($('#sValorMin').value)||0, busca:norm($('#sBusca').value)
   };
   E.filtroSan=f;
-  let res=conjuntoEnquadrado().filter(function(m){
+  let res=conjuntoSaneamento().filter(function(m){
     if(f.regra.length){
       const atende=f.regra.some(function(r){
+        if(r==='excluido') return estaExcluido(m.chave);
         return r==='sobre' ? m.d.regras.length>1 : m.d.regras.indexOf(r)>=0;
       });
       if(!atende) return false;
@@ -5068,7 +5063,7 @@ function filtrarSaneamento(){
     if(f.valorMin && mappNaFonte(m,f.fonte).saldo<f.valorMin) return false;
     if(f.situacao.length){
       const atende=f.situacao.some(function(r){
-        return r==='mantido' ? !estaOculto(m.chave) : estaOculto(m.chave);
+        return r==='mantido' ? !estaExcluido(m.chave) : estaExcluido(m.chave);
       });
       if(!atende) return false;
     }
@@ -5088,7 +5083,7 @@ function filtrarSaneamento(){
     estagio:function(m){return GRUPOS_ESTAGIO[m.estagio].rotulo;},
     regra:function(m){return m.d.regras.join('+');},
     acao:function(m){return m.d.acao;},
-    situacao:function(m){ return estaOculto(m.chave)?3:(E.decisoes[m.chave]?(E.decisoes[m.chave].situacao==='acatada'?1:2):0); }
+    situacao:function(m){ return estaExcluido(m.chave)?3:(E.decisoes[m.chave]?(E.decisoes[m.chave].situacao==='acatada'?1:2):0); }
   }[o.campo]||function(m){return m.saldo;};
   res.sort(function(a,b){
     const x=chaveOrd(a),y=chaveOrd(b);
@@ -5098,9 +5093,15 @@ function filtrarSaneamento(){
   return res;
 }
 
-/* Enquadrados que as regras retiram (sem exceção). */
-function mantidos(){ return retiradosPelasRegras(conjuntoEnquadrado()); }
-function ocultados(){ return conjuntoEnquadrado().filter(function(m){ return estaOculto(m.chave); }); }
+/* Mantidos no saneamento: todos que saem do conjunto ativo (regras e exclusões). */
+function mantidos(){ return retirados(conjuntoSaneamento()); }
+function excluidos(){ return conjuntoSaneamento().filter(function(m){ return estaExcluido(m.chave); }); }
+/* Etiqueta da exclusão na coluna Regra. */
+function etiquetaExcluido(m){
+  const ex=E.exclusoes[m.chave]; if(!ex) return '';
+  return '<span class="etq excluido"'+tip('Motivo: '+(ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—')+'\nData: '+new Date(ex.data).toLocaleString('pt-BR')+
+    '\nEfeito: sai do conjunto ativo como os MAPPs das regras e não recebe o Novo Programado 2027.','Excluído pelo usuário')+'>Excluído pelo usuário</span>';
+}
 
 /* Botão de providência individual — reaproveitado na grade do saneamento e no diagnóstico. */
 function celulaProvidencia(m,oculto){
@@ -5113,16 +5114,17 @@ function celulaProvidencia(m,oculto){
 
 function renderSaneamento(){
   if(!E.diag) return;
-  const base=conjuntoEnquadrado(), fica=mantidos(), sai=ocultados();
+  const base=conjuntoSaneamento(), enq=conjuntoEnquadrado(), fica=mantidos(), sai=excluidos();
   $('#saneamentoCriterio').textContent='Critério de execução: '+E.diag.criterio+' · universo: '+rotuloUniverso();
 
   $('#cartoesSaneamento').innerHTML=
-    cartao('Enquadrados pelas regras',n(base.length),'união das quatro regras','var(--ardosia)',
+    cartao('Enquadrados pelas regras',n(enq.length),'união das quatro regras','var(--ardosia)',
       'MAPPs alcançados por ao menos uma regra da primeira fase, contados uma única vez ainda que haja sobreposição.')+
     cartao('Mantidos no saneamento',n(fica.length),rsCurto(somaSaldo(fica))+' de saldo do programado','var(--musgo)',
-      'Conjunto que comporá o resultado exportado.')+
-    cartao('Ocultados individualmente',n(sai.length),rsCurto(somaSaldo(sai))+' de saldo do programado','var(--sepia)',
-      'MAPPs retirados do resultado por decisão do revisor, com o motivo registrado.')+
+      'MAPPs que saem do conjunto ativo: os enquadrados pelas regras, com decisão acatada, rejeitada ou sem decisão, e os excluídos pelo usuário. '+
+      'Não recebem o Novo Programado 2027; o resultado exportado traz os que sobrevivem.')+
+    cartao('Excluídos individualmente',n(sai.length),rsCurto(somaSaldo(sai))+' de saldo do programado','var(--sepia)',
+      'Parte dos mantidos no saneamento excluída pelo usuário, com o motivo registrado. Sai como os MAPPs das regras, tenha ou não regra.')+
     cartao('Com decisão registrada',n(fica.filter(function(m){ return E.decisoes[m.chave]; }).length),
       'de '+n(fica.length)+' mantidos','var(--ameixa)',
       'Mantidos que já passaram pela revisão humana.')+
@@ -5137,9 +5139,9 @@ function renderSaneamento(){
   const ini=(E.paginaSan-1)*porPag, fim=Math.min(total,ini+porPag);
   const pagina=lista.slice(ini,fim);
 
-  $('#contagemSaneamento').textContent=n(total)+' de '+n(base.length)+' MAPPs enquadrados';
-  $('#resumoSaneamento').textContent='Saldo do programado filtrado: '+rs(somaSaldo(lista))+' · ocultados no filtro: '+
-    n(lista.filter(function(m){ return estaOculto(m.chave); }).length)+(E.filtroSan.fonte.length?' · valores só de '+textoFiltroFonte('#sFonte'):'');
+  $('#contagemSaneamento').textContent=n(total)+' de '+n(base.length)+' MAPPs mantidos no saneamento';
+  $('#resumoSaneamento').textContent='Saldo do programado filtrado: '+rs(somaSaldo(lista))+' · excluídos no filtro: '+
+    n(lista.filter(function(m){ return estaExcluido(m.chave); }).length)+(E.filtroSan.fonte.length?' · valores só de '+textoFiltroFonte('#sFonte'):'');
   $('#infoPaginaSan').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
   $('#tabSaneamento').querySelector('tfoot').innerHTML = total
     ? '<tr><td colspan="10">Total filtrado ('+n(total)+' MAPPs)</td><td class="num">'+rsCurto(somaSaldo(lista))+'</td><td></td></tr>'
@@ -5155,20 +5157,20 @@ function renderSaneamento(){
     atualizarSelecaoSan(); return;
   }
   corpo.innerHTML=pagina.map(function(m){
-    const oculto=estaOculto(m.chave), ex=E.exclusoes[m.chave];
+    const oculto=estaExcluido(m.chave), ex=E.exclusoes[m.chave];
     const etqRegras=m.d.regras.map(function(r){
       return '<span class="etq '+REGRAS[r].classe+'"'+tip(dicaRegra(r),REGRAS[r].nome)+'>'+REGRAS[r].nome+'</span>';
-    }).join(' ');
+    }).concat(oculto?[etiquetaExcluido(m)]:[]).join(' ');
     const dec=E.decisoes[m.chave];
     const situacao = oculto
       ? '<span class="etq excluido"'+tip('Motivo: '+(ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—')+
           '\nData: '+new Date(ex.data).toLocaleString('pt-BR')+
-          '\nEfeito: o MAPP não integra o resultado exportado; o enquadramento e a base original permanecem intactos.','Ocultado do saneamento')+'>Ocultado</span>'
+          '\nEfeito: sai do conjunto ativo como os MAPPs das regras; a base original permanece intacta.','Excluído pelo usuário')+'>Excluído</span>'
       : (dec ? '<span class="etq '+(dec.situacao==='acatada'?'alta':'baixa')+'"'+
           tip('Decisão humana registrada em '+new Date(dec.data).toLocaleString('pt-BR')+
               '\nResponsável: '+dec.responsavel+'\nJustificativa: '+dec.justificativa,'Revisão')+'>'+
           (dec.situacao==='acatada'?'Acatada':'Rejeitada')+'</span>'
-             : '<span class="etq sem"'+tip('Permanece no resultado do saneamento e ainda não recebeu decisão humana.','Mantido')+'>Mantido</span>');
+             : '<span class="etq sem"'+tip('Mantido no saneamento: sai do conjunto ativo pela regra. Ainda sem decisão humana registrada.','Mantido')+'>Mantido</span>');
     return '<tr class="'+(oculto?'ocultada ':'')+(E.selecionadosSan.has(m.chave)?'selecionada':'')+'" data-chave-san="'+esc(m.chave)+'">'+
       '<td><input type="checkbox" class="selsan" data-chave="'+esc(m.chave)+'"'+(E.selecionadosSan.has(m.chave)?' checked':'')+'></td>'+
       celulaProvidencia(m,oculto)+
@@ -5202,9 +5204,9 @@ function pintarEncerramento(){
   if(E.encerramento){
     el.innerHTML='<span class="etq alta">Saneamento concluído</span> '+
       esc(E.encerramento.responsavel)+' · '+new Date(E.encerramento.data).toLocaleString('pt-BR')+
-      ' · '+n(mantidos().length)+' MAPPs mantidos e '+n(ocultados().length)+' ocultados';
+      ' · '+n(mantidos().length)+' MAPPs mantidos e '+n(excluidos().length)+' ocultados';
   } else {
-    el.innerHTML='<span class="etq sem">Saneamento em curso</span> '+n(ocultados().length)+' MAPP(s) ocultado(s) até o momento';
+    el.innerHTML='<span class="etq sem">Saneamento em curso</span> '+n(excluidos().length)+' MAPP(s) ocultado(s) até o momento';
   }
 }
 
@@ -5212,7 +5214,7 @@ function pintarEncerramento(){
 
 async function alternarOcultacao(chave){
   const m=E.mapps[E.indice.get(chave)]; if(!m) return;
-  if(estaOculto(chave)){ restabelecerMapps([chave]); return; }
+  if(estaExcluido(chave)){ restabelecerMapps([chave]); return; }
   await ocultarMapps([chave], m.codigo+' — '+(m.titulo||''));
 }
 
@@ -5234,12 +5236,13 @@ async function ocultarMapps(chaves,rotulo){
   }
   const agora=new Date().toISOString();
   chaves.forEach(function(k){
-    if(estaOculto(k)) return;
+    if(estaExcluido(k)) return;
     const m=E.mapps[E.indice.get(k)];
     E.exclusoes[k]={ motivo:motivo, responsavel:responsavel, data:agora };
   });
   E.selecionadosSan.clear();
   marcarPasso(8);
+  prepararFiltrosSaneamento();   /* o excluído sem regra entra na Decisão */
   renderSaneamento(); renderDiagnostico(); renderExportacoes(); atualizarSelo();
   recado(n(chaves.length)+' MAPP(s) ocultado(s) do saneamento.');
 }
@@ -5247,7 +5250,7 @@ async function ocultarMapps(chaves,rotulo){
 function restabelecerMapps(chaves){
   let q=0;
   chaves.forEach(function(k){
-    if(!estaOculto(k)) return;
+    if(!estaExcluido(k)) return;
     const m=E.mapps[E.indice.get(k)];
     const ex=E.exclusoes[k];
     delete E.exclusoes[k];
@@ -5255,6 +5258,7 @@ function restabelecerMapps(chaves){
   });
   if(!q){ recado('Nenhum dos MAPPs selecionados estava ocultado.'); return; }
   E.selecionadosSan.clear();
+  prepararFiltrosSaneamento();
   renderSaneamento(); renderDiagnostico(); renderExportacoes(); atualizarSelo();
   recado(n(q)+' MAPP(s) restabelecido(s).');
 }
@@ -5274,7 +5278,7 @@ async function restabelecerTudo(){
 
 async function finalizarSaneamento(){
   if(!E.diag){ recado('Importe a base primeiro.'); return; }
-  const fica=mantidos(), sai=ocultados();
+  const fica=mantidos(), sai=excluidos();
   const corpo='<div class="aviso nota"><span class="marca">Resultado</span><span>'+
     n(fica.length)+' MAPP(s) mantidos ('+rs(somaSaldo(fica))+' de saldo do programado) e '+
     n(sai.length)+' ocultados. '+n(Object.keys(E.decisoes).length)+' decisão(ões) humana(s) registrada(s).</span></div>'+
@@ -5295,7 +5299,7 @@ async function finalizarSaneamento(){
 /* Um só ato: pede responsável e observação, declara concluído e exporta. */
 async function concluirEExportar(){
   if(!E.diag){ recado('Importe a base primeiro.'); return; }
-  const fica=mantidos(), sai=ocultados();
+  const fica=mantidos(), sai=excluidos();
   if(!fica.length && !sai.length){ recado('Não há resultado a exportar.'); return; }
   let resp = E.responsavel && E.responsavel!=='(não identificado)' ? E.responsavel : '', obs='';
   for(;;){
@@ -5332,13 +5336,12 @@ async function reabrirSaneamento(){
 }
 
 
-function linhasExcecoes(){
-  return linhasMapp(sobreviventes().filter(function(m){ return !!excecaoRegra(m); }),function(m){
-    const ex=E.exclusoes[m.chave], dec=E.decisoes[m.chave];
-    const reg=estaOculto(m.chave)?ex:dec;
-    return Object.assign(contextoRegra(m),{ 'EXCEÇÃO':excecaoRegra(m),
-      'JUSTIFICATIVA':(estaOculto(m.chave)?ex.motivo:dec.justificativa)||'',
-      'DATA':reg&&reg.data?new Date(reg.data).toLocaleString('pt-BR'):'' });
+/* Excluídos pelo usuário, com ou sem regra: saem do conjunto ativo como os das regras. */
+function linhasExcluidos(){
+  return linhasMapp(excluidos(),function(m){
+    const ex=E.exclusoes[m.chave];
+    return Object.assign(contextoRegra(m),{ 'EXCLUSÃO':'Excluído pelo usuário', 'MOTIVO':ex.motivo||'',
+      'RESPONSÁVEL':ex.responsavel||'', 'DATA':ex.data?new Date(ex.data).toLocaleString('pt-BR'):'' });
   });
 }
 
@@ -5388,7 +5391,7 @@ function linhasResultadoPorOrgao(){
   return linhas;
 }
 function linhasParametrosResultado(anosOcultos){
-  const U=E.diag.noUniverso, S=sobreviventes(), R=retiradosPelasRegras();
+  const U=E.diag.noUniverso, S=sobreviventes(), R=retirados();
   const tU=totaisNP(U), tS=totaisNP(S), tR=totaisNP(R);
   return [
     ['Arquivo de origem', E.arquivo?E.arquivo.name:'—'],
@@ -5396,7 +5399,7 @@ function linhasParametrosResultado(anosOcultos){
     ['Situação do saneamento', E.encerramento?'Concluído':'Em curso (resultado preliminar)'],
     ['Filtros aplicados (Cenário projetado)', textoFiltrosResultado()||'nenhum — todos os sobreviventes, todas as fontes'],
     ['Colunas ocultas no QUADRO POR MAPP', (typeof textoColunasOcultas==='function'&&textoColunasOcultas('tabQuadroMapp'))||'nenhuma'],
-    ['Sobrevivente', 'MAPP do universo sem regra alguma, ou enquadrado que foi ocultado do saneamento ou teve a recomendação rejeitada'],
+    ['Sobrevivente', 'MAPP do universo sem regra alguma e não excluído pelo usuário (acatar ou rejeitar a recomendação não muda quem sai)'],
     ['Novo Programado 2027', 'VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO − VLR_EMPENHO) dos anos incorporados'],
     ['Anos incorporados', rotuloAnosNP(anosNovoProgramado())],
     ['Ano com saldo negativo', 'não é somado nem subtraído; o MAPP é sinalizado'],
@@ -5404,7 +5407,8 @@ function linhasParametrosResultado(anosOcultos){
     ['MAPPs com ano de saldo negativo (sobreviventes)', tS.incons],
     ['MAPPs no universo', U.length],
     ['MAPPs sobreviventes', S.length],
-    ['MAPPs retirados pelas regras', R.length],
+    ['MAPPs retirados (regras e exclusões)', R.length],
+    ['MAPPs excluídos pelo usuário', excluidos().length],
     ['Programado 2027 — universo (R$)', tU.p27],
     ['Programado 2027 — sobreviventes (R$)', tS.p27],
     ['Programado 2027 — retirados (R$)', tR.p27],
@@ -5433,7 +5437,7 @@ async function exportarResultadoNP(){
 function ligarEventosSaneamento(){
   ['#sRegra','#sSecretaria','#sOrgao','#sSituacao','#sAno','#sEstagio','#sFonte'].forEach(function(s){
     $(s).addEventListener('change',function(){
-      if(s==='#sSecretaria') opcoesDependentes(conjuntoEnquadrado(),'#sSecretaria','#sOrgao');
+      if(s==='#sSecretaria') opcoesDependentes(conjuntoSaneamento(),'#sSecretaria','#sOrgao');
       E.paginaSan=1; renderSaneamento();
     });
   });
@@ -5498,10 +5502,12 @@ function ligarEventosSaneamento(){
    aplicação das ações recomendadas aos MAPPs mantidos no saneamento.
    ========================================================================== */
 
-const SITUACOES = ['Ativo','Pendente','Execução física concluída','Concluído físico e financeiro','Paralisado','Cancelado'];
+const SITUACAO_EXCLUIDO = 'Excluído pelo usuário';
+const SITUACOES = ['Ativo','Pendente','Execução física concluída','Concluído físico e financeiro','Paralisado','Cancelado',SITUACAO_EXCLUIDO];
 const COR_SITUACAO = {
   'Ativo':'var(--ardosia)', 'Pendente':'var(--carmim)', 'Execução física concluída':'var(--musgo)',
-  'Concluído físico e financeiro':'var(--neutro)', 'Paralisado':'var(--ocre)', 'Cancelado':'var(--sepia)'
+  'Concluído físico e financeiro':'var(--neutro)', 'Paralisado':'var(--ocre)', 'Cancelado':'var(--sepia)',
+  'Excluído pelo usuário':'var(--ferrugem)'
 };
 
 function situacaoAntes(m){
@@ -5522,19 +5528,18 @@ function regraEfeito(m){
   return null;
 }
 
+/* A regra muda a situação de todo enquadrado, com ou sem decisão humana (acatar ou
+   rejeitar é registro). Paralisados, cancelados e dados insuficientes ficam como estão. */
 function alcancadoPelaProjecao(m){
-  if(estaOculto(m.chave)) return false;
   if(!m.d.regras.length) return false;
   if(m.estagio==='CANCELADO' || m.estagio==='PARALISADO') return false;
   if(m.d.insuficiente) return false;
-  if($('#adBase') && $('#adBase').value==='decisoes'){
-    const dec=E.decisoes[m.chave];
-    return !!dec && dec.situacao==='acatada';
-  }
   return true;
 }
 
 function situacaoDepois(m){
+  /* A exclusão pelo usuário prevalece sobre regra e decisão. */
+  if(estaExcluido(m.chave)) return SITUACAO_EXCLUIDO;
   const sa=situacaoAntes(m);
   /* Quem já está concluído físico e financeiro não regride a pendente: o
      saneamento visa depurar a listagem ativa, não reabrir projeto encerrado. */
@@ -5644,11 +5649,12 @@ function apurarAntesDepois(){
     antes[sa].q++; antes[sa].v+=m.saldo;
     depois[sd].q++; depois[sd].v+=m.saldo;
     if(sa!==sd){ mudam++; mudamValor+=m.saldo; }
-    if(sa!==sd){
+    const exc=estaExcluido(m.chave);   /* conta como excluído, não na coluna da regra */
+    if(sa!==sd && !exc){
       const r=regraEfeito(m);
       if(r){ porRegra[r].q++; porRegra[r].v+=m.saldo; }
     }
-    if(estaOculto(m.chave)){ excluidos.q++; excluidos.v+=m.saldo; }
+    if(exc){ excluidos.q++; excluidos.v+=m.saldo; }
 
     const contribs = campo==='grupo' ? seriesPorGrupoFonte(m)
       : campo==='fonte'
@@ -5670,11 +5676,11 @@ function apurarAntesDepois(){
 
       if(m.dentroUniverso){ o.antes++; o.antesV+=m.saldo; }
       if(npm){ o.depois++; o.depoisV+=m.saldo; }
-      if(sa!==sd){
+      if(sa!==sd && !exc){
         const r=regraEfeito(m);
         if(r){ o.regras[r]++; o.regrasV[r]+=m.saldo; }
       }
-      if(estaOculto(m.chave)){ o.exc++; o.excV+=m.saldo; }
+      if(exc){ o.exc++; o.excV+=m.saldo; }
     });
 
     const a=m.ano||0;
@@ -5700,7 +5706,7 @@ function renderAntesDepois(){
   const reducao = ativosAntes-ativosDepois;
 
   $('#cenarioLegenda').textContent =
-    ($('#adBase').value==='decisoes' ? 'Projeção restrita às decisões humanas acatadas' : 'Projeção de todas as recomendações mantidas no saneamento')+
+    'Projeção das Regras 1 a 4 e das exclusões pelo usuário'+
     ' · medida: '+rotuloMedida()+' · critério de execução: '+E.diag.criterio;
 
   $('#cartoesAntesDepois').innerHTML=
@@ -5709,7 +5715,7 @@ function renderAntesDepois(){
       'MAPPs submetidos às regras (universo), antes do saneamento.',true)+
     cartao('Ativos depois · sobreviventes',fmtAD(ativosDepois),
       medida==='valor'?n(a.sobrev.q)+' MAPPs':rsCurto(a.sobrev.v)+' de saldo do programado','var(--musgo)',
-      'MAPPs que sobrevivem às Regras 1 a 4: sem regra alguma, ou enquadrados que são exceção (ocultados ou com recomendação rejeitada).',true)+
+      'MAPPs que sobrevivem às Regras 1 a 4: sem regra alguma e não excluídos pelo usuário.',true)+
     cartao('Novo Programado 2027',rsCurto(a.npQ.total),'Programado 2027 dos mesmos: '+rsCurto(a.npQ.p27),'var(--latao)',
       'Novo Programado 2027 dos sobreviventes: programado 2027 + saldos de '+rotuloAnosNP(a.novoProgramadoAnos)+'.\n'+
       'Valor exato: '+rs(a.npQ.total)+'\nProgramado 2027 dos mesmos MAPPs: '+rs(a.npQ.p27)+
@@ -5734,9 +5740,10 @@ function renderAntesDepois(){
       REGRAS['1.3'].nome+': '+resumoRegra('1.3')+' — '+REGRAS['1.3'].acao+'. '+fmtAD(medida==='valor'?a.porRegra['1.3'].v:a.porRegra['1.3'].q)+'.\n'+
       'Desdobramento: saem da listagem principal, seguem consultáveis por filtro e podem ser reativados pelo órgão.',
       true,'Passam a concluídos')+
-    cartao('Devolvidos pela exclusão individual',fmtAD(medida==='valor'?a.excluidos.v:a.excluidos.q),
-      'permanecem como antes','var(--sepia)',
-      'MAPPs enquadrados que foram ocultados na área Decisão: a projeção não lhes aplica efeito algum.',true);
+    cartao('Excluídos pelo usuário',fmtAD(medida==='valor'?a.excluidos.v:a.excluidos.q),
+      'saem do conjunto ativo','var(--ferrugem)',
+      'MAPPs excluídos individualmente, com ou sem regra. Saem do conjunto ativo como os das regras e não recebem o Novo Programado 2027. '+
+      'Na tabela, contam só na coluna Excluídos, e não também na da regra.',true);
 
   const linhas=Array.from(a.estratos.values()).sort(function(x,y){
     return (medida==='valor'?y.antesV-x.antesV:y.antes-x.antes);
@@ -5760,7 +5767,7 @@ function renderAntesDepois(){
     { rot:'Ativos antes', num:true,
       tip:'Universo submetido às regras, antes do saneamento.\nMedida: '+rotuloMedida()+'.' },
     { rot:'Ativos depois', num:true,
-      tip:'Sobreviventes às Regras 1 a 4: sem regra alguma, ou enquadrados que são exceção (ocultados ou com recomendação rejeitada).\nMedida: '+rotuloMedida()+'.' },
+      tip:'Sobreviventes às Regras 1 a 4: sem regra alguma e não excluídos pelo usuário.\nMedida: '+rotuloMedida()+'.' },
     { rot:'Programado 2027', num:true,
       tip:'VLR_PLANEJADO_27 dos MAPPs ativos depois (sobreviventes). Sempre em valor, qualquer que seja a medida escolhida.' },
     { rot:'Novo Programado 2027', num:true, novo:true,
@@ -5774,7 +5781,7 @@ function renderAntesDepois(){
     { rot:REGRAS['1.2'].nome, num:true, regra:'1.2' },
     { rot:REGRAS['1.3'].nome, num:true, regra:'1.3' },
     { rot:'Excluídos', num:true,
-      tip:'MAPPs enquadrados que foram ocultados individualmente na área Decisão. A projeção não lhes aplica efeito algum: permanecem como estavam.' }
+      tip:'MAPPs excluídos pelo usuário, com ou sem regra. Saem do conjunto ativo; contam aqui e não na coluna da regra que tiverem.' }
   ];
   $('#tabAntesDepois').querySelector('thead tr').innerHTML = colunas.map(function(c){
     const dica = c.regra
@@ -5960,7 +5967,7 @@ function exportarAntesDepois(){
 }
 
 function ligarEventosAntesDepois(){
-  ['#adBase','#adMedida','#adEstrato','#adConjunto','#adOrgao','#adFonte'].forEach(function(s){
+  ['#adMedida','#adEstrato','#adConjunto','#adOrgao','#adFonte'].forEach(function(s){
     $(s).addEventListener('change',renderAntesDepois);
   });
   let t=null;
@@ -6137,10 +6144,10 @@ function conjuntos(){
       dica:'Despesas de continuidade, programação e títulos não comunicativos, cada um em sua aba.',
       contagem:function(){ return f.continuidade.length+f.programacao.length+f.titulos.length; },
       abas:[abaContin, { aba:'PROGRAMACAO', tabela:'tabProgramacao', dados:linhasProgramacao }, abaTitulos] },
-    { id:'excecoes', nome:'Exceções', arquivo:'excecoes',
-      dica:'Enquadrados que voltam a sobreviver: ocultados do saneamento ou com a recomendação rejeitada.',
-      contagem:function(){ return sobreviventes().filter(function(m){ return !!excecaoRegra(m); }).length; },
-      abas:[{ aba:'EXCECOES', dados:linhasExcecoes }] },
+    { id:'excluidos', nome:'Excluídos pelo usuário', arquivo:'excluidos_pelo_usuario',
+      dica:'MAPPs excluídos individualmente, com ou sem regra, com motivo, responsável e data. Saem do conjunto ativo como os das regras.',
+      contagem:function(){ return excluidos().length; },
+      abas:[{ aba:'EXCLUIDOS', dados:linhasExcluidos }] },
     { id:'saldo', nome:'Saldo por exercício', arquivo:'saldo_por_exercicio',
       dica:'Saldo do programado por exercício e Novo Programado 2027, no agrupamento e no conjunto em vigor no Panorama.',
       contagem:function(){ return apurarSaldo().grupos.length; },
@@ -7282,7 +7289,7 @@ const FASES_RODADA=[
 function conjuntoRodada(){
   const sel=valoresMulti('#mOrgao'), soPend=$('#mSoPendentes').checked;
   return conjuntoEnquadrado().filter(function(m){
-    if(estaOculto(m.chave)) return false;
+    if(estaExcluido(m.chave)) return false;
     if(sel.length && sel.indexOf(m.orgao)<0) return false;
     if(soPend && E.manifestacoes[m.chave]) return false;
     return true;
