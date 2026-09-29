@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <style>
 /* ============================================================
    Sistema visual — paleta discreta de repartição pública
@@ -245,6 +246,12 @@ html[data-tema="escuro"] .etq.solida{color:#14171b}
 .etq.paral{--cor:var(--ocre)} .etq.insuf{--cor:var(--latao)}
 .etq.sem{--cor:var(--tinta-3)}
 .etq.excluido{--cor:var(--sepia)}
+/* Seleção de colunas (bloco 12) */
+.cols-barra{display:flex;justify-content:flex-end;margin:0 0 4px}
+.cols-bt{font-size:11.5px;padding:2px 9px;display:inline-flex;gap:6px;align-items:center}
+.cols-bt.ativa{border-color:var(--acento);box-shadow:inset 0 0 0 1px var(--acento-medio)}
+.cols-painel .multi-lista label.fixa{opacity:.6;cursor:default}
+.col-oculta{display:none !important}
 tr.ocultada{opacity:.52}
 tr.ocultada td{text-decoration:line-through;text-decoration-color:var(--linha-forte)}
 tr.ocultada td:last-child{text-decoration:none}
@@ -767,6 +774,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
       <label class="campo"><span><b id="rotFExec" style="font-weight:inherit">Execução no período atual</b> <i class="sigla" tabindex="0" data-tip="Com ou sem execução no período atual resolvido pela âncora, conforme o critério de execução configurado.">?</i></span><select id="fExec"></select></label>
       <label class="campo"><span>Saldo do programado mínimo (R$) <i class="sigla" tabindex="0" data-tip="Considera o saldo do programado do MAPP: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores.">?</i></span><select id="fValorMin"><option value="0" selected>Sem valor mínimo</option><option value="10000">A partir de R$ 10 mil</option><option value="50000">A partir de R$ 50 mil</option><option value="100000">A partir de R$ 100 mil</option><option value="500000">A partir de R$ 500 mil</option><option value="1000000">A partir de R$ 1 milhão</option><option value="5000000">A partir de R$ 5 milhões</option><option value="10000000">A partir de R$ 10 milhões</option><option value="50000000">A partir de R$ 50 milhões</option><option value="100000000">A partir de R$ 100 milhões</option></select></label>
       <label class="campo"><span>Confiança <i class="sigla" tabindex="0" data-tip="Grau de suficiência probatória do enquadramento: alta, média ou baixa.">?</i></span><select id="fConfianca"></select></label>
+      <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados. Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes dos grupos marcados. Os grupos vêm embutidos no sistema ou da planilha carregada pelo link abaixo." data-tip-t="Grupo de fonte">?</i></span><select id="fGrupoFonte"></select></label>
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. O saldo do programado da linha continua somando todas as fontes do MAPP — a ficha mostra a quebra por fonte.">?</i></span><select id="fFonte"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa.">?</i></span><input type="text" id="fBusca" placeholder="código, título, órgão…"></label>
     </div>
@@ -775,6 +783,13 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
       <button class="btn" id="btnExportarFiltro" data-tip="Gera uma planilha .xlsx com exatamente os MAPPs atualmente filtrados, com regra, ação e situação no saneamento.">Exportar seleção filtrada</button>
       <span class="tenue pequeno" id="resumoFiltro" style="margin-left:auto"></span>
     </div>
+    <div class="barra-acoes pequeno" style="margin-top:8px">
+      <span class="tenue">Grupos de fonte: <b id="gfEstado" style="font-weight:600"></b></span>
+      <button type="button" class="btn pequeno discreto" id="btnCarregarGruposFonte" data-tip="Carrega uma planilha .xlsx de grupos de fonte (aba FONTES com a coluna GRUPO; a aba GRUPOS é opcional). A planilha é criticada: com erro, é recusada. Vale enquanto a janela estiver aberta." data-tip-t="Carregar grupos de fonte">Carregar grupos de fonte (.xlsx)</button>
+      <button type="button" class="btn pequeno discreto" id="btnModeloGruposFonte" data-tip="Baixa o modelo .xlsx de grupos de fonte, com as fontes da base importada." data-tip-t="Baixar modelo">Baixar modelo</button>
+      <input type="file" id="arqGruposFonte" accept=".xlsx" class="oculto">
+    </div>
+    <div id="gfCritica" style="margin-top:6px"></div>
   </div>
 
   
@@ -784,8 +799,8 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
       <label class="chk" data-tip="Marca ou desmarca todos os MAPPs exibidos na página corrente."><input type="checkbox" id="chkTodos"> Selecionar página</label>
       <span class="etq" id="selContagem">0 selecionados</span>
       <button class="btn risco" id="btnOcultarLote" data-tip="Exclui de imediato os MAPPs selecionados do universo, com ou sem regra: entram na base saneada com a ação “excluído pelo usuário”.">Excluir selecionados</button>
-      <button class="btn" id="btnRestabelecerLote" data-tip="Retorna de imediato ao saneamento os MAPPs selecionados que estavam excluídos.">Retornar selecionados</button>
-      <button class="btn discreto" id="btnRestabelecerTudo" data-tip="Retorna de imediato ao saneamento todos os MAPPs excluídos nesta sessão.">Retornar todos</button>
+      <button class="btn" id="btnRestabelecerLote" data-tip="Desfaz de imediato a exclusão dos MAPPs selecionados: com regra, seguem na base saneada com a ação da regra; sem regra, deixam a base saneada.">Retornar selecionados</button>
+      <button class="btn discreto" id="btnRestabelecerTudo" data-tip="Desfaz de imediato todas as exclusões desta sessão.">Retornar todos</button>
     </div>
     <div class="tabela-caixa">
       <table id="tabDiag">
@@ -802,7 +817,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
           <th class="ordenavel num" data-ord="futuro" data-tip="Programado dos exercícios posteriores ao corrente. Esses exercícios não têm empenho na base: o programado entra no saldo tal como está." data-tip-t="Programado futuro">Programado futuro</th>
           <th class="ordenavel num" data-ord="saldo" data-tip="Saldo do programado do MAPP: saldo até o exercício corrente + programado dos exercícios posteriores. É a grandeza monetária com que o sistema trabalha após a aplicação das regras." data-tip-t="Saldo do programado">Saldo do programado</th>
           <th class="ordenavel" data-ord="regra" data-tip="Regras da primeira fase que o MAPP satisfaz. Passe o ponteiro sobre cada etiqueta para ler o critério completo." data-tip-t="Regra">Regra</th>
-          <th class="ordenavel" data-ord="acao" data-tip="Ação que a base saneada registra para o MAPP, enquanto ele permanecer no saneamento." data-tip-t="Ação do saneamento">Ação do saneamento</th>
+          <th class="ordenavel" data-ord="acao" data-tip="Ação que a base saneada registra para o MAPP: a da regra ou, excluído, “excluído pelo usuário”, que prevalece." data-tip-t="Ação do saneamento">Ação do saneamento</th>
           <th class="ordenavel" data-ord="revisao" data-tip="A sanear, excluído pelo usuário ou sem regra." data-tip-t="Situação">Situação</th>
         </tr></thead>
         <tbody></tbody>
@@ -833,13 +848,15 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
         <select id="bsRecorte"><option value="todos">Toda a base saneada</option><option value="etapa2">Somente os filtros da etapa 2</option></select></label>
       <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe a grade aos órgãos marcados. Sem marcação, não há restrição." data-tip-t="Órgão">?</i></span><select id="bsOrgao"></select></label>
       <label class="campo"><span>Regra <i class="sigla" tabindex="0" data-tip="Restringe a grade aos MAPPs alcançados pelas regras marcadas. Em sobreposição, o MAPP atende a mais de uma." data-tip-t="Regra">?</i></span><select id="bsRegra"></select></label>
+      <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados; limita a lista do filtro Fonte às fontes dele." data-tip-t="Grupo de fonte">?</i></span><select id="bsGrupoFonte"></select></label>
+      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da linha continuam somando todas as fontes do MAPP." data-tip-t="Fonte">?</i></span><select id="bsFonte"></select></label>
       <label class="campo"><span>Exercícios exibidos <i class="sigla" tabindex="0" data-tip="Quais colunas de saldo por exercício aparecem na grade. A exportação traz sempre todos os exercícios." data-tip-t="Exercícios">?</i></span>
         <select id="bsAnos"><option value="todos">Todos os exercícios</option><option value="recentes">Três anteriores, corrente e futuros</option><option value="futuros">Corrente e futuros</option></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa." data-tip-t="Busca">?</i></span><input type="text" id="bsBusca" placeholder="código, título, órgão…"></label>
     </div>
     <div class="barra-acoes" style="margin-top:12px">
       <span class="tenue pequeno" id="bsResumo"></span>
-      <button class="btn principal" id="btnExportarFinal" style="margin-left:auto" data-tip="Gera o .xlsx da base saneada com as mesmas abas e colunas da exportação do sistema completo: RESULTADO DO SANEAMENTO (MAPPs saneados, com regra, ação e saldo do programado por exercício) e EXCLUIDOS (MAPPs excluídos pelo usuário, que também constam do resultado). Exporta a base saneada inteira, independentemente dos filtros da grade.">Exportar base saneada</button>
+      <button class="btn principal" id="btnExportarFinal" style="margin-left:auto" data-tip="Gera o .xlsx da base saneada com as mesmas abas e colunas da exportação do sistema completo: RESULTADO DO SANEAMENTO (MAPPs saneados, com regra, ação e saldo do programado por exercício) e EXCLUIDOS (MAPPs excluídos pelo usuário, que também constam do resultado), mais PARAMETROS. Segue a grade: recorte, filtros (inclusive grupo de fonte e fonte) e colunas escolhidas; traz sempre todos os exercícios.">Exportar base saneada</button>
     </div>
     <div class="tabela-caixa" style="margin-top:10px"><table id="tabSaneada"><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     <div class="paginacao">
@@ -852,7 +869,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
   <div class="bloco" style="--acento:var(--carmim);--acento-tenue:rgba(139,58,58,.08);--acento-medio:rgba(139,58,58,.3)">
     <header><h2>Excluídos pelo usuário</h2><span class="legenda" id="excluidosLegenda"></span></header>
     <div class="tabela-caixa"><table id="tabExcluidos"><thead><tr>
-      <th style="width:112px" data-tip="Retorna de imediato o MAPP ao saneamento." data-tip-t="Providência">Providência</th>
+      <th style="width:112px" data-tip="Desfaz de imediato a exclusão do MAPP." data-tip-t="Providência">Providência</th>
       <th data-tip="Código do projeto." data-tip-t="MAPP">MAPP</th>
       <th data-tip="Órgão executor." data-tip-t="Órgão">Órgão</th>
       <th data-tip="Título do projeto." data-tip-t="Título">Título</th>
@@ -1372,6 +1389,7 @@ function montarMulti(idSel){
   const validos=new Set(lista.map(function(p){ return p[0]; }));
   Array.from(st.escolha).forEach(function(v){ if(!validos.has(v)) st.escolha.delete(v); });
   rotularMulti(id);
+  if(typeof cascataGrupoFonte==='function') cascataGrupoFonte(id,st);   /* Grupo de fonte → Fonte */
 }
 
 function visiveisMulti(id){
@@ -2684,7 +2702,7 @@ function lerFiltros(){
     secretaria:valoresMulti('#fSecretaria'), orgao:valoresMulti('#fOrgao'), programa:valoresMulti('#fPrograma'),
     ano:valoresMulti('#fAno'), regra:valoresMulti('#fRegra'), estagio:valoresMulti('#fEstagio'),
     revisao:valoresMulti('#fRevisao'), exec:valoresMulti('#fExec'), confianca:valoresMulti('#fConfianca'),
-    fonte:valoresMulti('#fFonte'),
+    fonte:fontesDoFiltro('#fFonte'),
     valorMin:parseFloat($('#fValorMin').value)||0,
     busca:norm($('#fBusca').value)
   };
@@ -2810,7 +2828,9 @@ function renderDiagnostico(){
       '<td class="num">'+rsCurto(m.progFuturo)+'</td>'+
       '<td class="num"'+(m.saldo<-0.005?' style="color:var(--risco)"':'')+'><strong>'+rsCurto(m.saldo)+'</strong></td>'+
       '<td>'+etqRegras+extra+'</td>'+
-      '<td class="pequeno"'+tip(dicaAcao(m),'Ação recomendada')+'>'+esc(d.acao)+'</td>'+
+      (estaExcluido(m.chave)
+        ? '<td class="pequeno"'+tip('A exclusão pelo usuário prevalece sobre a ação da regra.','Ação do saneamento')+'>'+esc(acaoSaneada(m))+'</td>'
+        : '<td class="pequeno"'+tip(dicaAcao(m),'Ação recomendada')+'>'+esc(d.acao)+'</td>')+
       '<td>'+revisao+'</td></tr>';
   }).join('');
   atualizarSelecao();
@@ -3105,22 +3125,46 @@ function linhasExcluidos(){
   });
 }
 
+/* Filtros da grade da base saneada em texto, para a aba PARAMETROS. */
+function textoFiltrosSaneada(){
+  const p=[];
+  if($('#bsRecorte').value==='etapa2') p.push('recorte: filtros da etapa 2');
+  const o=valoresMulti('#bsOrgao'); if(o.length) p.push('órgão: '+o.join(', '));
+  const r=valoresMulti('#bsRegra'); if(r.length) p.push('regra: '+r.map(function(x){ return x==='sobre'?'sobreposição':(x==='excluido'?'excluído pelo usuário':REGRAS[x].nome); }).join(', '));
+  const tf=textoFiltroFonte('#bsFonte'); if(tf) p.push(tf);
+  const b=limpo($('#bsBusca').value); if(b) p.push('busca: “'+b+'”');
+  return p.join(' · ');
+}
+/* Exporta o que a grade mostra: recorte, filtros e colunas da tela (a exportação traz
+   sempre todos os exercícios, qualquer que seja a opção "Exercícios exibidos"). */
 async function exportarResultadoFinal(){
   if(!E.diag){ recado('Importe a base primeiro.'); return; }
-  const fica=mantidos(), exc=linhasExcluidos();
+  const fica=filtrarSaneada(), exc=colunasExportaveis('tabExcluidos',linhasExcluidos());
   if(!fica.length && !exc.length){ recado('Não há resultado a exportar.'); return; }
   await veuCarga('Compondo o resultado do saneamento…');
   try{
     const wb=XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,
-      XLSX.utils.json_to_sheet(fica.length?linhasMapp(fica):[{'MAPP':'(nenhum MAPP mantido)'}]),
+      XLSX.utils.json_to_sheet(fica.length?colunasExportaveis('tabSaneada',linhasMapp(fica)):[{'MAPP':'(nenhum MAPP nos filtros)'}]),
       'RESULTADO DO SANEAMENTO');
     XLSX.utils.book_append_sheet(wb,
       XLSX.utils.json_to_sheet(exc.length?exc:[{'MAPP':'(nenhuma exclusão individual)'}]),
       'EXCLUIDOS');
+    const filtros=textoFiltrosSaneada();
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([
+      ['Arquivo de origem', E.arquivo?E.arquivo.name:'—'],
+      ['Resultado gerado em', new Date().toLocaleString('pt-BR')],
+      ['Filtros aplicados (grade da base saneada)', filtros||'nenhum — toda a base saneada'],
+      ['MAPPs exportados / na base saneada', n(fica.length)+' de '+n(mantidos().length)],
+      ['Excluídos pelo usuário (aba EXCLUIDOS, todos)', exc.length],
+      ['Colunas ocultas em MAPPs da base saneada', textoColunasOcultas('tabSaneada')||'nenhuma'],
+      ['Colunas ocultas em Excluídos pelo usuário', textoColunasOcultas('tabExcluidos')||'nenhuma'],
+      ['Grupos de fonte', (function(){ const j=gruposVigentes(); return j ? Object.keys(j.grupos).map(nomeGrupoFonte).join(', ')+(E.gruposFonte?' (planilha carregada)':' (embutidos)') : 'nenhum'; })()]
+    ].map(function(l){ return {'ITEM':l[0],'VALOR':l[1]}; })),'PARAMETROS');
+    anexarColunasOcultas(wb,['tabSaneada','tabExcluidos']);
     XLSX.writeFile(wb,'resultado_saneamento_mapps_'+hojeISO()+'.xlsx');
     marcarPasso(9);
-    recado('Resultado exportado: '+n(fica.length)+' MAPPs na base saneada, dos quais '+n(exc.length)+' excluídos pelo usuário.');
+    recado('Resultado exportado: '+n(fica.length)+' MAPPs da base saneada'+(filtros?' (filtros: '+filtros+')':'')+'; '+n(exc.length)+' excluídos pelo usuário na aba própria.');
   }catch(err){ recado('Falha ao exportar: '+err.message); }
   veuCarga(false);
 }
@@ -3261,6 +3305,7 @@ function prepararFiltrosEss(){
   E.mapps.forEach(function(m){ m.porFonte.forEach(function(pf){ fontes.add(pf.fonte); }); });
   opcoes('#fFonte',Array.from(fontes).sort().map(function(v){ return [v,v]; }),'Todas as fontes');
   ['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte'].forEach(montarMulti);
+  if(typeof prepararFiltrosGrupo==='function') prepararFiltrosGrupo();
 }
 
 function renderRegrasEss(){
@@ -3341,11 +3386,15 @@ function prepararFiltrosSaneada(){
   opcoes('#bsOrgao',Array.from(new Set(fica.map(function(m){ return m.orgao; }))).filter(Boolean).sort()
     .map(function(v){ return [v,v]; }),'Todos os órgãos');
   opcoes('#bsRegra',['1a','1b','1.2','1.3'].map(function(r){ return [r,REGRAS[r].nome]; }).concat([['sobre','Sobreposição'],['excluido','Excluído pelo usuário']]),'Todas (regras e exclusões)');
-  ['#bsOrgao','#bsRegra'].forEach(montarMulti);
+  const fontes=new Set(); fica.forEach(function(m){ m.porFonte.forEach(function(pf){ if(pf.fonte) fontes.add(pf.fonte); }); });
+  opcoes('#bsFonte',Array.from(fontes).sort().map(function(v){ return [v,v]; }),'Todas as fontes');
+  ['#bsOrgao','#bsRegra','#bsFonte'].forEach(montarMulti);
+  if(typeof prepararGrupo==='function'){ prepararGrupo('bsGrupoFonte'); montarMulti('#bsFonte'); }
 }
 
 function filtrarSaneada(){
   const orgaos=valoresMulti('#bsOrgao'), regras=valoresMulti('#bsRegra'), busca=norm($('#bsBusca').value);
+  const fontes=typeof fontesDoFiltro==='function' ? fontesDoFiltro('#bsFonte') : valoresMulti('#bsFonte');
   let base=mantidos();
   if($('#bsRecorte').value==='etapa2'){
     const ok=new Set(filtrar().map(function(m){ return m.chave; }));
@@ -3353,6 +3402,7 @@ function filtrarSaneada(){
   }
   const res=base.filter(function(m){
     if(!casaMulti(orgaos,m.orgao)) return false;
+    if(!casaFonte(fontes,m)) return false;
     if(regras.length && !regras.some(function(r){
       if(r==='excluido') return estaExcluido(m.chave);
       return r==='sobre' ? m.d.regras.length>1 : m.d.regras.indexOf(r)>=0; })) return false;
@@ -3425,7 +3475,7 @@ function renderGradeSaneada(){
 }
 
 function ligarEventosSaneada(){
-  ['#bsOrgao','#bsRegra','#bsRecorte','#bsAnos'].forEach(function(sel){
+  ['#bsOrgao','#bsRegra','#bsGrupoFonte','#bsFonte','#bsRecorte','#bsAnos'].forEach(function(sel){
     $(sel).addEventListener('change',function(){ E.bs.pagina=1; renderGradeSaneada(); });
   });
   let t=null;
@@ -3662,7 +3712,7 @@ function ligarEventosEss(){
   area.addEventListener('drop',function(ev){ if(ev.dataTransfer.files[0]) selecionarArquivo(ev.dataTransfer.files[0]); });
   $('#btnProcessar').addEventListener('click',importarComTrava);
 
-  const FILTROS=['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fFonte'];
+  const FILTROS=['#fSecretaria','#fOrgao','#fPrograma','#fAno','#fRegra','#fEstagio','#fRevisao','#fExec','#fConfianca','#fGrupoFonte','#fFonte'];
   FILTROS.forEach(function(s){ $(s).addEventListener('change',function(){ E.pagina=1; renderDiagnostico(); }); });
   let t=null;
   ['#fBusca','#fValorMin'].forEach(function(s){
@@ -3758,5 +3808,557 @@ $('#btnTrocarBase').addEventListener('click',function(){ $('#arquivo').click(); 
 
 </script>
 
+<!-- BLOCO12:INICIO (gerado por testes/gerar_bloco12_simplificado.js) -->
+<script type="application/json" id="gruposFontePadrao">{"versao":1,"origem":"grupos-fontes.xlsx","gerado":"2026-09-29T18:35:03.105Z","hash":"15d7rpv0s3b","grupos":{"OUTRAS FONTES":"OUTRAS FONTES","FONTES COGERF":"FONTES COGERF"},"fontes":{"000-018":["OUTRAS FONTES","FDS"],"000-019":["OUTRAS FONTES","FEMA"],"000-021":["OUTRAS FONTES","Governo Municipal - Aplicação Direta"],"000-022":["OUTRAS FONTES","Governo Federal - Aplicação Direta"],"000-023":["OUTRAS FONTES","Orgaos privados - Aplicação Direta"],"000-024":["OUTRAS FONTES","Orgãos Internacionais - Aplicação Direta"],"000-025":["OUTRAS FONTES","Plano de Investimento Especial"],"000-075":["OUTRAS FONTES","Medida Compensatória Ambiental"],"000-090":["OUTRAS FONTES","Programa PADH"],"000-095":["OUTRAS FONTES","Aumento de Capital do Tesouro"],"000-099":["OUTRAS FONTES","Aplicação direta de outras entidades"],"000-110":["OUTRAS FONTES","Tesouro - Precatórios"],"500-200":["FONTES COGERF","Tesouro - Contrapartida PROPAG"],"500-501":["FONTES COGERF","Tesouro"],"501-001":["FONTES COGERF","Tesouro - Consignados"],"501-002":["FONTES COGERF","Tesouro - Projetos Prioritários"],"501-003":["FONTES COGERF","Tesouro - CIPP"],"501-005":["FONTES COGERF","Tesouro - Recursos Hídricos"],"501-006":["FONTES COGERF","Tesouro - Dividendos Cagece"],"501-012":["FONTES COGERF","Tesouro - Rendimentos De Empréstimos"],"540-050":["FONTES COGERF","FUNDEB"],"544-000":["FONTES COGERF","Precatórios FUNDEF"],"550-007":["OUTRAS FONTES","Salário-Educação"],"552-073":["OUTRAS FONTES","Transferências Diretas do FNDE"],"570-082":["OUTRAS FONTES","Governo Federal / Educação"],"570-312.82":["OUTRAS FONTES","Emenda Parlamentar de Bancada / Educação"],"572-086":["OUTRAS FONTES","Governo Municipal / Educação"],"575-088":["OUTRAS FONTES","Órgãos Privados / Educação"],"599-070":["FONTES COGERF","Recursos Próprios / Educação"],"600-091":["OUTRAS FONTES","SUS"],"600-312":["OUTRAS FONTES","SUS - Emenda Parlamentar de Bancada"],"600-314":["OUTRAS FONTES","SUS - Emenda Parlamentar de Comissão"],"602-091":["OUTRAS FONTES","SUS - COVID"],"631-082":["OUTRAS FONTES","Governo Federal / Saúde"],"633-086":["OUTRAS FONTES","Governo Municipal / Saúde"],"634-259":["OUTRAS FONTES","Crédito Externo - BID"],"636-080":["OUTRAS FONTES","Órgãos Internacionais / Saúde"],"636-088":["OUTRAS FONTES","Órgãos Privados / Saúde"],"659-070":["FONTES COGERF","Recursos Próprios / Saúde"],"660-092":["OUTRAS FONTES","FNAS"],"665-082":["OUTRAS FONTES","Governo Federal / Assistência Social"],"665-086":["OUTRAS FONTES","Governo Municipal / Assistência Social"],"669-070":["FONTES COGERF","Recursos Próprios / Assistência Social"],"700-070":["FONTES COGERF","Recursos Próprios"],"700-082":["OUTRAS FONTES","Governo Federal"],"700-311.82":["OUTRAS FONTES","Emenda Parlamentar Individual"],"700-312.82":["OUTRAS FONTES","Emenda Parlamentar de Bancada"],"700-314.82":["OUTRAS FONTES","Emenda Parlamentar de Comissão"],"702-086":["OUTRAS FONTES","Governo Municipal"],"703-080":["OUTRAS FONTES","Órgãos Internacionais"],"703-088":["OUTRAS FONTES","Órgãos Privados"],"704-044":["FONTES COGERF","Royalties"],"706-000":["OUTRAS FONTES","Transferência União / Emendas Impositivas"],"712-096":["OUTRAS FONTES","FUNPEN"],"713-097":["OUTRAS FONTES","FNSP"],"714-098":["OUTRAS FONTES","FAT"],"715-000":["FONTES COGERF","Transferência - Lei Paulo Gustavo - Setor Audiovisual"],"716-000":["FONTES COGERF","Transferência - Lei Paulo Gustavo - Demais Setores"],"717-030":["OUTRAS FONTES","Repasse financeiro - Transporte Coletivo"],"718-501":["OUTRAS FONTES","Tesouro - EC 123/2022"],"719-070":["OUTRAS FONTES","Transferência - Lei Aldir Blanc"],"749-002":["OUTRAS FONTES","Recurso não reembolsável / Doação - BNDES"],"749-070":["OUTRAS FONTES","Repasse - Lei Aldir Blanc"],"750-011":["FONTES COGERF","CIDE"],"754-136":["OUTRAS FONTES","Crédito Interno - CPAC VLT - CEF"],"754-137":["OUTRAS FONTES","Crédito Interno - CPAC/MCMV - CEF"],"754-138":["OUTRAS FONTES","Crédito Interno - CPAC/Maranguapinho"],"754-142":["FONTES COGERF","Crédito Interno - Investimentos - BB"],"754-143":["OUTRAS FONTES","Crédito Interno - BNDES/PEF"],"754-145":["OUTRAS FONTES","Crédito Interno - BNDES"],"754-147":["FONTES COGERF","Crédito Interno - BNDES/Estados"],"754-149":["OUTRAS FONTES","Crédito Interno - BNDES/Linha Leste"],"754-153":["OUTRAS FONTES","Crédito Interno - BNDES/PROINVESTE"],"754-154":["OUTRAS FONTES","Crédito Interno - CPAC/MCMV - BB"],"754-155":["OUTRAS FONTES","Crédito Interno - BNB"],"754-156":["OUTRAS FONTES","Crédito Interno - CEF"],"754-171":["OUTRAS FONTES","Crédito Interno - Outras Fontes"],"754-240":["OUTRAS FONTES","Crédito Externo - SWAP A"],"754-248":["OUTRAS FONTES","Crédito Externo - Tesouro"],"754-249":["OUTRAS FONTES","Crédito Externo - IPF/BIRD"],"754-257":["OUTRAS FONTES","Crédito Externo - KFW"],"754-258":["OUTRAS FONTES","Crédito Externo - BIRD"],"754-259":["OUTRAS FONTES","Crédito Externo - BID"],"754-263":["OUTRAS FONTES","Crédito Externo - EX-IM"],"754-264":["OUTRAS FONTES","Crédito Externo - FIDA"],"754-265":["OUTRAS FONTES","Crédito Externo - Tesouro/CAF"],"754-267":["OUTRAS FONTES","Crédito Externo - Tesouro/MLW"],"754-269":["OUTRAS FONTES","Crédito Externo - PforR"],"754-272":["OUTRAS FONTES","Crédito Externo - Outras Fontes"],"755-012":["FONTES COGERF","Alienação de Bens - Adm direta"],"756-012":["FONTES COGERF","Alienação de Bens - Adm indireta"],"759-016":["FONTES COGERF","Medida Compensatória Ambiental"],"759-070":["FONTES COGERF","Recursos Próprios / Fundos"],"759-079":["FONTES COGERF","Recursos Próprios / FDC"],"761-010":["FONTES COGERF","FECOP"],"799-001":["FONTES COGERF","Recursos da Tarifa de Segurança Hídrica - PISF"],"799-002":["FONTES COGERF","Doações Ceará Sem Fome"],"799-016":["FONTES COGERF","Medida Compensatória Ambiental"],"799-076":["FONTES COGERF","FIT"],"799-099":["FONTES COGERF","Outras Obrigações Legais"],"800-003":["OUTRAS FONTES","Contribuição Social - Capitalização"],"800-005":["OUTRAS FONTES","Contribuição Parlamentar"],"802-070":["FONTES COGERF","Recursos Próprios / Previdência"],"501-051":["FONTES COGERF","Tesouro - Recursos Convertidos"]}}</script>
+<script>
+"use strict";
+/* ==========================================================================
+   Grupos de fonte e seleção de colunas — versão simplificada.
+   GERADO de ../index.html por testes/gerar_bloco12_simplificado.js: não editar
+   aqui; alterar a completa e gerar de novo. Sem sessão: os grupos carregados
+   valem enquanto a janela estiver aberta.
+   Grupos: planilha .xlsx (abas GRUPOS e FONTES) criticada e convertida num
+   JSON compacto; o embutido acima vale até a sessão trazer outro.
+   ========================================================================== */
+
+/* Auxiliares presentes na completa e ausentes aqui. */
+function cyrb53(str,seed){
+  let h1=0xdeadbeef^(seed||0), h2=0x41c6ce57^(seed||0);
+  for(let i=0,ch;i<str.length;i++){ ch=str.charCodeAt(i); h1=Math.imul(h1^ch,2654435761); h2=Math.imul(h2^ch,1597334677); }
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);
+}
+function baixarBlob(blob,nome){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=nome; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); },4000);
+}
+function lerComoBuffer(file){
+  return new Promise(function(ok,falha){
+    const fr=new FileReader();
+    fr.onload=function(){ ok(fr.result); };
+    fr.onerror=function(){ falha(new Error('Não foi possível ler '+file.name+'.')); };
+    fr.readAsArrayBuffer(file);
+  });
+}
+/* MODELO-GRUPOS-FONTE:INICIO — trecho também executado por testes/gerar_modelo_grupos_fonte.js,
+   para que o arquivo do repositório e o baixado no sistema sejam o mesmo modelo. */
+/* Código da fonte: "(500)-(501) Tesouro", "(500)-(501)", "500-501" e "500501" → "500-501";
+   "(700)-(311.82) Emenda…" → "700-311.82". */
+function codigoFonte(txt){
+  const s=String(txt==null?'':txt).trim();
+  const par=s.match(/\(\d+(?:\.\d+)?\)/g);
+  if(par && par.length) return par.map(function(p){ return p.slice(1,-1); }).join('-');
+  const m=/^(\d+(?:\.\d+)?)\s*[-\/]\s*(\d+(?:\.\d+)?)$/.exec(s); if(m) return m[1]+'-'+m[2];
+  if(/^\d{6}$/.test(s)) return s.slice(0,3)+'-'+s.slice(3);
+  return /^\d+$/.test(s) ? s : '';
+}
+/* Descrição da fonte sem os códigos: "(500)-(501) Tesouro" → "Tesouro". */
+function descricaoFonte(txt){ return String(txt==null?'':txt).replace(/^\s*(\(\d+(?:\.\d+)?\)\s*-?\s*)+/,'').trim(); }
+/* Monta o modelo .xlsx de grupos de fonte (ExcelJS). `fontes`: nomes das fontes como na base. */
+async function montarModeloGruposFonte(ExcelJS,fontes){
+  const wb=new ExcelJS.Workbook();
+  wb.creator='Saneamento MAPPs';
+  const cab=function(ws,larguras){
+    ws.columns=larguras.map(function(w){ return { width:w }; });
+    const r=ws.getRow(1); r.font={ bold:true, color:{ argb:'FFFFFFFF' } };
+    r.eachCell(function(c){ c.fill={ type:'pattern', pattern:'solid', fgColor:{ argb:'FF2F5F61' } }; });
+    ws.views=[{ state:'frozen', ySplit:1 }];
+    ws.autoFilter={ from:{ row:1, column:1 }, to:{ row:1, column:larguras.length } };
+  };
+  const ins=wb.addWorksheet('INSTRUCOES');
+  ins.columns=[{ width:110 }];
+  [ 'Grupos de fonte — Saneamento MAPPs','',
+    'Aba GRUPOS: uma linha por grupo. CÓDIGO é definido por você (curto, sem repetir, ex.: TES). DESCRIÇÃO é o nome exibido no filtro (ex.: Tesouro Estadual).',
+    'Aba FONTES: uma linha por fonte, já preenchida com as fontes da base. Informe em GRUPO o CÓDIGO do grupo da fonte (lista de escolha).',
+    'Cada fonte pertence a um único grupo. Fonte sem GRUPO fica em "(sem grupo)" no filtro.',
+    'CÓDIGO da fonte: os números da fonte na base (ex.: 500-501 para "(500)-(501) Tesouro"). Não altere as colunas CÓDIGO e FONTE NA BASE.',
+    'Não renomeie as abas nem os cabeçalhos. O sistema critica o arquivo ao recebê-lo: com erro, ele é recusado e a lista mostra o que corrigir.',
+    'Envio: Configurações › Grupos de fonte (versão completa) ou “Carregar grupos de fonte” junto do filtro (versão simplificada).'
+  ].forEach(function(t,i){ const r=ins.addRow([t]); if(i===0) r.font={ bold:true, size:13 }; r.alignment={ wrapText:true }; });
+  const g=wb.addWorksheet('GRUPOS');
+  g.addRow(['CÓDIGO','DESCRIÇÃO']); cab(g,[16,50]);
+  const f=wb.addWorksheet('FONTES');
+  f.addRow(['CÓDIGO','DESCRIÇÃO','GRUPO','FONTE NA BASE']); cab(f,[14,52,14,60]);
+  const vistas=new Set();
+  fontes.filter(Boolean).slice().sort(function(a,b){ return codigoFonte(a).localeCompare(codigoFonte(b),'pt-BR',{numeric:true}) || String(a).localeCompare(String(b)); })
+    .forEach(function(nome){
+      const cod=codigoFonte(nome)||String(nome);
+      if(vistas.has(cod+'|'+nome)) return; vistas.add(cod+'|'+nome);
+      f.addRow([cod,descricaoFonte(nome)||String(nome),'',String(nome)]);
+    });
+  const ult=Math.max(f.rowCount,2);
+  for(let i=2;i<=ult;i++){
+    f.getCell('C'+i).dataValidation={ type:'list', allowBlank:true, formulae:['GRUPOS!$A$2:$A$300'],
+      showErrorMessage:true, errorTitle:'Grupo', error:'Escolha um CÓDIGO da aba GRUPOS.' };
+    f.getCell('A'+i).font={ color:{ argb:'FF555555' } }; f.getCell('D'+i).font={ color:{ argb:'FF777777' } };
+  }
+  return await wb.xlsx.writeBuffer();
+}
+/* MODELO-GRUPOS-FONTE:FIM */
+
+/* Fontes distintas da base importada, como aparecem nela. */
+function fontesDaBase(){ return E.dic && E.dic.fonte ? E.dic.fonte.filter(function(f){ return f!=null && String(f).trim(); }).map(String) : []; }
+
+/* Modelo: com base importada, gerado com as fontes dela; sem base, o arquivo do repositório. */
+async function baixarModeloGruposFonte(){
+  const fontes=fontesDaBase();
+  if(!fontes.length){
+    try{
+      const r=await fetch('../modelos/grupos-fonte-modelo.xlsx');
+      if(r.ok){ baixarBlob(await r.blob(),'grupos-fonte-modelo.xlsx'); return; }
+    }catch(e){}
+    recado('Importe a base de execução para gerar o modelo com as fontes dela.'); return;
+  }
+  if(typeof ExcelJS==='undefined'){ recado('A biblioteca de planilhas não carregou. Recarregue a página.'); return; }
+  const buf=await montarModeloGruposFonte(ExcelJS,fontes);
+  baixarBlob(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'grupos-fonte-modelo_'+hojeISO()+'.xlsx');
+}
+
+/* ---------------------------- Grupos vigentes ---------------------------- */
+const SEM_GRUPO='(sem grupo)';
+E.gruposFonte=null;          /* grupos aceitos nesta sessão (vão para o .json); null = embutido */
+E._critGF=null;
+let _gfEmbutido=null, _gfCache=null;
+function gruposEmbutidos(){
+  if(_gfEmbutido===null){
+    try{ const el=document.getElementById('gruposFontePadrao'); _gfEmbutido=JSON.parse(el?el.textContent:'{}')||{}; }catch(e){ _gfEmbutido={}; }
+  }
+  return _gfEmbutido;
+}
+function gruposVigentes(){
+  const j=E.gruposFonte || gruposEmbutidos();
+  return j && j.grupos && Object.keys(j.grupos).length ? j : null;
+}
+function temGruposFonte(){ return !!gruposVigentes(); }
+/* Código do grupo da fonte (nome como na base), ou SEM_GRUPO. */
+function grupoDaFonte(nome){
+  const j=gruposVigentes(); if(!j) return SEM_GRUPO;
+  if(!_gfCache || _gfCache.j!==j) _gfCache={ j:j, mapa:new Map() };
+  let g=_gfCache.mapa.get(nome);
+  if(g===undefined){ const r=j.fontes[codigoFonte(nome)] || j.fontes[String(nome)]; g=r?r[0]:SEM_GRUPO; _gfCache.mapa.set(nome,g); }
+  return g;
+}
+function nomeGrupoFonte(cod){ const j=gruposVigentes(); return cod===SEM_GRUPO||!j ? SEM_GRUPO : (j.grupos[cod]||cod); }
+/* Opções do filtro: grupos que têm fonte na base, mais “(sem grupo)” se houver fonte sem grupo. */
+function opcoesGrupoFonte(){
+  if(!temGruposFonte()) return [];
+  const pres=new Set(fontesDaBase().map(grupoDaFonte));
+  return Array.from(pres).filter(function(g){ return g!==SEM_GRUPO; })
+    .map(function(g){ return [g,nomeGrupoFonte(g)]; }).sort(function(a,b){ return a[1].localeCompare(b[1],'pt-BR'); })
+    .concat(pres.has(SEM_GRUPO)?[[SEM_GRUPO,SEM_GRUPO]]:[]);
+}
+
+/* ---------------------------- Leitura e crítica ------------------------- */
+function colunasPorNome(cab,nomes){
+  const c=(cab||[]).map(function(x){ return norm(x); }), o={};
+  Object.keys(nomes).forEach(function(k){ o[k]=c.findIndex(function(x){ return nomes[k].indexOf(x)>=0; }); });
+  return o;
+}
+/* abas: { GRUPOS:matriz, FONTES:matriz } (primeira linha = cabeçalho). */
+function criticarGruposFonte(abas,arquivo){
+  const erros=[], avisos=[];
+  const F=abas.FONTES;
+  let G=abas.GRUPOS;
+  if(!F) erros.push('Aba FONTES não encontrada. Use o modelo (aba FONTES; a aba GRUPOS é opcional).');
+  if(erros.length) return { arquivo:arquivo, erros:erros, avisos:avisos, json:null };
+  const cf=colunasPorNome(F[0],{ cod:['CODIGO'], desc:['DESCRICAO'], grupo:['GRUPO'], base:['FONTE NA BASE'] });
+  /* Mais de uma coluna GRUPO: vale a mais preenchida. */
+  const colsGrupo=(F[0]||[]).map(function(h,k){ return norm(h)==='GRUPO'?k:-1; }).filter(function(k){ return k>=0; });
+  if(colsGrupo.length>1){
+    const cheias=function(k){ let q=0; for(let i=1;i<F.length;i++) if(limpo((F[i]||[])[k])) q++; return q; };
+    cf.grupo=colsGrupo.reduce(function(a,k){ return cheias(k)>cheias(a)?k:a; },colsGrupo[0]);
+    avisos.push('Aba FONTES com '+colsGrupo.length+' colunas GRUPO: usada a mais preenchida (coluna '+String.fromCharCode(65+cf.grupo)+').');
+  }
+  /* Aba GRUPOS só com o cabeçalho conta como ausente. */
+  if(G && !G.slice(1).some(function(r){ return (r||[]).some(function(x){ return limpo(x); }); })) G=null;
+  /* Sem a aba GRUPOS, os grupos são os valores da coluna GRUPO: o texto é código e descrição. */
+  if(!G && cf.grupo>=0){
+    const vistos=[];
+    for(let i=1;i<F.length;i++){ const g=limpo((F[i]||[])[cf.grupo]); if(g && vistos.indexOf(g)<0) vistos.push(g); }
+    G=[['CÓDIGO','DESCRIÇÃO']].concat(vistos.map(function(g){ return [g,g]; }));
+    avisos.push('Sem a aba GRUPOS: '+vistos.length+' grupo(s) tirado(s) da coluna GRUPO ('+vistos.join(', ')+').');
+  }
+  const cg=G ? colunasPorNome(G[0],{ cod:['CODIGO'], desc:['DESCRICAO'] }) : { cod:-1, desc:-1 };
+  if(cg.cod<0||cg.desc<0) erros.push('Aba GRUPOS: faltam as colunas CÓDIGO e DESCRIÇÃO no cabeçalho.');
+  if(cf.cod<0||cf.grupo<0) erros.push('Aba FONTES: faltam as colunas CÓDIGO e GRUPO no cabeçalho.');
+  if(erros.length) return { arquivo:arquivo, erros:erros, avisos:avisos, json:null };
+  const grupos={};
+  for(let i=1;i<G.length;i++){
+    const r=G[i]||[], cod=limpo(r[cg.cod]), desc=limpo(r[cg.desc]);
+    if(!cod && !desc) continue;
+    if(!cod){ erros.push('GRUPOS, linha '+(i+1)+': CÓDIGO vazio ('+desc+').'); continue; }
+    if(!desc){ erros.push('GRUPOS, linha '+(i+1)+': DESCRIÇÃO vazia para o grupo '+cod+'.'); continue; }
+    if(grupos[cod]){ erros.push('GRUPOS, linha '+(i+1)+': código '+cod+' repetido.'); continue; }
+    grupos[cod]=desc;
+  }
+  if(!Object.keys(grupos).length && !erros.length) erros.push('Aba GRUPOS sem nenhum grupo.');
+  /* fontes da base: por nome, por código e por descrição */
+  const base=fontesDaBase(), porNome=new Map(), porCod=new Map(), porDesc=new Map();
+  base.forEach(function(nm){
+    porNome.set(norm(nm),nm);
+    const c=codigoFonte(nm); if(c) porCod.set(c,(porCod.get(c)||[]).concat(nm));
+    const d=norm(descricaoFonte(nm)); porDesc.set(d,(porDesc.get(d)||[]).concat(nm));
+  });
+  const fontes={}, linhaDe={}, usados=new Set();
+  for(let i=1;i<F.length;i++){
+    const r=F[i]||[], nl=i+1;
+    const codTxt=limpo(r[cf.cod]), desc=cf.desc>=0?limpo(r[cf.desc]):'', grupo=limpo(r[cf.grupo]), nomeBase=cf.base>=0?limpo(r[cf.base]):'';
+    if(!codTxt && !desc && !grupo && !nomeBase) continue;
+    if(!codTxt){ erros.push('FONTES, linha '+nl+': CÓDIGO vazio'+(desc?' ('+desc+')':'')+'.'); continue; }
+    let nm=nomeBase && porNome.get(norm(nomeBase));
+    /* CÓDIGO e FONTE NA BASE em conflito: vale o código do nome da fonte, com aviso. */
+    const codNome=nomeBase?codigoFonte(nomeBase):'', codCol=codigoFonte(codTxt)||codTxt;
+    if(codNome && codNome!==codCol) avisos.push('FONTES, linha '+nl+': CÓDIGO '+codTxt+' difere do código de FONTE NA BASE ('+codNome+'); vale '+codNome+'.');
+    const cod=codNome||codCol;
+    if(!nm){ const l=porCod.get(cod); if(l && l.length===1) nm=l[0]; }
+    if(!nm && desc){ const l=porDesc.get(norm(desc)); if(l && l.length===1) nm=l[0]; }
+    const chave=nm ? (codigoFonte(nm)||nm) : cod;
+    if(linhaDe[chave]){ erros.push('FONTES, linha '+nl+': fonte '+chave+' repetida (já na linha '+linhaDe[chave]+'); cada fonte pertence a um só grupo.'); continue; }
+    linhaDe[chave]=nl;
+    if(!grupo) continue;   /* sem grupo: fica em “(sem grupo)” */
+    if(!grupos[grupo]){ erros.push('FONTES, linha '+nl+': grupo '+grupo+' não existe na aba GRUPOS.'); continue; }
+    if(!nm && base.length) avisos.push('FONTES, linha '+nl+': fonte '+codTxt+(desc?' ('+desc+')':'')+' não está na base importada.');
+    if(nm && desc && norm(desc)!==norm(descricaoFonte(nm))) avisos.push('FONTES, linha '+nl+': descrição “'+desc+'” difere da base (“'+descricaoFonte(nm)+'”).');
+    fontes[chave]=[grupo, desc || (nm?descricaoFonte(nm):'')];
+    usados.add(grupo);
+  }
+  Object.keys(grupos).forEach(function(g){ if(!usados.has(g)) avisos.push('Grupo '+g+' ('+grupos[g]+') sem nenhuma fonte.'); });
+  if(!base.length) avisos.push('Base de execução não importada: as fontes não foram conferidas com a base.');
+  else {
+    const sem=base.filter(function(nm){ return !fontes[codigoFonte(nm)||nm]; });
+    if(sem.length) avisos.push(sem.length+' fonte(s) da base sem grupo — ficam em “(sem grupo)”: '+sem.slice(0,15).join('; ')+(sem.length>15?'…':''));
+  }
+  const json={ versao:1, origem:arquivo, gerado:new Date().toISOString(), hash:'', grupos:grupos, fontes:fontes };
+  json.hash=cyrb53(JSON.stringify([grupos,fontes]));
+  return { arquivo:arquivo, erros:erros, avisos:avisos, json:erros.length?null:json };
+}
+
+async function importarGruposFonte(file){
+  if(!file) return;
+  if(!/\.xlsx$/i.test(file.name)){ recado('Os grupos de fonte devem vir numa planilha .xlsx (use o modelo).'); return; }
+  let crit;
+  try{
+    const wb=XLSX.read(new Uint8Array(await lerComoBuffer(file)),{type:'array'});
+    const aba=function(nome){ const s=wb.SheetNames.find(function(x){ return norm(x)===nome; });
+      return s ? XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,defval:'',blankrows:false,raw:false}) : null; };
+    crit=criticarGruposFonte({ GRUPOS:aba('GRUPOS'), FONTES:aba('FONTES') },file.name);
+  }catch(err){ console.error(err); crit={ arquivo:file.name, erros:['Não foi possível ler a planilha: '+err.message], avisos:[], json:null }; }
+  E._critGF=crit;
+  if(crit.json){
+    E.gruposFonte=crit.json; _gfCache=null;
+    recado('Grupos de fonte aceitos: '+n(Object.keys(crit.json.grupos).length)+' grupo(s), '+n(Object.keys(crit.json.fontes).length)+
+      ' fonte(s) agrupada(s)'+(crit.avisos.length?' · '+n(crit.avisos.length)+' aviso(s)':'')+'. Valem enquanto a janela estiver aberta.');
+    aoMudarGruposFonte();
+  } else recado('Planilha de grupos recusada: '+n(crit.erros.length)+' erro(s). Corrija e envie de novo.');
+  pintarGruposFonte();
+}
+function pintarGruposFonte(){
+  const box=$('#gfCritica'); const est=$('#gfEstado');
+  const j=gruposVigentes(), c=E._critGF;
+  if(est) est.textContent = j ? n(Object.keys(j.grupos).length)+' grupo(s) · '+(E.gruposFonte?'da planilha '+(j.origem||''):'embutidos no sistema') : 'nenhum grupo carregado';
+  if(!box) return;
+  const lista=function(itens){ return '<ul class="pequeno" style="margin:4px 0 0 18px;max-height:160px;overflow:auto">'+
+    itens.slice(0,60).map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+(itens.length>60?'<li>… e mais '+n(itens.length-60)+'</li>':'')+'</ul>'; };
+  let h='';
+  if(c && c.erros.length) h+='<div class="aviso alerta"><span class="marca">Recusado</span><span><b>'+esc(c.arquivo)+'</b>: '+n(c.erros.length)+' erro(s); o arquivo não foi aceito'+
+    (j?' e continuam valendo os grupos anteriores':'')+'.'+lista(c.erros)+'</span></div>';
+  if(j) h+='<div class="aviso bom"><span class="marca">Grupos</span><span>'+Object.keys(j.grupos).map(function(g){ return '<b>'+esc(g)+'</b> '+esc(j.grupos[g]); }).join(' · ')+'</span></div>';
+  else if(!c) h+='<div class="aviso nota"><span class="marca">Grupos</span><span>Nenhum grupo de fonte carregado: o filtro Grupo de fonte fica desabilitado até carregar a planilha.</span></div>';
+  if(c && !c.erros.length && c.avisos.length) h+='<div class="aviso nota"><span class="marca">Avisos</span><span>'+n(c.avisos.length)+' aviso(s), que não impedem o uso.'+lista(c.avisos)+'</span></div>';
+  box.innerHTML=h;
+}
+function baixarJsonGruposFonte(){
+  const j=gruposVigentes(); if(!j){ recado('Nenhum grupo de fonte carregado.'); return; }
+  baixarBlob(new Blob([JSON.stringify(j)],{type:'application/json'}),'grupos-fonte_'+hojeISO()+'.json');
+}
+/* ---------------------------- Filtro Grupo → Fonte ----------------------
+   Cada filtro de Fonte tem o seu Grupo, sempre antes dele. As telas leem as
+   fontes por fontesDoFiltro: fontes marcadas; sem elas, todas as fontes dos
+   grupos marcados; sem nada, [] (sem restrição). */
+const PARES_FONTE={ fFonte:'fGrupoFonte', bsFonte:'bsGrupoFonte' };
+const NENHUMA_FONTE='\u0000nenhuma fonte';   /* grupo marcado sem fonte na base: restringe a nada */
+
+function fontesDoFiltro(idF){
+  const id=idF.replace('#',''), f=valoresMulti('#'+id);
+  if(f.length) return f;
+  const g=PARES_FONTE[id], gs=g && $('#'+g) ? valoresMulti('#'+g) : [];
+  if(!gs.length) return [];
+  const lista=fontesDaBase().filter(function(nm){ return gs.indexOf(grupoDaFonte(nm))>=0; });
+  return lista.length ? lista : [NENHUMA_FONTE];
+}
+/* Texto do filtro para legendas e parâmetros: grupos e fontes marcados. */
+function textoFiltroFonte(idF){
+  const id=idF.replace('#',''), g=PARES_FONTE[id], gs=g && $('#'+g) ? valoresMulti('#'+g) : [], f=valoresMulti('#'+id);
+  const p=[];
+  if(gs.length) p.push('grupo de fonte: '+gs.map(nomeGrupoFonte).join(', '));
+  if(f.length) p.push('fonte: '+f.join(', '));
+  return p.join(' · ');
+}
+function prepararGrupo(idG){
+  if(!$('#'+idG)) return;
+  const tem=temGruposFonte();
+  opcoes('#'+idG,opcoesGrupoFonte(),tem?'Todos os grupos':'Nenhum grupo carregado');
+  montarMulti('#'+idG);
+  const st=MULTIS[idG]; if(!st) return;
+  st._chave=(gruposVigentes()||{}).hash||'';
+  st._dic=E.dic;
+  st.bt.disabled=!tem;
+  if(!tem) st.bt.setAttribute('data-tip','Carregue os grupos de fonte (link “Carregar grupos de fonte”, junto do filtro) para usar este filtro.');
+  if(!st._ligado){
+    st._ligado=true;
+    st.sel.addEventListener('change',function(){
+      const idF=Object.keys(PARES_FONTE).find(function(k){ return PARES_FONTE[k]===idG; });
+      if(idF && MULTIS[idF]){ montarMulti('#'+idF); aplicarMulti(idF); }
+    });
+  }
+}
+function prepararFiltrosGrupo(){ Object.keys(PARES_FONTE).forEach(function(idF){ prepararGrupo(PARES_FONTE[idF]); if(MULTIS[idF]) montarMulti('#'+idF); }); }
+/* Chamada ao fim de montarMulti: restringe a lista de Fonte aos grupos marcados. */
+function cascataGrupoFonte(id,st){
+  const g=PARES_FONTE[id]; if(!g) return;
+  const sg=MULTIS[g];
+  if(!sg || sg._chave!==((gruposVigentes()||{}).hash||'') || sg._dic!==E.dic) prepararGrupo(g);
+  const gs=valoresMulti('#'+g); if(!gs.length) return;
+  st.lista=st.lista.filter(function(p){ return gs.indexOf(grupoDaFonte(p[0]))>=0; });
+  const ok=new Set(st.lista.map(function(p){ return p[0]; }));
+  Array.from(st.escolha).forEach(function(v){ if(!ok.has(v)) st.escolha.delete(v); });
+  rotularMulti(id);
+}
+
+/* Agrupamento por grupo de fonte (Saldo e Resultado): as séries das fontes do MAPP
+   somadas por grupo — um MAPP com duas fontes no mesmo grupo entra uma vez nele. */
+function seriesPorGrupoFonte(m){
+  const por=new Map();
+  (m.porFonte||[]).forEach(function(pf){
+    const nome=nomeGrupoFonte(grupoDaFonte(pf.fonte));
+    let s=por.get(nome);
+    if(!s){ s=new Float64Array(pf.serie.length); por.set(nome,s); }
+    for(let i=0;i<s.length;i++) s[i]+=pf.serie[i];
+  });
+  return Array.from(por.entries()).map(function(e){ return { nome:e[0], serie:e[1] }; });
+}
+
+/* Troca de grupos: redesenha os filtros e o que depende deles. */
+function aoMudarGruposFonte(){
+  _gfCache=null;
+  if(typeof prepararFiltrosGrupo==='function') prepararFiltrosGrupo();
+  if(E.diag && typeof renderTudo==='function') renderTudo();
+}
+
+/* ==========================================================================
+   Seleção de colunas. Cada tabela abre com todas as colunas; o botão Colunas
+   oculta ou mostra cada uma na hora. As colunas são identificadas pelo rótulo
+   do cabeçalho, de modo que a escolha resiste a redesenhos e a colunas
+   variáveis. A escolha vale enquanto a janela estiver aberta e é respeitada
+   pelas exportações da tabela (colunasExportaveis).
+   ========================================================================== */
+const TABELAS_COLUNAS=['tabEstagios','tabParametros','tabDiag','tabSaneada','tabExcluidos'];
+E.colunasOcultas={};   /* idTabela → Set(rótulo normalizado) */
+const _colsInfo={};    /* idTabela → { cols:[{chave,rot,fixa}], ... } */
+
+function rotuloTh(th){
+  const c=th.cloneNode(true);
+  c.querySelectorAll('.sigla,.seta,input,button').forEach(function(x){ x.remove(); });
+  return limpo(c.textContent);
+}
+/* Colunas lógicas pela última linha do cabeçalho (com colspan). */
+function colunasDaTabela(tab){
+  const linhas=tab.tHead ? tab.tHead.rows : [];
+  if(!linhas.length) return [];
+  const cols=[], vistos={};
+  Array.prototype.forEach.call(linhas[linhas.length-1].cells,function(th,k){
+    const rot=rotuloTh(th), span=th.colSpan||1;
+    const temCaixa=!!th.querySelector('input[type=checkbox]');
+    for(let s=0;s<span;s++){
+      let chave=norm(rot)||('#'+cols.length);
+      vistos[chave]=(vistos[chave]||0)+1; if(vistos[chave]>1) chave+='#'+vistos[chave];
+      cols.push({ chave:chave, rot:rot||(temCaixa?'(seleção)':'(ações)'), fixa: !rot || temCaixa || /^PROVIDENCIA$/.test(chave) });
+    }
+  });
+  /* a coluna MAPP (ou Código) identifica a linha; sem ela, a primeira com rótulo. Fica sempre */
+  const ident=cols.find(function(c){ return !c.fixa && /^(MAPP|CODIGO)\b/.test(c.chave); }) || cols.find(function(c){ return !c.fixa; });
+  if(ident) ident.fixa=true;
+  return cols;
+}
+function aplicarColunas(tab){
+  const id=tab.id, cols=colunasDaTabela(tab);
+  _colsInfo[id]={ cols:cols };
+  const oc=E.colunasOcultas[id]||new Set();
+  const oculta=cols.map(function(c){ return !c.fixa && oc.has(c.chave); });
+  Array.prototype.forEach.call(tab.rows,function(tr){
+    let pos=0;
+    Array.prototype.forEach.call(tr.cells,function(td){
+      let orig=+td.getAttribute('data-cs')||0;
+      if(!orig){ orig=td.colSpan||1; if(orig>1) td.setAttribute('data-cs',orig); }
+      let esc=0; for(let s=0;s<orig;s++) if(oculta[pos+s]) esc++;
+      pos+=orig;
+      td.classList.toggle('col-oculta',esc===orig);
+      if(orig>1) td.colSpan=Math.max(1,orig-esc);
+    });
+  });
+  pintarBotaoColunas(id);
+}
+let _colsPend=new Set(), _colsQuadro=0;
+function agendarColunas(tab){
+  _colsPend.add(tab);
+  if(_colsQuadro) return;
+  _colsQuadro=requestAnimationFrame(function(){ _colsQuadro=0; const l=Array.from(_colsPend); _colsPend.clear(); l.forEach(aplicarColunas); });
+}
+function pintarBotaoColunas(id){
+  const bt=document.querySelector('.cols-bt[data-cols="'+id+'"]'); if(!bt) return;
+  const info=_colsInfo[id]||{cols:[]}, oc=E.colunasOcultas[id]||new Set();
+  const vis=info.cols.filter(function(c){ return c.fixa || !oc.has(c.chave); }).length;
+  bt.querySelector('.c').textContent='('+vis+'/'+info.cols.length+')';
+  bt.classList.toggle('ativa',vis<info.cols.length);
+}
+function abrirPainelColunas(id,bt){
+  let p=document.getElementById('painelColunas');
+  if(!p){
+    p=document.createElement('div'); p.id='painelColunas'; p.className='multi-painel cols-painel';
+    p.innerHTML='<div class="busca pequeno" style="font-weight:600"></div><div class="multi-lista"></div>'+
+      '<div class="multi-rodape"><button type="button" class="btn pequeno discreto" data-cols-todas>Marcar todas</button>'+
+      '<button type="button" class="btn pequeno discreto" data-cols-padrao>Restaurar padrão</button><span class="conta"></span></div>';
+    document.body.appendChild(p);
+    p.addEventListener('change',function(ev){
+      const cx=ev.target; if(cx.type!=='checkbox') return;
+      const tid=p.getAttribute('data-tabela'), oc=E.colunasOcultas[tid]=E.colunasOcultas[tid]||new Set();
+      if(cx.checked) oc.delete(cx.value); else oc.add(cx.value);
+      aplicarColunas(document.getElementById(tid)); desenharPainelColunas();
+    });
+    p.addEventListener('click',function(ev){
+      const tid=p.getAttribute('data-tabela');
+      if(ev.target.hasAttribute('data-cols-todas')||ev.target.hasAttribute('data-cols-padrao')){
+        E.colunasOcultas[tid]=new Set(); aplicarColunas(document.getElementById(tid)); desenharPainelColunas();
+        if(ev.target.hasAttribute('data-cols-padrao')) fecharPainelColunas();
+      }
+    });
+  }
+  if(p.classList.contains('aberto') && p.getAttribute('data-tabela')===id){ fecharPainelColunas(); return; }
+  p.setAttribute('data-tabela',id);
+  aplicarColunas(document.getElementById(id));
+  desenharPainelColunas();
+  p.classList.add('aberto');
+  const r=bt.getBoundingClientRect(), larg=280;
+  p.style.width=larg+'px';
+  const alt=p.getBoundingClientRect().height;
+  let topo=r.bottom+4; if(topo+alt>window.innerHeight-8) topo=Math.max(8,r.top-alt-4);
+  p.style.top=topo+'px'; p.style.left=Math.max(8,Math.min(r.right-larg,window.innerWidth-larg-8))+'px';
+}
+function desenharPainelColunas(){
+  const p=document.getElementById('painelColunas'); if(!p) return;
+  const id=p.getAttribute('data-tabela'), info=_colsInfo[id]||{cols:[]}, oc=E.colunasOcultas[id]||new Set();
+  const tit=document.getElementById(id).closest('.bloco'); const h=tit&&tit.querySelector('h2');
+  p.querySelector('.busca').textContent='Colunas — '+(h?h.textContent:id);
+  p.querySelector('.multi-lista').innerHTML=info.cols.map(function(c){
+    const marc=c.fixa||!oc.has(c.chave);
+    return '<label'+(c.fixa?' class="fixa"':'')+'><input type="checkbox" value="'+esc(c.chave)+'"'+(marc?' checked':'')+(c.fixa?' disabled':'')+'><span>'+esc(c.rot)+(c.fixa?' <span class="tenue">(fixa)</span>':'')+'</span></label>';
+  }).join('');
+  const vis=info.cols.filter(function(c){ return c.fixa||!oc.has(c.chave); }).length;
+  p.querySelector('.conta').textContent=vis+' de '+info.cols.length;
+}
+function fecharPainelColunas(){ const p=document.getElementById('painelColunas'); if(p) p.classList.remove('aberto'); }
+/* Vigia só a troca de linhas (filhos diretos de tbody/tfoot e as linhas do cabeçalho),
+   nunca a subárvore inteira: observar subtree faz cada troca de uma tabela grande
+   registrar milhares de nós removidos. */
+function vigiarTabela(tab){
+  if(tab._colsObs) tab._colsObs.disconnect();
+  const obs=new MutationObserver(function(recs){
+    if(recs.some(function(r){ return r.target===tab || r.target.tagName==='THEAD'; })) vigiarTabela(tab);   /* seções ou cabeçalho trocados */
+    agendarColunas(tab);
+  });
+  obs.observe(tab,{ childList:true });
+  Array.prototype.forEach.call(tab.children,function(sec){
+    if(sec.tagName==='THEAD'){ obs.observe(sec,{ childList:true }); Array.prototype.forEach.call(sec.rows,function(tr){ obs.observe(tr,{ childList:true }); }); }
+    else if(sec.tagName==='TBODY'||sec.tagName==='TFOOT') obs.observe(sec,{ childList:true });
+  });
+  tab._colsObs=obs;
+}
+function prepararColunas(){
+  TABELAS_COLUNAS.forEach(function(id){
+    const tab=document.getElementById(id); if(!tab || tab._colsLigada) return;
+    tab._colsLigada=true;
+    const caixa=tab.closest('.tabela-caixa')||tab;
+    const barra=document.createElement('div'); barra.className='cols-barra';
+    barra.innerHTML='<button type="button" class="btn pequeno discreto cols-bt" data-cols="'+id+'" data-tip="Escolhe as colunas desta tabela. A escolha vale na hora, também para a exportação correspondente, e dura até fechar a janela." data-tip-t="Colunas">☰ Colunas <span class="c"></span></button>';
+    caixa.parentNode.insertBefore(barra,caixa);
+    barra.querySelector('button').addEventListener('click',function(ev){ ev.preventDefault(); ev.stopPropagation(); abrirPainelColunas(id,ev.currentTarget); });
+    vigiarTabela(tab);
+    aplicarColunas(tab);
+  });
+  document.addEventListener('click',function(ev){
+    if(!ev.target.closest('#painelColunas') && !ev.target.closest('.cols-bt')) fecharPainelColunas();
+  });
+}
+/* Rótulos de coluna ocultos de uma tabela (normalizados). */
+function colunasOcultasDe(id){
+  const info=_colsInfo[id], oc=E.colunasOcultas[id];
+  if(!info || !oc || !oc.size) return [];
+  return info.cols.filter(function(c){ return !c.fixa && oc.has(c.chave); });
+}
+/* Nome de coluna do arquivo → rótulo equivalente na tela, quando diferem. */
+const ALIAS_COLUNAS={
+  tabSaneada:function(k){
+    const m=/^SALDO (\d{4})( \(= PROGRAMADO\))?$/.exec(k); if(m) return m[2]?'PROG. '+m[1]:k;
+    if(k==='REGRAS ATENDIDAS') return 'REGRA';
+    if(k==='AÇÃO NA BASE SANEADA') return 'AÇÃO DO SANEAMENTO';
+    if(/^PROGRAMADO APÓS \d{4}/.test(k)) return 'PROGRAMADO FUTURO';
+    return k;
+  },
+  tabExcluidos:function(k){ return { 'REGRAS ATENDIDAS':'REGRA', 'DATA DA EXCLUSÃO':'EXCLUÍDO EM' }[k] || k; }
+};
+/* Aba COLUNAS OCULTAS no arquivo, quando a tela tem colunas ocultas: rastreabilidade. */
+function anexarColunasOcultas(wb,ids){
+  const linhas=[];
+  (ids||[]).forEach(function(id){
+    const oc=colunasOcultasDe(id); if(!oc.length) return;
+    const tab=document.getElementById(id), bl=tab&&tab.closest('.bloco'), h=bl&&bl.querySelector('h2');
+    linhas.push({ 'TABELA NA TELA':h?h.textContent:id, 'COLUNAS OCULTAS (fora deste arquivo)':oc.map(function(c){ return c.rot; }).join(', ') });
+  });
+  if(linhas.length && wb.SheetNames.indexOf('COLUNAS OCULTAS')<0) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas),'COLUNAS OCULTAS');
+}
+/* Tira das linhas exportadas as colunas ocultas na tabela da tela. `linhas`:
+   lista de objetos (json_to_sheet). Devolve as linhas e os rótulos retirados. */
+function colunasExportaveis(id,linhas){
+  const ocultas=colunasOcultasDe(id); if(!ocultas.length || !linhas.length) return linhas;
+  const alvo=new Set(ocultas.map(function(c){ return c.chave.replace(/#\d+$/,''); }));
+  const alias=ALIAS_COLUNAS[id]||function(k){ return k; };
+  const tirar=Object.keys(linhas[0]).filter(function(k){ return alvo.has(norm(k)) || alvo.has(norm(alias(k))); });
+  if(!tirar.length) return linhas;
+  return linhas.map(function(l){ const o={}; Object.keys(l).forEach(function(k){ if(tirar.indexOf(k)<0) o[k]=l[k]; }); return o; });
+}
+/* Mesmo, para matriz com cabeçalho (aoa_to_sheet). */
+function colunasExportaveisAoa(id,cab,linhas){
+  const ocultas=colunasOcultasDe(id); if(!ocultas.length) return { cab:cab, linhas:linhas };
+  const alvo=new Set(ocultas.map(function(c){ return c.chave.replace(/#\d+$/,''); }));
+  const manter=cab.map(function(c,i){ return alvo.has(norm(c)) ? -1 : i; }).filter(function(i){ return i>=0; });
+  return { cab:manter.map(function(i){ return cab[i]; }), linhas:linhas.map(function(l){ return manter.map(function(i){ return l[i]; }); }) };
+}
+function textoColunasOcultas(id){ return colunasOcultasDe(id).map(function(c){ return c.rot; }).join(', '); }
+
+function ligarGruposEColunas(){
+  prepararColunas();
+  const b=$('#btnModeloGruposFonte'); if(b) b.addEventListener('click',baixarModeloGruposFonte);
+  const bj=$('#btnJsonGruposFonte'); if(bj) bj.addEventListener('click',baixarJsonGruposFonte);
+  const area=$('#areaGruposFonte'), inp=$('#arqGruposFonte');
+  if(area && inp){
+    area.addEventListener('click',function(){ inp.click(); });
+    area.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); inp.click(); } });
+    inp.addEventListener('change',function(){ const f=inp.files[0]; inp.value=''; importarGruposFonte(f); });
+    ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
+    ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
+    area.addEventListener('drop',function(ev){ importarGruposFonte(ev.dataTransfer.files[0]); });
+  }
+  const bc=$('#btnCarregarGruposFonte');
+  if(bc && inp && !area){
+    bc.addEventListener('click',function(ev){ ev.preventDefault(); inp.click(); });
+    inp.addEventListener('change',function(){ const f=inp.files[0]; inp.value=''; importarGruposFonte(f); });
+  }
+  pintarGruposFonte();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ligarGruposEColunas); else ligarGruposEColunas();
+</script>
+<!-- BLOCO12:FIM -->
 </body>
 </html>
