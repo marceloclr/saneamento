@@ -1269,6 +1269,19 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="pequeno tenue" id="ghEstado" style="margin-top:6px"></div>
   </div>
   <div class="bloco" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
+    <header><h2>Grupos de fonte</h2><span class="legenda" id="gfEstado"></span></header>
+    <p class="pequeno tenue" style="margin:0 0 8px">Agrupamento das fontes usado no filtro <b>Grupo de fonte</b> (sempre antes do filtro Fonte) e no agrupamento por grupo. Baixe o modelo, informe os grupos na aba GRUPOS e o grupo de cada fonte na aba FONTES, e envie a planilha: o sistema a critica antes de aceitar.</p>
+    <div class="barra-acoes" style="margin-bottom:8px">
+      <div class="area-solta compacta" id="areaGruposFonte" role="button" tabindex="0" style="flex:1" data-tip="Clique para escolher a planilha de grupos de fonte (.xlsx), ou arraste-a até aqui. Abas GRUPOS (CÓDIGO, DESCRIÇÃO) e FONTES (CÓDIGO, DESCRIÇÃO, GRUPO). Com erro, o arquivo é recusado e a lista mostra o que corrigir." data-tip-t="Grupos de fonte">
+        <span class="texto-arq"><strong>Escolha ou arraste a planilha de grupos de fonte</strong><span class="pequeno tenue">modelo com as fontes da base · criticada antes de ser aceita</span></span>
+        <input type="file" id="arqGruposFonte" accept=".xlsx" class="oculto">
+      </div>
+      <button type="button" class="btn" id="btnModeloGruposFonte" data-tip="Baixa o modelo com as abas INSTRUCOES, GRUPOS e FONTES; a aba FONTES já traz as fontes da base importada, faltando só o grupo.">Baixar modelo</button>
+      <button type="button" class="btn discreto" id="btnJsonGruposFonte" data-tip="Baixa o JSON gerado a partir da planilha aceita (o mesmo que fica na sessão).">Baixar JSON</button>
+    </div>
+    <div id="gfCritica"></div>
+  </div>
+  <div class="bloco" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
     <header><h2>E-mail (Google)</h2><span class="legenda" id="gEstado"></span></header>
     <p class="pequeno tenue" style="margin:0 0 8px">Envio das planilhas de manifestação pela conta Google (Gmail) de quem clica em enviar. O ID do cliente vem do projeto criado uma vez no Google Cloud (manual, “Configurar o Google”); ele não é segredo. O acesso concedido vale por uma hora e fica só nesta janela.</p>
     <div class="grade g3">
@@ -1901,6 +1914,62 @@ function casaMulti(valores,valor){ return !valores.length || valores.indexOf(val
    por isso o filtro testa "o MAPP tem ao menos uma linha com esta fonte", nunca compara
    contra um único valor "moda" como os demais filtros (órgão, secretaria, programa). */
 function casaFonte(selecionadas,m){ return !selecionadas.length || m.porFonte.some(function(pf){ return selecionadas.indexOf(pf.fonte)>=0; }); }
+
+/* MODELO-GRUPOS-FONTE:INICIO — trecho também executado por ferramentas/gerar-modelo-grupos-fonte.js,
+   para que o arquivo do repositório e o baixado no sistema sejam o mesmo modelo. */
+/* Código da fonte: "(500)-(501) Tesouro", "(500)-(501)", "500-501" e "500501" → "500-501";
+   "(700)-(311.82) Emenda…" → "700-311.82". */
+function codigoFonte(txt){
+  const s=String(txt==null?'':txt).trim();
+  const par=s.match(/\(\d+(?:\.\d+)?\)/g);
+  if(par && par.length) return par.map(function(p){ return p.slice(1,-1); }).join('-');
+  const m=/^(\d+(?:\.\d+)?)\s*[-\/]\s*(\d+(?:\.\d+)?)$/.exec(s); if(m) return m[1]+'-'+m[2];
+  if(/^\d{6}$/.test(s)) return s.slice(0,3)+'-'+s.slice(3);
+  return /^\d+$/.test(s) ? s : '';
+}
+/* Descrição da fonte sem os códigos: "(500)-(501) Tesouro" → "Tesouro". */
+function descricaoFonte(txt){ return String(txt==null?'':txt).replace(/^\s*(\(\d+(?:\.\d+)?\)\s*-?\s*)+/,'').trim(); }
+/* Monta o modelo .xlsx de grupos de fonte (ExcelJS). `fontes`: nomes das fontes como na base. */
+async function montarModeloGruposFonte(ExcelJS,fontes){
+  const wb=new ExcelJS.Workbook();
+  wb.creator='Saneamento MAPPs';
+  const cab=function(ws,larguras){
+    ws.columns=larguras.map(function(w){ return { width:w }; });
+    const r=ws.getRow(1); r.font={ bold:true, color:{ argb:'FFFFFFFF' } };
+    r.eachCell(function(c){ c.fill={ type:'pattern', pattern:'solid', fgColor:{ argb:'FF2F5F61' } }; });
+    ws.views=[{ state:'frozen', ySplit:1 }];
+    ws.autoFilter={ from:{ row:1, column:1 }, to:{ row:1, column:larguras.length } };
+  };
+  const ins=wb.addWorksheet('INSTRUCOES');
+  ins.columns=[{ width:110 }];
+  [ 'Grupos de fonte — Saneamento MAPPs','',
+    'Aba GRUPOS: uma linha por grupo. CÓDIGO é definido por você (curto, sem repetir, ex.: TES). DESCRIÇÃO é o nome exibido no filtro (ex.: Tesouro Estadual).',
+    'Aba FONTES: uma linha por fonte, já preenchida com as fontes da base. Informe em GRUPO o CÓDIGO do grupo da fonte (lista de escolha).',
+    'Cada fonte pertence a um único grupo. Fonte sem GRUPO fica em "(sem grupo)" no filtro.',
+    'CÓDIGO da fonte: os números da fonte na base (ex.: 500-501 para "(500)-(501) Tesouro"). Não altere as colunas CÓDIGO e FONTE NA BASE.',
+    'Não renomeie as abas nem os cabeçalhos. O sistema critica o arquivo ao recebê-lo: com erro, ele é recusado e a lista mostra o que corrigir.',
+    'Envio: Configurações › Grupos de fonte (versão completa) ou “Carregar grupos de fonte” junto do filtro (versão simplificada).'
+  ].forEach(function(t,i){ const r=ins.addRow([t]); if(i===0) r.font={ bold:true, size:13 }; r.alignment={ wrapText:true }; });
+  const g=wb.addWorksheet('GRUPOS');
+  g.addRow(['CÓDIGO','DESCRIÇÃO']); cab(g,[16,50]);
+  const f=wb.addWorksheet('FONTES');
+  f.addRow(['CÓDIGO','DESCRIÇÃO','GRUPO','FONTE NA BASE']); cab(f,[14,52,14,60]);
+  const vistas=new Set();
+  fontes.filter(Boolean).slice().sort(function(a,b){ return codigoFonte(a).localeCompare(codigoFonte(b),'pt-BR',{numeric:true}) || String(a).localeCompare(String(b)); })
+    .forEach(function(nome){
+      const cod=codigoFonte(nome)||String(nome);
+      if(vistas.has(cod+'|'+nome)) return; vistas.add(cod+'|'+nome);
+      f.addRow([cod,descricaoFonte(nome)||String(nome),'',String(nome)]);
+    });
+  const ult=Math.max(f.rowCount,2);
+  for(let i=2;i<=ult;i++){
+    f.getCell('C'+i).dataValidation={ type:'list', allowBlank:true, formulae:['GRUPOS!$A$2:$A$300'],
+      showErrorMessage:true, errorTitle:'Grupo', error:'Escolha um CÓDIGO da aba GRUPOS.' };
+    f.getCell('A'+i).font={ color:{ argb:'FF555555' } }; f.getCell('D'+i).font={ color:{ argb:'FF777777' } };
+  }
+  return await wb.xlsx.writeBuffer();
+}
+/* MODELO-GRUPOS-FONTE:FIM */
 /* Selo "N fontes" com a quebra financeira por fonte na dica — usado nas grades para que o
    filtro de fonte não esconda as demais fontes que o MAPP porventura tenha. Vazio quando
    há só uma fonte (nada a detalhar além do total já exibido na linha). */
@@ -7962,6 +8031,38 @@ function ligarManifestacoes(){
   sessaoParaTela(); pintarUltimaGravacao(); renderManifestacoes();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ligarManifestacoes); else ligarManifestacoes();
+</script>
+<script type="application/json" id="gruposFontePadrao">{}</script>
+<script>
+"use strict";
+/* ==========================================================================
+   Grupos de fonte e seleção de colunas.
+   Grupos: planilha .xlsx (abas GRUPOS e FONTES) criticada e convertida num
+   JSON compacto; o embutido acima vale até a sessão trazer outro.
+   ========================================================================== */
+
+/* Fontes distintas da base importada, como aparecem nela. */
+function fontesDaBase(){ return E.dic && E.dic.fonte ? E.dic.fonte.filter(function(f){ return f!=null && String(f).trim(); }).map(String) : []; }
+
+/* Modelo: com base importada, gerado com as fontes dela; sem base, o arquivo do repositório. */
+async function baixarModeloGruposFonte(){
+  const fontes=fontesDaBase();
+  if(!fontes.length){
+    try{
+      const r=await fetch('modelos/grupos-fonte-modelo.xlsx');
+      if(r.ok){ baixarBlob(await r.blob(),'grupos-fonte-modelo.xlsx'); return; }
+    }catch(e){}
+    recado('Importe a base de execução para gerar o modelo com as fontes dela.'); return;
+  }
+  if(typeof ExcelJS==='undefined'){ recado('A biblioteca de planilhas não carregou. Recarregue a página.'); return; }
+  const buf=await montarModeloGruposFonte(ExcelJS,fontes);
+  baixarBlob(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'grupos-fonte-modelo_'+hojeISO()+'.xlsx');
+}
+
+function ligarGruposEColunas(){
+  const b=$('#btnModeloGruposFonte'); if(b) b.addEventListener('click',baixarModeloGruposFonte);
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ligarGruposEColunas); else ligarGruposEColunas();
 </script>
 </body>
 </html>
