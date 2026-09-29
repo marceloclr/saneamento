@@ -8161,12 +8161,19 @@ function colunasPorNome(cab,nomes){
 /* abas: { GRUPOS:matriz, FONTES:matriz } (primeira linha = cabeçalho). */
 function criticarGruposFonte(abas,arquivo){
   const erros=[], avisos=[];
-  const G=abas.GRUPOS, F=abas.FONTES;
-  if(!G) erros.push('Aba GRUPOS não encontrada. Use o modelo (abas GRUPOS e FONTES).');
-  if(!F) erros.push('Aba FONTES não encontrada. Use o modelo (abas GRUPOS e FONTES).');
+  const F=abas.FONTES;
+  let G=abas.GRUPOS;
+  if(!F) erros.push('Aba FONTES não encontrada. Use o modelo (aba FONTES; a aba GRUPOS é opcional).');
   if(erros.length) return { arquivo:arquivo, erros:erros, avisos:avisos, json:null };
-  const cg=colunasPorNome(G[0],{ cod:['CODIGO'], desc:['DESCRICAO'] });
   const cf=colunasPorNome(F[0],{ cod:['CODIGO'], desc:['DESCRICAO'], grupo:['GRUPO'], base:['FONTE NA BASE'] });
+  /* Sem a aba GRUPOS, os grupos são os valores da coluna GRUPO: o texto é código e descrição. */
+  if(!G && cf.grupo>=0){
+    const vistos=[];
+    for(let i=1;i<F.length;i++){ const g=limpo((F[i]||[])[cf.grupo]); if(g && vistos.indexOf(g)<0) vistos.push(g); }
+    G=[['CÓDIGO','DESCRIÇÃO']].concat(vistos.map(function(g){ return [g,g]; }));
+    avisos.push('Sem a aba GRUPOS: '+vistos.length+' grupo(s) tirado(s) da coluna GRUPO ('+vistos.join(', ')+').');
+  }
+  const cg=G ? colunasPorNome(G[0],{ cod:['CODIGO'], desc:['DESCRICAO'] }) : { cod:-1, desc:-1 };
   if(cg.cod<0||cg.desc<0) erros.push('Aba GRUPOS: faltam as colunas CÓDIGO e DESCRIÇÃO no cabeçalho.');
   if(cf.cod<0||cf.grupo<0) erros.push('Aba FONTES: faltam as colunas CÓDIGO e GRUPO no cabeçalho.');
   if(erros.length) return { arquivo:arquivo, erros:erros, avisos:avisos, json:null };

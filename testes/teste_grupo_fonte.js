@@ -41,6 +41,18 @@ carregar().then(async win=>{
       && tem(/não está na base/,ruim.avisos) && tem(/difere da base/,ruim.avisos) && tem(/VAZIO .*sem nenhuma fonte/,ruim.avisos)
       && tem(/sem grupo/,ruim.avisos)) };
 
+  /* ---------- sem a aba GRUPOS: grupos tirados da coluna GRUPO ---------- */
+  const semG=win.criticarGruposFonte({GRUPOS:null,FONTES:[['CÓDIGO','DESCRIÇÃO','FONTE NA BASE','GRUPO'],
+    [win.codigoFonte(tes[0]),win.descricaoFonte(tes[0]),tes[0],'TESOURO'],[win.codigoFonte(cred[0]),win.descricaoFonte(cred[0]),cred[0],'OUTRAS FONTES']]},'t.xlsx');
+  const real=(()=>{ const p=require('path').join(__dirname,'..','modelos','grupos-fontes.xlsx');
+    if(!require('fs').existsSync(p)) return null;
+    const w=XLSX.readFile(p), aba=n=>{ const s=w.SheetNames.find(x=>x.toUpperCase()===n); return s?XLSX.utils.sheet_to_json(w.Sheets[s],{header:1,defval:'',blankrows:false,raw:false}):null; };
+    return win.criticarGruposFonte({GRUPOS:aba('GRUPOS'),FONTES:aba('FONTES')},'grupos-fontes.xlsx'); })();
+  R.semAbaGrupos={ erros:semG.erros, grupos:semG.json&&Object.keys(semG.json.grupos).join(','),
+    planilhaUsuario: real && { erros:real.erros, avisos:real.avisos.map(a=>a.slice(0,120)), grupos:real.json&&Object.keys(real.json.grupos).join(','),
+      fontes:real.json&&Object.keys(real.json.fontes).length } };
+  R.semAbaGrupos.ok=ok(!semG.erros.length && R.semAbaGrupos.grupos==='TESOURO,OUTRAS FONTES' && (!real || !real.erros.length));
+
   /* ---------- importação real: grupos TES e CRED ---------- */
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([GC,['TES','Tesouro Estadual'],['CRED','Operações de crédito']]),'GRUPOS');
