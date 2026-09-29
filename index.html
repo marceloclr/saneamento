@@ -5233,7 +5233,7 @@ function linhasResultadoPorOrgao(){
     'NOVO PROGRAMADO 2027':t.np, 'DIFERENÇA (NP − PROGRAMADO 2027)':t.np-t.p27 });
   return linhas;
 }
-function linhasParametrosResultado(){
+function linhasParametrosResultado(anosOcultos){
   const U=E.diag.noUniverso, S=sobreviventes(), R=retiradosPelasRegras();
   const tU=totaisNP(U), tS=totaisNP(S), tR=totaisNP(R);
   return [
@@ -5244,6 +5244,7 @@ function linhasParametrosResultado(){
     ['Novo Programado 2027', 'VLR_PLANEJADO_27 + Σ (VLR_PLANEJADO − VLR_EMPENHO) dos anos incorporados'],
     ['Anos incorporados', rotuloAnosNP(anosNovoProgramado())],
     ['Ano com saldo negativo', 'não é somado nem subtraído; o MAPP é sinalizado'],
+    ['Anos sem saldo a programar (programado − empenhado = 0) ocultos no QUADRO POR MAPP', anosOcultos&&anosOcultos.length ? faixasTexto(anosOcultos) : 'nenhum'],
     ['MAPPs com ano de saldo negativo (sobreviventes)', tS.incons],
     ['MAPPs no universo', U.length],
     ['MAPPs sobreviventes', S.length],
@@ -5263,7 +5264,7 @@ async function exportarResultadoNP(){
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasNPPorFonte()),'NP 2027 POR MAPP');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([q.cab].concat(q.linhas)),'QUADRO POR MAPP');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasResultadoPorOrgao()),'QUADRO POR ORGAO');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasParametrosResultado()),'PARAMETROS');
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasParametrosResultado(q.anosOcultos)),'PARAMETROS');
     XLSX.writeFile(wb,'resultado_np2027_'+hojeISO()+'.xlsx');
     marcarPasso(9);
     recado('Resultado exportado: '+n(q.mapps)+' MAPPs sobreviventes.');
@@ -5853,21 +5854,41 @@ function colunaProgramado2027(){
   return it ? it.col : E.colunas.length-1;
 }
 /* Quadro por MAPP dos ativos depois: as linhas originais (MAPP × fonte) dos
-   sobreviventes, com as colunas da planilha e o NP 2027 logo após o programado 2027. */
+   sobreviventes, com as colunas da planilha e o NP 2027 logo após o programado 2027.
+   Os exercícios anteriores a 2027 sem saldo a programar (programado − empenhado = 0
+   em todas as linhas) saem do quadro: não somam nada ao NP 2027. */
 function linhasQuadroMapp(todos){
-  const c27=colunaProgramado2027();
-  const cab=E.colunas.slice(); cab.splice(c27+1,0,'NOVO PROGRAMADO 2027');
   const lista=todos ? sobreviventes()
     : sobreviventes(universoAntesDepois().filter(function(m){ return m.dentroUniverso; })).filter(passaFiltroAntesDepois);
-  const linhas=[];
+  const brutas=[], nps=[];
   lista.forEach(function(m){
     (m.linhas||[]).forEach(function(i){
-      const L=E.linhas[i], v=linhaOriginal(L);
-      v.splice(c27+1,0,npDaLinha(L,m).valor);
-      linhas.push(v);
+      const L=E.linhas[i];
+      brutas.push(linhaOriginal(L)); nps.push(npDaLinha(L,m).valor);
     });
   });
-  return { cab:cab, linhas:linhas, c27:c27, mapps:lista.length };
+  const colDe=function(met,ano){ const it=(E.serie||[]).find(function(x){ return x.met===met && x.ano===ano; }); return it ? it.col : null; };
+  const comSaldo=new Set();
+  (E.serie||[]).forEach(function(it){
+    if(comSaldo.has(it.ano)) return;
+    const cp=colDe('Programado',it.ano), ce=colDe('Empenhado',it.ano);
+    if(it.ano>=NP_ANO || cp==null || ce==null){ comSaldo.add(it.ano); return; }
+    for(let r=0;r<brutas.length;r++)
+      if(Math.abs((+brutas[r][cp]||0)-(+brutas[r][ce]||0))>=0.005){ comSaldo.add(it.ano); return; }
+  });
+  const anosOcultos=[], remover=new Set();
+  (E.serie||[]).forEach(function(it){
+    if(comSaldo.has(it.ano)) return;
+    remover.add(it.col); if(anosOcultos.indexOf(it.ano)<0) anosOcultos.push(it.ano);
+  });
+  anosOcultos.sort(function(a,b){ return a-b; });
+  const manter=[]; for(let k=0;k<E.colunas.length;k++) if(!remover.has(k)) manter.push(k);
+  const c27=manter.indexOf(colunaProgramado2027());
+  const cab=manter.map(function(k){ return E.colunas[k]; }); cab.splice(c27+1,0,'NOVO PROGRAMADO 2027');
+  const linhas=brutas.map(function(b,r){
+    const v=manter.map(function(k){ return b[k]; }); v.splice(c27+1,0,nps[r]); return v;
+  });
+  return { cab:cab, linhas:linhas, c27:c27, mapps:lista.length, anosOcultos:anosOcultos };
 }
 function renderQuadroMapp(){
   if(!E.diag || !$('#tabQuadroMapp')) return;
@@ -5875,7 +5896,7 @@ function renderQuadroMapp(){
   let t27=0, tNP=0;
   q.linhas.forEach(function(v){ t27+=+v[q.c27]||0; tNP+=+v[q.c27+1]||0; });
   $('#adLegendaMapp').textContent=n(q.mapps)+' MAPPs · '+n(q.linhas.length)+' linhas (MAPP × fonte) · Programado 2027 '+rsCurto(t27)+
-    ' → Novo Programado 2027 '+rsCurto(tNP)+(q.linhas.length>500?' · a tela mostra 500 linhas; a exportação traz todas':'');
+    ' → Novo Programado 2027 '+rsCurto(tNP)+(q.anosOcultos.length?' · anos sem saldo a programar ocultos: '+faixasTexto(q.anosOcultos):'')+(q.linhas.length>500?' · a tela mostra 500 linhas; a exportação traz todas':'');
   const numerica=function(k){ return k>=0 && q.linhas.length && typeof q.linhas[0][k]==='number'; };
   tab.querySelector('thead tr').innerHTML=q.cab.map(function(c,k){
     return '<th class="'+(numerica(k)?'num':'')+(k===q.c27+1?' novo-programado':'')+'">'+esc(c)+'</th>'; }).join('');
