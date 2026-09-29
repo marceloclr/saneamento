@@ -6954,7 +6954,7 @@ function montarSessao(nome){
     arquivo:E.arquivo?E.arquivo.name:'', assinaturaBase:assinaturaBase(),
     cfg:E.cfg, decisoes:E.decisoes, responsavel:E.responsavel, seq:E.seq,
     exclusoes:E.exclusoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao, npAnos:E.npAnos,
-    rodadas:E.rodadas, manifestacoes:E.manifestacoes, destinatarios:E.destinatarios,
+    rodadas:E.rodadas, manifestacoes:E.manifestacoes, destinatarios:E.destinatarios, gruposFonte:E.gruposFonte||null,
     cfgSessao:{ destino:E.destinoSessao, github:{ repo:E.github.repo, branch:E.github.branch, pasta:E.github.pasta },
       google:{ clientId:E.google?E.google.clientId:'' }, modeloEmail:E.modeloEmail||null }
   };
@@ -7067,6 +7067,8 @@ function aplicarSessao(d,origem){
   E.rodadas=Array.isArray(d.rodadas)?d.rodadas:[];
   E.manifestacoes=d.manifestacoes||{};
   E.destinatarios=d.destinatarios&&Array.isArray(d.destinatarios.linhas)?d.destinatarios:null; E._critDest=null;
+  E.gruposFonte=d.gruposFonte&&d.gruposFonte.grupos&&d.gruposFonte.fontes?d.gruposFonte:null; E._critGF=null;
+  if(typeof aoMudarGruposFonte==='function'){ _gfCache=null; if(typeof prepararFiltrosGrupo==='function') prepararFiltrosGrupo(); pintarGruposFonte(); }
   E._envios=null;
   if(d.cfgSessao){
     if(d.cfgSessao.destino) E.destinoSessao=d.cfgSessao.destino;
@@ -8059,8 +8061,164 @@ async function baixarModeloGruposFonte(){
   baixarBlob(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'grupos-fonte-modelo_'+hojeISO()+'.xlsx');
 }
 
+/* ---------------------------- Grupos vigentes ---------------------------- */
+const SEM_GRUPO='(sem grupo)';
+E.gruposFonte=null;          /* grupos aceitos nesta sessão (vão para o .json); null = embutido */
+E._critGF=null;
+let _gfEmbutido=null, _gfCache=null;
+function gruposEmbutidos(){
+  if(_gfEmbutido===null){
+    try{ const el=document.getElementById('gruposFontePadrao'); _gfEmbutido=JSON.parse(el?el.textContent:'{}')||{}; }catch(e){ _gfEmbutido={}; }
+  }
+  return _gfEmbutido;
+}
+function gruposVigentes(){
+  const j=E.gruposFonte || gruposEmbutidos();
+  return j && j.grupos && Object.keys(j.grupos).length ? j : null;
+}
+function temGruposFonte(){ return !!gruposVigentes(); }
+/* Código do grupo da fonte (nome como na base), ou SEM_GRUPO. */
+function grupoDaFonte(nome){
+  const j=gruposVigentes(); if(!j) return SEM_GRUPO;
+  if(!_gfCache || _gfCache.j!==j) _gfCache={ j:j, mapa:new Map() };
+  let g=_gfCache.mapa.get(nome);
+  if(g===undefined){ const r=j.fontes[codigoFonte(nome)] || j.fontes[String(nome)]; g=r?r[0]:SEM_GRUPO; _gfCache.mapa.set(nome,g); }
+  return g;
+}
+function nomeGrupoFonte(cod){ const j=gruposVigentes(); return cod===SEM_GRUPO||!j ? SEM_GRUPO : (j.grupos[cod]||cod); }
+/* Opções do filtro: grupos que têm fonte na base, mais “(sem grupo)” se houver fonte sem grupo. */
+function opcoesGrupoFonte(){
+  if(!temGruposFonte()) return [];
+  const pres=new Set(fontesDaBase().map(grupoDaFonte));
+  return Array.from(pres).filter(function(g){ return g!==SEM_GRUPO; })
+    .map(function(g){ return [g,nomeGrupoFonte(g)]; }).sort(function(a,b){ return a[1].localeCompare(b[1],'pt-BR'); })
+    .concat(pres.has(SEM_GRUPO)?[[SEM_GRUPO,SEM_GRUPO]]:[]);
+}
+
+/* ---------------------------- Leitura e crítica ------------------------- */
+function colunasPorNome(cab,nomes){
+  const c=(cab||[]).map(function(x){ return norm(x); }), o={};
+  Object.keys(nomes).forEach(function(k){ o[k]=c.findIndex(function(x){ return nomes[k].indexOf(x)>=0; }); });
+  return o;
+}
+/* abas: { GRUPOS:matriz, FONTES:matriz } (primeira linha = cabeçalho). */
+function criticarGruposFonte(abas,arquivo){
+  const erros=[], avisos=[];
+  const G=abas.GRUPOS, F=abas.FONTES;
+  if(!G) erros.push('Aba GRUPOS não encontrada. Use o modelo (abas GRUPOS e FONTES).');
+  if(!F) erros.push('Aba FONTES não encontrada. Use o modelo (abas GRUPOS e FONTES).');
+  if(erros.length) return { arquivo:arquivo, erros:erros, avisos:avisos, json:null };
+  const cg=colunasPorNome(G[0],{ cod:['CODIGO'], desc:['DESCRICAO'] });
+  const cf=colunasPorNome(F[0],{ cod:['CODIGO'], desc:['DESCRICAO'], grupo:['GRUPO'], base:['FONTE NA BASE'] });
+  if(cg.cod<0||cg.desc<0) erros.push('Aba GRUPOS: faltam as colunas CÓDIGO e DESCRIÇÃO no cabeçalho.');
+  if(cf.cod<0||cf.grupo<0) erros.push('Aba FONTES: faltam as colunas CÓDIGO e GRUPO no cabeçalho.');
+  if(erros.length) return { arquivo:arquivo, erros:erros, avisos:avisos, json:null };
+  const grupos={};
+  for(let i=1;i<G.length;i++){
+    const r=G[i]||[], cod=limpo(r[cg.cod]), desc=limpo(r[cg.desc]);
+    if(!cod && !desc) continue;
+    if(!cod){ erros.push('GRUPOS, linha '+(i+1)+': CÓDIGO vazio ('+desc+').'); continue; }
+    if(!desc){ erros.push('GRUPOS, linha '+(i+1)+': DESCRIÇÃO vazia para o grupo '+cod+'.'); continue; }
+    if(grupos[cod]){ erros.push('GRUPOS, linha '+(i+1)+': código '+cod+' repetido.'); continue; }
+    grupos[cod]=desc;
+  }
+  if(!Object.keys(grupos).length && !erros.length) erros.push('Aba GRUPOS sem nenhum grupo.');
+  /* fontes da base: por nome, por código e por descrição */
+  const base=fontesDaBase(), porNome=new Map(), porCod=new Map(), porDesc=new Map();
+  base.forEach(function(nm){
+    porNome.set(norm(nm),nm);
+    const c=codigoFonte(nm); if(c) porCod.set(c,(porCod.get(c)||[]).concat(nm));
+    const d=norm(descricaoFonte(nm)); porDesc.set(d,(porDesc.get(d)||[]).concat(nm));
+  });
+  const fontes={}, linhaDe={}, usados=new Set();
+  for(let i=1;i<F.length;i++){
+    const r=F[i]||[], nl=i+1;
+    const codTxt=limpo(r[cf.cod]), desc=cf.desc>=0?limpo(r[cf.desc]):'', grupo=limpo(r[cf.grupo]), nomeBase=cf.base>=0?limpo(r[cf.base]):'';
+    if(!codTxt && !desc && !grupo && !nomeBase) continue;
+    if(!codTxt){ erros.push('FONTES, linha '+nl+': CÓDIGO vazio'+(desc?' ('+desc+')':'')+'.'); continue; }
+    let nm=nomeBase && porNome.get(norm(nomeBase));
+    const cod=codigoFonte(codTxt)||codTxt;
+    if(!nm){ const l=porCod.get(cod); if(l && l.length===1) nm=l[0]; }
+    if(!nm && desc){ const l=porDesc.get(norm(desc)); if(l && l.length===1) nm=l[0]; }
+    const chave=nm ? (codigoFonte(nm)||nm) : cod;
+    if(linhaDe[chave]){ erros.push('FONTES, linha '+nl+': fonte '+chave+' repetida (já na linha '+linhaDe[chave]+'); cada fonte pertence a um só grupo.'); continue; }
+    linhaDe[chave]=nl;
+    if(!grupo) continue;   /* sem grupo: fica em “(sem grupo)” */
+    if(!grupos[grupo]){ erros.push('FONTES, linha '+nl+': grupo '+grupo+' não existe na aba GRUPOS.'); continue; }
+    if(!nm && base.length) avisos.push('FONTES, linha '+nl+': fonte '+codTxt+(desc?' ('+desc+')':'')+' não está na base importada.');
+    if(nm && desc && norm(desc)!==norm(descricaoFonte(nm))) avisos.push('FONTES, linha '+nl+': descrição “'+desc+'” difere da base (“'+descricaoFonte(nm)+'”).');
+    fontes[chave]=[grupo, desc || (nm?descricaoFonte(nm):'')];
+    usados.add(grupo);
+  }
+  Object.keys(grupos).forEach(function(g){ if(!usados.has(g)) avisos.push('Grupo '+g+' ('+grupos[g]+') sem nenhuma fonte.'); });
+  if(!base.length) avisos.push('Base de execução não importada: as fontes não foram conferidas com a base.');
+  else {
+    const sem=base.filter(function(nm){ return !fontes[codigoFonte(nm)||nm]; });
+    if(sem.length) avisos.push(sem.length+' fonte(s) da base sem grupo — ficam em “(sem grupo)”: '+sem.slice(0,15).join('; ')+(sem.length>15?'…':''));
+  }
+  const json={ versao:1, origem:arquivo, gerado:new Date().toISOString(), hash:'', grupos:grupos, fontes:fontes };
+  json.hash=cyrb53(JSON.stringify([grupos,fontes]));
+  return { arquivo:arquivo, erros:erros, avisos:avisos, json:erros.length?null:json };
+}
+
+async function importarGruposFonte(file){
+  if(!file) return;
+  if(!/\.xlsx$/i.test(file.name)){ recado('Os grupos de fonte devem vir numa planilha .xlsx (use o modelo).'); return; }
+  let crit;
+  try{
+    const wb=XLSX.read(new Uint8Array(await lerComoBuffer(file)),{type:'array'});
+    const aba=function(nome){ const s=wb.SheetNames.find(function(x){ return norm(x)===nome; });
+      return s ? XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,defval:'',blankrows:false,raw:false}) : null; };
+    crit=criticarGruposFonte({ GRUPOS:aba('GRUPOS'), FONTES:aba('FONTES') },file.name);
+  }catch(err){ console.error(err); crit={ arquivo:file.name, erros:['Não foi possível ler a planilha: '+err.message], avisos:[], json:null }; }
+  E._critGF=crit;
+  if(crit.json){
+    E.gruposFonte=crit.json; _gfCache=null;
+    recado('Grupos de fonte aceitos: '+n(Object.keys(crit.json.grupos).length)+' grupo(s), '+n(Object.keys(crit.json.fontes).length)+
+      ' fonte(s) agrupada(s)'+(crit.avisos.length?' · '+n(crit.avisos.length)+' aviso(s)':'')+'. Eles entram na próxima versão gravada da sessão.');
+    aoMudarGruposFonte();
+  } else recado('Planilha de grupos recusada: '+n(crit.erros.length)+' erro(s). Corrija e envie de novo.');
+  pintarGruposFonte();
+}
+function pintarGruposFonte(){
+  const box=$('#gfCritica'); const est=$('#gfEstado');
+  const j=gruposVigentes(), c=E._critGF;
+  if(est) est.textContent = j ? n(Object.keys(j.grupos).length)+' grupo(s) · '+(E.gruposFonte?'da planilha '+(j.origem||''):'embutidos no sistema') : 'nenhum grupo carregado';
+  if(!box) return;
+  const lista=function(itens){ return '<ul class="pequeno" style="margin:4px 0 0 18px;max-height:160px;overflow:auto">'+
+    itens.slice(0,60).map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+(itens.length>60?'<li>… e mais '+n(itens.length-60)+'</li>':'')+'</ul>'; };
+  let h='';
+  if(c && c.erros.length) h+='<div class="aviso alerta"><span class="marca">Recusado</span><span><b>'+esc(c.arquivo)+'</b>: '+n(c.erros.length)+' erro(s); o arquivo não foi aceito'+
+    (j?' e continuam valendo os grupos anteriores':'')+'.'+lista(c.erros)+'</span></div>';
+  if(j) h+='<div class="aviso bom"><span class="marca">Grupos</span><span>'+Object.keys(j.grupos).map(function(g){ return '<b>'+esc(g)+'</b> '+esc(j.grupos[g]); }).join(' · ')+'</span></div>';
+  else if(!c) h+='<div class="aviso nota"><span class="marca">Grupos</span><span>Nenhum grupo de fonte carregado: o filtro Grupo de fonte fica desabilitado até o envio da planilha.</span></div>';
+  if(c && !c.erros.length && c.avisos.length) h+='<div class="aviso nota"><span class="marca">Avisos</span><span>'+n(c.avisos.length)+' aviso(s), que não impedem o uso.'+lista(c.avisos)+'</span></div>';
+  box.innerHTML=h;
+}
+function baixarJsonGruposFonte(){
+  const j=gruposVigentes(); if(!j){ recado('Nenhum grupo de fonte carregado.'); return; }
+  baixarBlob(new Blob([JSON.stringify(j)],{type:'application/json'}),'grupos-fonte_'+hojeISO()+'.json');
+}
+/* Troca de grupos: redesenha os filtros e o que depende deles. */
+function aoMudarGruposFonte(){
+  _gfCache=null;
+  if(typeof prepararFiltrosGrupo==='function') prepararFiltrosGrupo();
+  if(E.diag && typeof renderTudo==='function') renderTudo();
+}
+
 function ligarGruposEColunas(){
   const b=$('#btnModeloGruposFonte'); if(b) b.addEventListener('click',baixarModeloGruposFonte);
+  const bj=$('#btnJsonGruposFonte'); if(bj) bj.addEventListener('click',baixarJsonGruposFonte);
+  const area=$('#areaGruposFonte'), inp=$('#arqGruposFonte');
+  if(area && inp){
+    area.addEventListener('click',function(){ inp.click(); });
+    area.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); inp.click(); } });
+    inp.addEventListener('change',function(){ const f=inp.files[0]; inp.value=''; importarGruposFonte(f); });
+    ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
+    ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
+    area.addEventListener('drop',function(ev){ importarGruposFonte(ev.dataTransfer.files[0]); });
+  }
+  pintarGruposFonte();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ligarGruposEColunas); else ligarGruposEColunas();
 </script>
