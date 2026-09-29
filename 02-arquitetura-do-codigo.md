@@ -60,6 +60,19 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    planilhas refeitas por `planilhasDaRodada` (a mesma do **Baixar de novo**), Google
    Identity Services (`obterTokenGoogle`, script carregado sob demanda), `montarMime`,
    `enviarGmail` e `enviarRodadaEmail`; registro em `rodada.orgaos[k].emails`.
+12. **Grupos de fonte e colunas** — grupos embutidos no JSON `#gruposFontePadrao`
+   (logo antes do bloco) ou vindos da planilha (`criticarGruposFonte`,
+   `importarGruposFonte`; aba FONTES com a coluna GRUPO, aba GRUPOS opcional), em
+   `E.gruposFonte` e na sessão; `gruposVigentes`, `grupoDaFonte`, `opcoesGrupoFonte`.
+   Filtro Grupo → Fonte: `PARES_FONTE`, `fontesDoFiltro`, `textoFiltroFonte`,
+   `prepararGrupo` e `cascataGrupoFonte` (chamada ao fim de `montarMulti`);
+   agrupamento `seriesPorGrupoFonte`. Colunas: `TABELAS_COLUNAS`, `E.colunasOcultas`,
+   `colunasDaTabela` (MAPP/Código e Providência fixas), `aplicarColunas`,
+   `vigiarTabela` (observa só as linhas), painel `abrirPainelColunas`; exportações por
+   `colunasExportaveis`/`colunasExportaveisAoa`, com `ALIAS_COLUNAS` e a aba
+   `anexarColunasOcultas`. Na simplificada, o bloco é **gerado** deste por
+   `testes/gerar_bloco12_simplificado.js` (entre `BLOCO12:INICIO` e `BLOCO12:FIM`):
+   alterar aqui e gerar de novo.
 
 ## Estado global `E`
 

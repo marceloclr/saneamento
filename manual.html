@@ -377,13 +377,13 @@ const GUIA_COMPLETA = [
     conferir:['O selo no alto, com MAPPs, linhas e o nome do arquivo.','Se um painel falhar, o sistema avisa qual; os demais são compostos normalmente.'],
     cautela:['Tudo é processado no navegador; nada é enviado a servidor.'] },
   { t:'Ler a Visão Geral e a prévia do resultado', cor:'var(--musgo)', ir:['panorama'], onde:'Visão Geral',
-    fazer:['Usar o **Recorte do Panorama** (secretaria, órgão, programa, fonte, estágio e busca) para restringir toda a aba.','Ler a **Prévia do resultado**: universo, sobreviventes às regras e retirados, com o **Programado 2027** contra o **Novo Programado 2027**.','Em **Exercícios de execução considerados**, no Saldo, marcar na régua os anos que entram no processamento e no Novo Programado.'],
+    fazer:['Usar o **Recorte do Panorama** (secretaria, órgão, programa, grupo de fonte, fonte, estágio e busca) para restringir toda a aba. O filtro **Grupo de fonte** vem sempre antes de Fonte: marcar FONTES COGERF ou OUTRAS FONTES limita a lista de fontes e, sem fonte marcada, vale para todas as fontes do grupo.','Ler a **Prévia do resultado**: universo, sobreviventes às regras e retirados, com o **Programado 2027** contra o **Novo Programado 2027**.','Em **Exercícios de execução considerados**, no Saldo, marcar na régua os anos que entram no processamento e no Novo Programado.'],
     conferir:['O Saldo por exercício, com o conjunto **Sobreviventes às regras**, e as inconsistências do Novo Programado, se houver.','Exercícios sem saldo do programado (programado − empenhado igual a zero em todos os MAPPs do conjunto) não aparecem na grade, na exportação, nas dicas do saldo por regra nem na ficha do MAPP; a legenda diz quais foram ocultados.','A Carteira por estágio e a Programação.'],
-    cautela:['A prévia é preliminar: muda com as exclusões pelo usuário até o saneamento ser concluído.','Blocos secundários abrem recolhidos: clique no título para expandir.'] },
+    cautela:['A prévia é preliminar: muda com as exclusões pelo usuário até o saneamento ser concluído.','Blocos secundários abrem recolhidos: clique no título para expandir.','Os grupos de fonte vêm embutidos no sistema; outra planilha pode ser enviada em Configurações › Grupos de fonte (vale para a sessão gravada).'] },
   { t:'Analisar', cor:'var(--ardosia)', ir:['diagnostico'], onde:'Análise',
     fazer:['No **Quadro de diagnóstico**, filtrar e abrir a ficha de cada MAPP para ver as regras testadas e a evidência.','Expandir, quando útil, **Revisão da base**, **Títulos não comunicativos** e **Despesas de continuidade**.'],
     conferir:['A ação recomendada e o grau de confiança.','Sobreposições, paralisados e dados insuficientes, que pedem exame manual.'],
-    cautela:['O sistema aponta; nunca corrige a base por conta própria.'] },
+    cautela:['O sistema aponta; nunca corrige a base por conta própria.','O botão **☰ Colunas**, acima de cada tabela, mostra ou oculta colunas na hora; MAPP, caixa de seleção e Providência ficam sempre. A escolha dura até fechar a janela.'] },
   { t:'Ouvir os órgãos', cor:'var(--petroleo)', ir:['manifestacao'], onde:'Manifestação',
     fazer:['Com uma sessão gravada ou retomada, escolher órgãos e prazo e acionar **Gerar planilhas**.',
       'Em **Destinatários por órgão**, acionar **Baixar modelo**, preencher NOME, E-MAIL e TIPO (Para ou Cc; um e-mail por linha, repetindo o órgão para vários) e enviar a planilha. O sistema a critica: com erro, ela é recusada e a lista diz o que corrigir.',
@@ -398,7 +398,7 @@ const GUIA_COMPLETA = [
   { t:'Exportar o resultado', cor:'var(--musgo)', ir:['antesdepois'], onde:'Resultado',
     fazer:['Conferir o **Quadro por órgão** (Programado 2027 e Novo Programado 2027) e o **Quadro por MAPP dos ativos depois**.','Acionar **Exportar resultado — Novo Programado 2027**, no alto da aba, ou **Concluir e exportar resultado**, na Decisão, para declarar o saneamento concluído.'],
     conferir:['O arquivo traz as abas NP 2027 POR MAPP (MAPP, órgão, fonte, Programado 2027, Novo Programado 2027), QUADRO POR MAPP, QUADRO POR ORGAO e PARAMETROS.','No Quadro por MAPP (tela e arquivo), os exercícios anteriores a 2027 sem saldo a programar (programado − empenhado igual a zero em todas as linhas) ficam ocultos; a legenda e a aba PARAMETROS dizem quais foram.'],
-    cautela:['As demais relações (regras, situações à margem, indícios, excluídos pelo usuário e saldo) ficam no box **Exportações**, no fim da aba.','Guarde a sessão (.json) ao fim da jornada: sem ela, o trabalho se perde ao fechar a página.'] }
+    cautela:['As demais relações (regras, situações à margem, indícios, excluídos pelo usuário e saldo) ficam no box **Exportações**, no fim da aba.','As exportações seguem os filtros e as colunas da tela; a aba **COLUNAS OCULTAS** diz o que ficou fora do arquivo.','Guarde a sessão (.json) ao fim da jornada: sem ela, o trabalho se perde ao fechar a página.'] }
 ];
 
 const GUIA_ESSENCIAL = [
@@ -412,17 +412,17 @@ const GUIA_ESSENCIAL = [
     conferir:['A tabela de parâmetros em vigor, já resolvidos pela âncora temporal.','A quantidade de MAPPs alcançados por regra.'],
     cautela:['Além dos exercícios de execução, os parâmetros são sempre os oficiais e não se alteram nesta versão; para outro critério de execução, use a versão completa.','Deixar de fora o período corrente faz a Regra 3 alcançar todo MAPP que executou no histórico; o aviso vermelho sob a régua indica isso.'] },
   { t:'Filtrar e examinar os MAPPs', cor:'var(--ardosia)', ir:['saneamento'], onde:'2 · Exclusão e retorno',
-    fazer:['Filtrar por secretaria, órgão, programa, ano de aprovação, regra, estágio, situação no saneamento, execução no período atual, saldo mínimo, confiança, fonte e busca livre.','Ordenar por qualquer coluna, clicando no cabeçalho.','Clicar na linha para abrir a ficha do MAPP, com todas as regras testadas.','Acionar **Exportar seleção filtrada**, se necessário.'],
+    fazer:['Filtrar por secretaria, órgão, programa, ano de aprovação, regra, estágio, situação no saneamento, execução no período atual, saldo mínimo, confiança, grupo de fonte, fonte e busca livre.','Para usar outros grupos de fonte, acionar **Carregar grupos de fonte (.xlsx)**, logo abaixo dos filtros; **Baixar modelo** traz a planilha com as fontes da base.','Ordenar por qualquer coluna, clicando no cabeçalho.','Clicar na linha para abrir a ficha do MAPP, com todas as regras testadas.','Acionar **Exportar seleção filtrada**, se necessário.'],
     conferir:['A regra, a ação do saneamento e a situação de cada MAPP.','Os totais filtrados, na linha totalizadora da grade.'],
-    cautela:['Filtro vazio significa ausência de restrição.','O filtro de fonte seleciona MAPPs, mas o saldo exibido soma todas as fontes do MAPP; a ficha mostra a quebra por fonte.'] },
+    cautela:['Filtro vazio significa ausência de restrição.','O filtro de fonte seleciona MAPPs, mas o saldo exibido soma todas as fontes do MAPP; a ficha mostra a quebra por fonte.','Os grupos carregados valem enquanto a janela estiver aberta; sem carga, valem os embutidos (FONTES COGERF e OUTRAS FONTES).','O botão **☰ Colunas**, acima de cada tabela, mostra ou oculta colunas na hora.'] },
   { t:'Excluir ou retornar MAPPs', cor:'var(--carmim)', ir:['saneamento'], onde:'2 · Exclusão e retorno',
     fazer:['Usar a coluna **Providência** para excluir ou retornar um MAPP.','Para vários, marcar as caixas e acionar **Excluir selecionados**, **Retornar selecionados** ou **Retornar todos**.'],
     conferir:['A situação passa a “Excluído pelo usuário”, o MAPP entra na base saneada com essa ação e o selo no alto atualiza a contagem.'],
     cautela:['Qualquer MAPP do universo pode ser excluído, com ou sem regra.','O excluído tem o mesmo tratamento dos MAPPs das regras: entra na base saneada, e a ação “excluído pelo usuário” prevalece sobre a da regra.','A exclusão pede responsável e motivo; dá para repetir o motivo nas próximas sem perguntar de novo.'] },
   { t:'Conferir e exportar a base saneada', cor:'var(--musgo)', ir:['saneada'], onde:'3 · Base saneada',
-    fazer:['Examinar os cartões de composição da base saneada.','Na grade, escolher recorte, órgão, regra, exercícios exibidos e busca.','Acionar **Exportar base saneada**.'],
-    conferir:['O arquivo exportado em duas abas: RESULTADO DO SANEAMENTO e EXCLUIDOS.','O quadro Excluídos do saneamento, de onde também é possível retornar o MAPP.'],
-    cautela:['A exportação traz a base saneada inteira e todos os exercícios, independentemente dos filtros da grade.','Saldo negativo aparece em carmim.'] },
+    fazer:['Examinar os cartões de composição da base saneada.','Na grade, escolher recorte, órgão, regra, grupo de fonte, fonte, exercícios exibidos e busca, e as colunas pelo botão **☰ Colunas**.','Acionar **Exportar base saneada**.'],
+    conferir:['O arquivo exportado nas abas RESULTADO DO SANEAMENTO, EXCLUIDOS e PARAMETROS (filtros e colunas ocultas), mais COLUNAS OCULTAS quando houver.','O quadro Excluídos pelo usuário, de onde também é possível retornar o MAPP.'],
+    cautela:['A exportação segue a grade (recorte, filtros e colunas) e traz sempre todos os exercícios, qualquer que seja a opção de exercícios exibidos. Para a base inteira, limpe os filtros.','Saldo negativo aparece em carmim.'] },
   { t:'Antes de fechar a página', cor:'var(--sepia)', ir:null, onde:'Fora do sistema',
     fazer:['Exportar a base saneada ao fim do trabalho.'],
     conferir:['O arquivo .xlsx gravado na pasta de downloads.'],
@@ -472,6 +472,8 @@ const COMPARATIVO = [
   ['Novo Programado 2027','sim','—'],
   ['Decisão humana (acatar ou rejeitar)','sim, com justificativa','—'],
   ['Exclusão de MAPPs pelo usuário','excluir e restabelecer','excluir e retornar'],
+  ['Grupos de fonte (filtro antes de Fonte)','em cada tela com fonte; planilha em Configurações, na sessão','na etapa 2 e na base saneada; planilha pelo link, enquanto a janela estiver aberta'],
+  ['Seleção de colunas (☰ Colunas)','17 tabelas','5 tabelas'],
   ['Revisão de consistência da base','sim','—'],
   ['Despesas de continuidade (segunda fase)','sim','—'],
   ['Antes e depois','sim','—'],
@@ -494,7 +496,9 @@ const GLOSSARIO = [
   ['Sobreposição','MAPP enquadrado em mais de uma regra; exige exame manual.','ambas'],
   ['Confiança','Alta, média ou baixa, conforme a completude e a coerência dos dados.','ambas'],
   ['Novo Programado 2027','VLR_PLANEJADO_27 somado aos saldos (programado − empenhado) de todos os exercícios anteriores a 2027 marcados na régua; saldo negativo não é somado e o MAPP é apontado como inconsistente.','completa'],
-  ['Providência','Coluna que retira um MAPP do resultado ou o devolve a ele, de imediato e de forma reversível.','ambas'],
+  ['Providência','Coluna que exclui o MAPP ou desfaz a exclusão, de imediato e de forma reversível.','ambas'],
+  ['Grupo de fonte','Conjunto de fontes usado para filtrar: FONTES COGERF (as que a COGERF delibera no limite financeiro) e OUTRAS FONTES. Vem embutido; outra planilha pode ser carregada (aba FONTES com a coluna GRUPO; a aba GRUPOS é opcional).','ambas'],
+  ['Seleção de colunas','Botão ☰ Colunas acima de cada tabela: oculta ou mostra colunas na hora, até fechar a janela. As exportações seguem a escolha e trazem a aba COLUNAS OCULTAS.','ambas'],
   ['Sobrevivente','MAPP do universo que não atende a regra alguma e não foi excluído pelo usuário. Leva o Novo Programado 2027.','completa'],
   ['Excluído pelo usuário','MAPP retirado individualmente, com ou sem regra. Sai do conjunto ativo como os das regras (completa) e entra na base saneada com a ação “excluído pelo usuário” (essencial).','ambas'],
   ['Rodada','Envio de planilhas protegidas aos órgãos, com identificador próprio, data-limite e a versão da sessão em que foi gerada.','completa'],
@@ -584,7 +588,8 @@ const BLOCOS_SCRIPT = [
   ['8','Antes e Depois','Situação antes e depois das decisões, por medida e por órgão (ou outro agrupamento).','`situacaoAntes` `situacaoDepois` `apurarAntesDepois` `renderAntesDepois`'],
   ['9','Exportações e ligações','Relações exportáveis, configurações, sessão em .json, ligação de eventos e inicialização.','`linhasMapp` `conjuntos` `exportar` `cfgParaTela` `aplicarConfig` `guardarSessao` `retomarSessao` `ligarEventos` `iniciar`'],
   ['10','Boas-vindas, apresentação e manual','Boas-vindas de abertura, apresentação completa e ligação com o manual único (`manual.html`). Somente leitura do estado.','`abrirBoasVindas` `abrirApresentacao` `abrirManual` `estadoParaManual` `enviarEstadoManual` `iniciarManual`'],
-  ['11','Manifestação e sessão','Rodadas de planilhas por órgão (ExcelJS e JSZip), conferência dos retornos, sessão versionada e gravação no computador ou no GitHub.','`gerarRodada` `montarPlanilhaOrgao` `reemitirRodada` `planilhasDaRodada` `importarDestinatarios` `criticarDestinatarios` `obterTokenGoogle` `montarMime` `enviarGmail` `enviarRodadaEmail` `importarRetornos` `aplicarRetornos` `situacaoManif` `sessaoAtiva` `gravarSessao` `aplicarSessao` `pedirAcessoGitHub` `githubGravar` `githubListar` `perguntar`']
+  ['11','Manifestação e sessão','Rodadas de planilhas por órgão (ExcelJS e JSZip), conferência dos retornos, sessão versionada e gravação no computador ou no GitHub.','`gerarRodada` `montarPlanilhaOrgao` `reemitirRodada` `planilhasDaRodada` `importarDestinatarios` `criticarDestinatarios` `obterTokenGoogle` `montarMime` `enviarGmail` `enviarRodadaEmail` `importarRetornos` `aplicarRetornos` `situacaoManif` `sessaoAtiva` `gravarSessao` `aplicarSessao` `pedirAcessoGitHub` `githubGravar` `githubListar` `perguntar`'],
+  ['12','Grupos de fonte e colunas','Grupos embutidos (`#gruposFontePadrao`) ou da planilha criticada, filtro Grupo → Fonte, agrupamento por grupo, seleção de colunas e exportações que as seguem. Na simplificada, gerado deste por `testes/gerar_bloco12_simplificado.js`.','`gruposVigentes` `grupoDaFonte` `criticarGruposFonte` `importarGruposFonte` `fontesDoFiltro` `cascataGrupoFonte` `seriesPorGrupoFonte` `aplicarColunas` `abrirPainelColunas` `vigiarTabela` `colunasExportaveis` `anexarColunasOcultas`']
 ];
 
 const CHAVES_E = [

@@ -1,5 +1,19 @@
 # Backlog
 
+## Lote de 29/09/2026 — grupos de fonte e seleção de colunas
+
+Plano: [`docs/planos/grupos-fonte-e-colunas.md`](docs/planos/grupos-fonte-e-colunas.md).
+- Filtro **Grupo de fonte** antes de Fonte em todas as telas com fonte (completa: Panorama,
+  Programação, Diagnóstico, Decisão, Continuidade e Resultado; simplificada: etapa 2 e base
+  saneada); agrupamento por grupo no Saldo e no Resultado.
+- Grupos **FONTES COGERF** e **OUTRAS FONTES** embutidos (`modelos/grupos-fontes.xlsx`); crítica
+  tolerante (aba GRUPOS opcional, colunas GRUPO duplicadas, código de FONTE NA BASE prevalece).
+- **☰ Colunas** em 17 tabelas (completa) e 5 (simplificada); exportações seguem filtros e colunas
+  da tela, com a aba COLUNAS OCULTAS; a base saneada da simplificada passa a exportar o que a grade mostra.
+- Simplificada: bloco 12 gerado da completa (`testes/gerar_bloco12_simplificado.js`).
+- Testes: `teste_colunas`, `teste_grupo_fonte`, `teste_grupos_embutidos`,
+  `teste_simplificado_grupos_colunas`; `carregar.js` 40× mais rápido no jsdom.
+
 ## Lote de 29/09/2026 — Excluir pelo usuário (auditoria SEPA)
 
 Plano: [`docs/planos/excluir-pelo-usuario.md`](docs/planos/excluir-pelo-usuario.md).

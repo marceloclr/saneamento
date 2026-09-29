@@ -14,7 +14,13 @@ Abra `index.html` diretamente no navegador (ou acesse a URL acima) e importe a p
 
 ## Arquitetura
 
-Arquivo único de aproximadamente 300 KB, sem dependências de build: `<head>` com todo o CSS, `<body>` com a marcação e nove blocos `<script>` sequenciais em JavaScript puro (sem módulos ou framework). Detalhes completos em [`02-arquitetura-do-codigo.md`](02-arquitetura-do-codigo.md).
+Arquivo único de aproximadamente 570 KB, sem dependências de build: `<head>` com todo o CSS, `<body>` com a marcação e doze blocos `<script>` sequenciais em JavaScript puro (sem módulos ou framework). Detalhes completos em [`02-arquitetura-do-codigo.md`](02-arquitetura-do-codigo.md).
+
+## Grupos de fonte e colunas
+
+Em toda tela com valores por fonte, o filtro **Grupo de fonte** vem antes do filtro Fonte. Os grupos vêm embutidos no sistema — **FONTES COGERF** (33 fontes, lista “Delibera Limite Financeiro”) e **OUTRAS FONTES** —, a partir de `modelos/grupos-fontes.xlsx`. Outra planilha pode ser carregada (aba FONTES com a coluna GRUPO; a aba GRUPOS é opcional): em Configurações › Grupos de fonte, na versão completa, vale para a sessão; pelo link junto do filtro, na simplificada, vale enquanto a janela estiver aberta. **Baixar modelo** traz a planilha com as fontes da base.
+
+Acima de cada tabela, o botão **☰ Colunas** mostra ou oculta colunas na hora (MAPP, caixa de seleção e Providência ficam sempre). As exportações seguem os filtros e as colunas da tela e trazem a aba COLUNAS OCULTAS.
 
 ## Manifestação dos órgãos e sessão
 
