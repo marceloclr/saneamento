@@ -6,10 +6,13 @@
     "filtros": "node --max-old-space-size=4096 teste_filtros.js",
     "todas-fontes": "node --max-old-space-size=4096 teste_todas_fontes.js",
     "anos-ocultos": "node --max-old-space-size=4096 teste_anos_ocultos.js",
-    "anos-sem-saldo": "node --max-old-space-size=4096 teste_anos_sem_saldo.js"
+    "anos-sem-saldo": "node --max-old-space-size=4096 teste_anos_sem_saldo.js",
+    "email-orgaos": "node --max-old-space-size=4096 teste_email_orgaos.js"
   },
   "dependencies": {
+    "exceljs": "^4.4.0",
     "jsdom": "^24.0.0",
+    "jszip": "^3.10.1",
     "xlsx": "0.18.5"
   }
 }

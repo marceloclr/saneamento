@@ -1071,6 +1071,15 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <button class="btn principal" id="btnGerarRodada" data-tip="Gera as planilhas dos órgãos selecionados, registra a rodada e grava a nova versão da sessão (no computador, no GitHub ou nos dois).">Gerar planilhas</button>
       <span class="tenue pequeno" id="mResumoGeracao"></span>
     </div>
+    <h4 style="margin:16px 0 6px">Destinatários por órgão</h4>
+    <div class="barra-acoes" style="margin-bottom:8px">
+      <div class="area-solta compacta" id="areaDestinatarios" role="button" tabindex="0" style="flex:1" data-tip="Clique para escolher a planilha de destinatários (.xlsx), ou arraste-a até aqui. Uma linha por pessoa: ÓRGÃO, NOME, E-MAIL e TIPO (Para ou Cc). O sistema critica o arquivo antes de aceitá-lo; o envio por e-mail só é liberado com um cadastro sem erros." data-tip-t="Destinatários">
+        <span class="texto-arq"><strong>Escolha ou arraste a planilha de destinatários</strong><span class="pequeno tenue">obrigatória para o envio por e-mail · criticada antes de ser aceita</span></span>
+        <input type="file" id="arqDestinatarios" accept=".xlsx" class="oculto">
+      </div>
+      <button type="button" class="btn" id="btnModeloDest" data-tip="Baixa o modelo do cadastro, já com uma linha por órgão que tem MAPP enquadrado, para preencher nome e e-mail.">Baixar modelo</button>
+    </div>
+    <div id="destCritica"></div>
     <h4 style="margin:16px 0 6px">Retornos dos órgãos</h4>
     <div class="area-solta compacta" id="areaRetornos" role="button" tabindex="0" data-tip="Clique para escolher as planilhas devolvidas pelos órgãos, ou arraste várias de uma vez. Antes de registrar, o sistema mostra a conferência de cada arquivo." data-tip-t="Retornos">
       <span class="texto-arq"><strong>Escolha ou arraste as planilhas devolvidas</strong><span class="pequeno tenue">várias de uma vez · a sessão da rodada precisa estar retomada</span></span>
@@ -1078,7 +1087,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     </div>
     <h4 style="margin:16px 0 6px">Rodadas</h4>
     <div class="barra-acoes" id="rodadasAcoes" style="margin-bottom:8px"></div>
-    <div class="tabela-caixa" style="max-height:30vh"><table id="tabRodadas"><thead><tr><th>Rodada</th><th class="num">Versão</th><th>Órgão</th><th class="num">MAPPs</th><th class="num">Respondidos</th><th class="num">Responder até</th><th>Situação</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="tabela-caixa" style="max-height:30vh"><table id="tabRodadas"><thead><tr><th>Rodada</th><th class="num">Versão</th><th>Órgão</th><th class="num">MAPPs</th><th class="num">Respondidos</th><th class="num">Responder até</th><th>Situação</th><th>E-mail</th><th></th></tr></thead><tbody></tbody></table></div>
     <h4 style="margin:16px 0 6px">Manifestações registradas</h4>
     <div class="tabela-caixa" style="max-height:40vh"><table id="tabManif"><thead><tr><th>MAPP</th><th>Órgão</th><th>Regra</th><th>Manifestação</th><th>Justificativa</th><th class="num">Previsão</th><th>Responsável no órgão</th><th class="num">Data</th><th>Decisão</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     <div class="barra-acoes" style="margin-top:10px"><button class="btn" id="btnExportarManif" data-tip="Exporta todas as manifestações registradas, com sentido, pendências, arquivo de origem e a decisão atual.">Exportar manifestações</button></div>
@@ -1258,6 +1267,14 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <button class="btn discreto" id="btnEsquecerGitHub" data-tip="Apaga deste navegador o acesso ao GitHub guardado (o token atual continua valendo só até fechar a janela).">Esquecer neste computador</button>
     </div>
     <div class="pequeno tenue" id="ghEstado" style="margin-top:6px"></div>
+  </div>
+  <div class="bloco" style="--acento:var(--petroleo);--acento-tenue:rgba(47,95,97,.10);--acento-medio:rgba(47,95,97,.3)">
+    <header><h2>E-mail (Google)</h2><span class="legenda" id="gEstado"></span></header>
+    <p class="pequeno tenue" style="margin:0 0 8px">Envio das planilhas de manifestação pela conta Google (Gmail) de quem clica em enviar. O ID do cliente vem do projeto criado uma vez no Google Cloud (manual, “Configurar o Google”); ele não é segredo. O acesso concedido vale por uma hora e fica só nesta janela.</p>
+    <div class="grade g3">
+      <label class="campo" style="grid-column:span 2"><span>ID do cliente OAuth <i class="sigla" tabindex="0" data-tip="Client ID do tipo Aplicativo da Web, terminado em .apps.googleusercontent.com. Fica guardado neste navegador e na sessão." data-tip-t="ID do cliente">?</i></span><input type="text" id="gClientId" placeholder="000000000000-xxxx.apps.googleusercontent.com" autocomplete="off"></label>
+      <div class="campo" style="display:flex;flex-direction:column;gap:4px;font-size:11.5px"><span>&nbsp;</span><button class="btn" id="btnConectarGoogle" data-tip="Abre a janela do Google para autorizar o envio de e-mails por esta conta e confirma o remetente.">Conectar e testar</button></div>
+    </div>
   </div>
   <div class="barra-acoes">
     <button class="btn principal" id="btnAplicarConfig" data-tip="Aplica as alterações de imediato e recalcula integralmente o diagnóstico.">Aplicar e recalcular</button>
@@ -6776,6 +6793,8 @@ Object.assign(E,{
   manifestacoes:{},    /* chave → manifestação vigente, com histórico */
   destinoSessao:'local', destinoFixo:null, ultimaGravacao:null,
   github:{ repo:'', branch:'main', pasta:'sessoes', token:'' },
+  destinatarios:null,  /* cadastro de e-mails por órgão aceito (sem erros); vai para o .json */
+  _critDest:null,      /* última crítica de planilha de destinatários, aceita ou não */
   _envios:null
 });
 
@@ -6866,8 +6885,9 @@ function montarSessao(nome){
     arquivo:E.arquivo?E.arquivo.name:'', assinaturaBase:assinaturaBase(),
     cfg:E.cfg, decisoes:E.decisoes, responsavel:E.responsavel, seq:E.seq,
     exclusoes:E.exclusoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao, npAnos:E.npAnos,
-    rodadas:E.rodadas, manifestacoes:E.manifestacoes,
-    cfgSessao:{ destino:E.destinoSessao, github:{ repo:E.github.repo, branch:E.github.branch, pasta:E.github.pasta } }
+    rodadas:E.rodadas, manifestacoes:E.manifestacoes, destinatarios:E.destinatarios,
+    cfgSessao:{ destino:E.destinoSessao, github:{ repo:E.github.repo, branch:E.github.branch, pasta:E.github.pasta },
+      google:{ clientId:E.google?E.google.clientId:'' }, modeloEmail:E.modeloEmail||null }
   };
 }
 
@@ -6977,14 +6997,20 @@ function aplicarSessao(d,origem){
   E.versaoSessao=d.formato===2 ? (d.versao||0) : 0;
   E.rodadas=Array.isArray(d.rodadas)?d.rodadas:[];
   E.manifestacoes=d.manifestacoes||{};
+  E.destinatarios=d.destinatarios&&Array.isArray(d.destinatarios.linhas)?d.destinatarios:null; E._critDest=null;
   E._envios=null;
   if(d.cfgSessao){
     if(d.cfgSessao.destino) E.destinoSessao=d.cfgSessao.destino;
     const g=d.cfgSessao.github||{};
     if(g.repo) E.github.repo=g.repo; if(g.branch) E.github.branch=g.branch; if(g.pasta) E.github.pasta=g.pasta;
+    if(d.cfgSessao.google && d.cfgSessao.google.clientId && !E.google.clientId){
+      E.google.clientId=d.cfgSessao.google.clientId; guardarClientIdLocal();
+      if($('#gClientId')) $('#gClientId').value=E.google.clientId;
+    }
+    if(d.cfgSessao.modeloEmail && d.cfgSessao.modeloEmail.assunto) E.modeloEmail=d.cfgSessao.modeloEmail;
   }
   E.ultimaGravacao={ nome:d.nome||'(sessão sem nome)', onde:[origem||'arquivo'], em:new Date().toISOString() };
-  cfgParaTela(); sessaoParaTela();
+  cfgParaTela(); sessaoParaTela(); pintarDestinatarios();
   if(E.mapps.length){ diagnosticar(); renderTudo(); }
   else { pintarEncerramento(); renderManifestacoes(); }
   pintarUltimaGravacao();
@@ -7285,18 +7311,26 @@ async function montarPlanilhaOrgao(rodada,orgao,itens,rks){
 
 /* Reemissão: refaz as planilhas de uma rodada já registrada, idênticas
    (mesmos tokens, mesmas regras gravadas), sem rodada nem versão nova. */
+/* Planilhas de uma rodada registrada (todas ou a do órgão `idx`), refeitas
+   idênticas: servem ao download de novo e ao envio por e-mail. */
+async function planilhasDaRodada(r,idx){
+  const orgs = idx==null ? r.orgaos.map(function(o,k){ return k; }) : [idx];
+  const arquivos=[]; let faltam=0;
+  for(const k of orgs){
+    const o=r.orgaos[k];
+    const itens=Object.keys(o.itens).map(function(ch){ const i=E.indice.get(ch); if(i==null){ faltam++; return null; } return E.mapps[i]; }).filter(Boolean)
+      .sort(function(a,b){ return String(a.codigo).localeCompare(String(b.codigo),'pt-BR',{numeric:true}); });
+    if(itens.length) arquivos.push({ nome:o.arquivo, buf:await montarPlanilhaOrgao(r,o.orgao,itens,o.itens), orgao:o.orgao, idx:k, mapps:itens.length });
+  }
+  return { arquivos:arquivos, faltam:faltam };
+}
+
 async function reemitirRodada(id,idx){
   const r=E.rodadas.find(function(x){ return x.id===id; });
   if(!r){ recado('Rodada não encontrada.'); return; }
   if(!E.diag){ recado('Importe antes a base de execução.'); return; }
   if(typeof ExcelJS==='undefined' || typeof JSZip==='undefined'){ recado('As bibliotecas de planilha não carregaram.'); return; }
-  const orgs = idx==null ? r.orgaos : [r.orgaos[idx]];
-  const arquivos=[]; let faltam=0;
-  for(const o of orgs){
-    const itens=Object.keys(o.itens).map(function(ch){ const i=E.indice.get(ch); if(i==null){ faltam++; return null; } return E.mapps[i]; }).filter(Boolean)
-      .sort(function(a,b){ return String(a.codigo).localeCompare(String(b.codigo),'pt-BR',{numeric:true}); });
-    if(itens.length) arquivos.push({ nome:o.arquivo, buf:await montarPlanilhaOrgao(r,o.orgao,itens,o.itens) });
-  }
+  const p=await planilhasDaRodada(r,idx), arquivos=p.arquivos, faltam=p.faltam;
   if(!arquivos.length){ recado('Nenhum MAPP da rodada foi encontrado na base importada.'); return; }
   if(arquivos.length===1) baixarBlob(new Blob([arquivos[0].buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),arquivos[0].nome);
   else {
@@ -7430,6 +7464,14 @@ function prepararFiltrosManif(){
   montarMulti('#mOrgao');
 }
 
+function celulaEmail(o){
+  const u=o.emails && o.emails.length ? o.emails[o.emails.length-1] : null;
+  if(!u) return '<span class="etq sem">Não enviado</span>';
+  const quando=new Date(u.em), dh=dois(quando.getDate())+'/'+dois(quando.getMonth()+1)+' '+dois(quando.getHours())+':'+dois(quando.getMinutes());
+  const dica=(u.situacao==='enviado'?'Enviado':'Falha')+' em '+dh+(u.remetente?' por '+u.remetente:'')+'\nPara: '+u.para.join(', ')+(u.cc.length?'\nCc: '+u.cc.join(', '):'')+
+    (u.erro?'\nErro: '+u.erro:'')+(o.emails.length>1?'\nTentativas registradas: '+o.emails.length:'');
+  return '<span class="etq '+(u.situacao==='enviado'?'alta':'r1a')+'"'+tip(dica,'E-mail')+'>'+(u.situacao==='enviado'?'Enviado '+dh:'Falha')+'</span>';
+}
 function renderManifestacoes(){
   if(!$('#blocoManif')) return;
   resumoRodada(); pintarSessaoManif();
@@ -7448,13 +7490,18 @@ function renderManifestacoes(){
       linhasR.push('<tr><td class="mono">'+esc(r.id)+'</td><td class="num">V'+dois(r.versao)+'</td><td>'+esc(o.orgao)+'</td>'+
         '<td class="num">'+n(chaves.length)+'</td><td class="num">'+n(resp)+'</td><td class="num">'+dataISOparaBR(r.dataLimite)+'</td>'+
         '<td><span class="etq '+sit[1]+'">'+sit[0]+'</span></td>'+
-        '<td><button type="button" class="btn pequeno" data-reemitir="'+esc(r.id)+'" data-orgao="'+k+'" data-tip="Refaz, idêntica, a planilha deste órgão ('+esc(o.arquivo)+').">Baixar de novo</button></td></tr>');
+        '<td>'+celulaEmail(o)+'</td>'+
+        '<td style="white-space:nowrap"><button type="button" class="btn pequeno" data-reemitir="'+esc(r.id)+'" data-orgao="'+k+'" data-tip="Refaz, idêntica, a planilha deste órgão ('+esc(o.arquivo)+').">Baixar de novo</button> '+
+        '<button type="button" class="btn pequeno" data-email="'+esc(r.id)+'" data-orgao="'+k+'" data-tip="Envia a planilha deste órgão, anexa, aos destinatários do cadastro, pela sua conta Google.">Enviar</button></td></tr>');
     });
   });
   $('#rodadasAcoes').innerHTML=E.rodadas.slice().reverse().map(function(r){
-    return '<button type="button" class="btn pequeno" data-reemitir="'+esc(r.id)+'" data-tip="Refaz, idênticas, as '+n(r.orgaos.length)+' planilha(s) da rodada '+esc(r.id)+', sem criar rodada nem versão nova.">Baixar de novo · V'+dois(r.versao)+' ('+n(r.orgaos.length)+')</button>';
+    const falhas=r.orgaos.filter(function(o){ const u=ultimoEmail(o); return u && u.situacao==='falha'; }).length;
+    return '<button type="button" class="btn pequeno" data-reemitir="'+esc(r.id)+'" data-tip="Refaz, idênticas, as '+n(r.orgaos.length)+' planilha(s) da rodada '+esc(r.id)+', sem criar rodada nem versão nova.">Baixar de novo · V'+dois(r.versao)+' ('+n(r.orgaos.length)+')</button>'+
+      '<button type="button" class="btn pequeno principal" data-email="'+esc(r.id)+'" data-tip="Envia a cada órgão da rodada a sua planilha, anexa, para os e-mails do cadastro de destinatários. Quem já recebeu fica de fora, salvo se marcar o reenvio.">Enviar por e-mail · V'+dois(r.versao)+'</button>'+
+      (falhas?'<button type="button" class="btn pequeno" data-email="'+esc(r.id)+'" data-modo="falhas" data-tip="Tenta de novo só os órgãos cujo último envio falhou.">Reenviar falhas · V'+dois(r.versao)+' ('+n(falhas)+')</button>':'');
   }).join('');
-  $('#tabRodadas tbody').innerHTML=linhasR.join('') || '<tr><td colspan="8" class="vazio">Nenhuma rodada gerada. Escolha os órgãos acima e gere as planilhas.</td></tr>';
+  $('#tabRodadas tbody').innerHTML=linhasR.join('') || '<tr><td colspan="9" class="vazio">Nenhuma rodada gerada. Escolha os órgãos acima e gere as planilhas.</td></tr>';
   /* Manifestações registradas */
   const lista=Object.keys(E.manifestacoes).map(function(ch){ return E.manifestacoes[ch]; })
     .sort(function(a,b){ return String(a.orgao).localeCompare(String(b.orgao)) || String(a.chave).localeCompare(String(b.chave)); });
@@ -7487,9 +7534,19 @@ function htmlFichaManif(m){
   return '<div class="ficha-secao"><h4>Manifestação do órgão</h4>'+corpo+'</div>';
 }
 
+function linhasEnviosEmail(){
+  const out=[];
+  E.rodadas.forEach(function(r){ r.orgaos.forEach(function(o){ (o.emails||[]).forEach(function(x){
+    out.push({ 'RODADA':r.id, 'VERSÃO':'V'+dois(r.versao), 'ÓRGÃO':o.orgao, 'ARQUIVO':x.arquivo, 'DATA E HORA':new Date(x.em).toLocaleString('pt-BR'),
+      'REMETENTE':x.remetente, 'PARA':x.para.join('; '), 'CC':x.cc.join('; '), 'ASSUNTO':x.assunto,
+      'SITUAÇÃO':x.situacao==='enviado'?'Enviado':'Falha', 'ERRO':x.erro||'', 'ID DA MENSAGEM':x.idMensagem||'' });
+  }); }); });
+  return out;
+}
 function exportarManifestacoes(){
   const lista=Object.keys(E.manifestacoes).map(function(ch){ return E.manifestacoes[ch]; });
-  if(!lista.length){ recado('Nenhuma manifestação registrada.'); return; }
+  const envios=linhasEnviosEmail();
+  if(!lista.length && !envios.length){ recado('Nenhuma manifestação nem envio registrado.'); return; }
   const linhas=lista.map(function(mf){
     const i=E.indice.get(mf.chave), m=i!=null?E.mapps[i]:null, dec=E.decisoes[mf.chave];
     return { 'CHAVE':mf.chave, 'MAPP':m?m.codigo:'', 'TÍTULO':m?(m.titulo||m.mappTxt):'', 'ÓRGÃO':mf.orgao, 'REGRA':rotuloRegraChave(mf.regra),
@@ -7499,8 +7556,349 @@ function exportarManifestacoes(){
       'DECISÃO':dec?(dec.situacao==='acatada'?'Acatada':'Rejeitada'):'Pendente' };
   });
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas),'MANIFESTACOES');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhas.length?linhas:[{ 'CHAVE':'Nenhuma manifestação registrada' }]),'MANIFESTACOES');
+  if(envios.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(envios),'ENVIOS POR EMAIL');
   XLSX.writeFile(wb,'manifestacoes_'+hojeISO()+'.xlsx');
+}
+
+/* ------------------------------ Destinatários por órgão -------------------
+   Cadastro obrigatório para o envio por e-mail: planilha .xlsx com uma linha
+   por pessoa (ÓRGÃO, NOME, E-MAIL, TIPO). A crítica separa erros, que impedem
+   aceitar o arquivo, de avisos, que só alertam. O cadastro aceito vai para a
+   sessão; os órgãos casam com a base pela mesma normalização do sistema. */
+
+const DEST_ABA='DESTINATARIOS';
+const DEST_COLUNAS={ orgao:['ORGAO'], nome:['NOME'], email:['E-MAIL','EMAIL'], tipo:['TIPO'] };
+const DEST_EMAIL=/^[^\s@,;<>()"]+@[^\s@,;<>()"]+\.[A-Za-z]{2,}$/;
+const DEST_MUITOS=10;
+
+function orgaosDaBase(){
+  const mapa=new Map();
+  E.mapps.forEach(function(m){ if(m.orgao && !mapa.has(norm(m.orgao))) mapa.set(norm(m.orgao),m.orgao); });
+  return mapa;
+}
+/* Órgão da base mais parecido (palavras em comum), para sugerir a grafia. */
+function orgaoParecido(nome,base){
+  const pal=function(s){ return norm(s).split(/[^A-Z0-9]+/).filter(function(p){ return p.length>1; }); };
+  const a=pal(nome); let melhor=null, nota=0;
+  base.forEach(function(orig){
+    const b=pal(orig); const comuns=a.filter(function(p){ return b.indexOf(p)>=0; }).length;
+    const s=comuns/Math.max(a.length,b.length,1);
+    if(s>nota){ nota=s; melhor=orig; }
+  });
+  return nota>=0.5 ? melhor : null;
+}
+
+/* Critica as linhas lidas da planilha (matriz, primeira linha = cabeçalho). */
+function criticarDestinatarios(matriz,arquivo){
+  const erros=[], avisos=[], linhas=[];
+  const cab=(matriz[0]||[]).map(function(c){ return norm(c); });
+  const col={};
+  Object.keys(DEST_COLUNAS).forEach(function(k){ col[k]=cab.findIndex(function(c){ return DEST_COLUNAS[k].indexOf(c)>=0; }); });
+  const faltam=['orgao','email'].filter(function(k){ return col[k]<0; });
+  if(faltam.length){
+    erros.push('Colunas obrigatórias ausentes no cabeçalho: '+faltam.map(function(k){ return k==='orgao'?'ÓRGÃO':'E-MAIL'; }).join(' e ')+
+      '. Use o modelo (ÓRGÃO · NOME · E-MAIL · TIPO).');
+    return { arquivo:arquivo, erros:erros, avisos:avisos, linhas:linhas };
+  }
+  const base=orgaosDaBase(), vistos=new Set();
+  if(!base.size) avisos.push('Base de execução não importada: os órgãos não foram conferidos com a base.');
+  const desconhecidos=new Map();
+  for(let i=1;i<matriz.length;i++){
+    const r=matriz[i]||[], nl=i+1;
+    const cel=function(k){ return col[k]>=0 ? limpo(r[col[k]]) : ''; };
+    const orgao=cel('orgao'), nome=cel('nome'), email=cel('email').toLowerCase(), tipoBruto=cel('tipo');
+    if(!nome && !email) continue;   /* linha em branco, ou linha do modelo não preenchida */
+    if(!orgao){ erros.push('Linha '+nl+': ÓRGÃO vazio.'); continue; }
+    if(!email){ erros.push('Linha '+nl+' ('+orgao+'): E-MAIL vazio.'); continue; }
+    if(!DEST_EMAIL.test(email)){ erros.push('Linha '+nl+' ('+orgao+'): e-mail inválido “'+email+'”. Informe um endereço por linha.'); continue; }
+    const t=norm(tipoBruto);
+    const tipo = !t || t==='PARA' ? 'Para' : (t==='CC' ? 'Cc' : null);
+    if(!tipo){ erros.push('Linha '+nl+' ('+orgao+'): TIPO “'+tipoBruto+'” inválido; use Para ou Cc.'); continue; }
+    const doBase=base.get(norm(orgao));
+    const k=norm(orgao)+'|'+email;
+    if(vistos.has(k)){ erros.push('Linha '+nl+': '+email+' repetido para '+orgao+'.'); continue; }
+    vistos.add(k);
+    if(base.size && !doBase && !desconhecidos.has(norm(orgao))) desconhecidos.set(norm(orgao),orgao);
+    if(!/\.gov\.br$/.test(email)) avisos.push('Linha '+nl+' ('+orgao+'): '+email+' não é de domínio .gov.br.');
+    linhas.push({ orgao:doBase||orgao, nome:nome, email:email, tipo:tipo });
+  }
+  if(!linhas.length && !erros.length) erros.push('Nenhum destinatário encontrado: a planilha só tem o cabeçalho.');
+  desconhecidos.forEach(function(orig){
+    const sug=orgaoParecido(orig,base);
+    avisos.push('Órgão “'+orig+'” não existe na base importada'+(sug?' — seria “'+sug+'”?':'')+'. Os seus destinatários não receberão planilha.');
+  });
+  const porOrgao=new Map();
+  linhas.forEach(function(l){ const k=norm(l.orgao); porOrgao.set(k,(porOrgao.get(k)||0)+1); });
+  porOrgao.forEach(function(q,k){ if(q>DEST_MUITOS) avisos.push('Órgão “'+(base.get(k)||k)+'” com '+q+' destinatários: confira se não há excesso.'); });
+  const semPara=[]; const temPara=new Set(linhas.filter(function(l){ return l.tipo==='Para'; }).map(function(l){ return norm(l.orgao); }));
+  porOrgao.forEach(function(q,k){ if(!temPara.has(k)) semPara.push(base.get(k)||k); });
+  semPara.forEach(function(o){ erros.push('Órgão “'+o+'” só tem destinatários em Cc: informe ao menos um Para.'); });
+  if(E.diag){
+    const faltaCad=Array.from(new Set(conjuntoEnquadrado().map(function(m){ return m.orgao; })))
+      .filter(function(o){ return !porOrgao.has(norm(o)); }).sort();
+    if(faltaCad.length) avisos.push(faltaCad.length+' órgão(s) com MAPP enquadrado sem destinatário no cadastro: '+faltaCad.join('; ')+
+      '. Eles não poderão receber a planilha por e-mail.');
+  }
+  return { arquivo:arquivo, erros:erros, avisos:avisos, linhas:linhas };
+}
+
+async function importarDestinatarios(file){
+  if(!file) return;
+  if(!/\.xlsx$/i.test(file.name)){ recado('O cadastro de destinatários deve ser uma planilha .xlsx.'); return; }
+  let crit;
+  try{
+    const wb=XLSX.read(new Uint8Array(await lerComoBuffer(file)),{type:'array'});
+    const aba=wb.SheetNames.find(function(s){ return norm(s)===DEST_ABA; }) || wb.SheetNames[0];
+    const matriz=XLSX.utils.sheet_to_json(wb.Sheets[aba],{header:1,defval:'',blankrows:false,raw:false});
+    crit=criticarDestinatarios(matriz,file.name);
+  }catch(err){
+    console.error(err); crit={ arquivo:file.name, erros:['Não foi possível ler a planilha: '+err.message], avisos:[], linhas:[] };
+  }
+  E._critDest=crit;
+  if(!crit.erros.length){
+    E.destinatarios={ arquivo:file.name, carregadoEm:new Date().toISOString(),
+      hash:cyrb53(crit.linhas.map(function(l){ return norm(l.orgao)+'|'+l.email+'|'+l.tipo; }).sort().join('#')), linhas:crit.linhas };
+    recado('Cadastro aceito: '+n(crit.linhas.length)+' destinatário(s) de '+n(new Set(crit.linhas.map(function(l){ return norm(l.orgao); })).size)+
+      ' órgão(s)'+(crit.avisos.length?' · '+n(crit.avisos.length)+' aviso(s)':'')+'. Ele entra na próxima versão gravada da sessão.');
+  } else recado('Cadastro recusado: '+n(crit.erros.length)+' erro(s). Corrija a planilha e envie de novo.');
+  pintarDestinatarios();
+}
+
+/* Destinatários de um órgão no cadastro aceito. */
+function destinatariosDoOrgao(orgao){
+  const r={ para:[], cc:[] };
+  if(!E.destinatarios) return r;
+  const k=norm(orgao);
+  E.destinatarios.linhas.forEach(function(l){ if(norm(l.orgao)===k) (l.tipo==='Cc'?r.cc:r.para).push(l); });
+  return r;
+}
+
+function pintarDestinatarios(){
+  const box=$('#destCritica'); if(!box) return;
+  const c=E._critDest, d=E.destinatarios;
+  const lista=function(itens,lim){
+    return '<ul class="pequeno" style="margin:4px 0 0 18px;max-height:160px;overflow:auto">'+itens.slice(0,lim).map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+
+      (itens.length>lim?'<li>… e mais '+n(itens.length-lim)+'</li>':'')+'</ul>';
+  };
+  let html='';
+  if(c && c.erros.length){
+    html+='<div class="aviso alerta"><span class="marca">Recusado</span><span><b>'+esc(c.arquivo)+'</b>: '+n(c.erros.length)+' erro(s) — o arquivo não foi aceito'+
+      (d?'; continua valendo o cadastro anterior ('+esc(d.arquivo)+')':'')+'.'+lista(c.erros,50)+'</span></div>';
+  }
+  if(d){
+    const orgs=new Set(d.linhas.map(function(l){ return norm(l.orgao); })).size;
+    html+='<div class="aviso bom"><span class="marca">Cadastro</span><span><b>'+esc(d.arquivo)+'</b> · '+n(d.linhas.length)+' destinatário(s) de '+n(orgs)+
+      ' órgão(s) · aceito em '+dataISOparaBR(d.carregadoEm)+'.</span></div>';
+  } else if(!c){
+    html+='<div class="aviso nota"><span class="marca">Cadastro</span><span>Nenhum cadastro de destinatários nesta sessão. Ele é exigido para enviar as planilhas por e-mail.</span></div>';
+  }
+  if(c && !c.erros.length && c.avisos.length){
+    html+='<div class="aviso nota"><span class="marca">Avisos</span><span>'+n(c.avisos.length)+' aviso(s) na crítica de '+esc(c.arquivo)+' — não impedem o uso.'+lista(c.avisos,50)+'</span></div>';
+  }
+  box.innerHTML=html;
+}
+
+function baixarModeloDestinatarios(){
+  const orgs = E.diag ? Array.from(new Set(conjuntoEnquadrado().map(function(m){ return m.orgao; }))).sort()
+    : Array.from(orgaosDaBase().values()).sort();
+  const linhas=[['ÓRGÃO','NOME','E-MAIL','TIPO']].concat(orgs.map(function(o){ return [o,'','','Para']; }));
+  if(!orgs.length) linhas.push(['NOME DO ÓRGÃO COMO NA BASE','Nome do responsável','responsavel@orgao.ce.gov.br','Para']);
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet(linhas); ws['!cols']=[{wch:48},{wch:32},{wch:40},{wch:8}];
+  XLSX.utils.book_append_sheet(wb,ws,DEST_ABA);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Cadastro de destinatários das planilhas de manifestação'],[''],
+    ['• Uma linha por pessoa. Para vários e-mails no mesmo órgão, repita o órgão em várias linhas.'],
+    ['• ÓRGÃO: exatamente como aparece na base de execução (a coluna já vem preenchida).'],
+    ['• E-MAIL: um endereço por linha.'],
+    ['• TIPO: Para (recebe a planilha) ou Cc (cópia). Em branco vale Para. Todo órgão precisa de ao menos um Para.'],
+    ['• Linha sem NOME e sem E-MAIL é ignorada: esse órgão fica sem cadastro e não recebe a planilha por e-mail.']]),'INSTRUCOES');
+  XLSX.writeFile(wb,'destinatarios_modelo_'+hojeISO()+'.xlsx');
+}
+
+/* ------------------------------ E-mail pelo Gmail -------------------------
+   Sem servidor: a página pede ao Google (Google Identity Services) um acesso de
+   uma hora ao escopo gmail.send da conta de quem clica e envia pela API do
+   Gmail. O ID do cliente é público; o acesso fica só na memória da janela. */
+
+const GOOGLE_GIS='https://accounts.google.com/gsi/client';
+const GOOGLE_ESCOPOS='https://www.googleapis.com/auth/gmail.send openid email';
+const CHAVE_GOOGLE_LOCAL='webmapp-saneamento-google';
+E.google={ clientId:'', token:'', expira:0, conta:'' };
+try{ E.google.clientId=(JSON.parse(localStorage.getItem(CHAVE_GOOGLE_LOCAL)||'null')||{}).clientId||''; }catch(e){}
+function guardarClientIdLocal(){ try{ localStorage.setItem(CHAVE_GOOGLE_LOCAL,JSON.stringify({ clientId:E.google.clientId })); }catch(e){} }
+
+let _gis=null;
+function carregarGIS(){
+  if(window.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
+  if(_gis) return _gis;
+  _gis=new Promise(function(ok,falha){
+    const s=document.createElement('script'); s.src=GOOGLE_GIS; s.async=true;
+    s.onload=function(){ ok(); }; s.onerror=function(){ _gis=null; falha(new Error('não foi possível carregar o script do Google (verifique a conexão).')); };
+    document.head.appendChild(s);
+  });
+  return _gis;
+}
+function googlePronto(){ return !!(E.google.token && E.google.expira>Date.now()+60000); }
+
+/* Acesso válido à API do Gmail; abre a janela do Google quando preciso. */
+async function obterTokenGoogle(){
+  if(googlePronto()) return E.google.token;
+  if(!/\.apps\.googleusercontent\.com$/.test(E.google.clientId||'')) throw new Error('informe em Configurações › E-mail (Google) o ID do cliente OAuth.');
+  await carregarGIS();
+  const resp=await new Promise(function(ok,falha){
+    const cli=google.accounts.oauth2.initTokenClient({ client_id:E.google.clientId, scope:GOOGLE_ESCOPOS,
+      callback:function(r){ if(r && r.access_token) ok(r); else falha(new Error((r&&r.error_description)||(r&&r.error)||'acesso não concedido.')); },
+      error_callback:function(e){ falha(new Error(e&&e.type==='popup_closed'?'a janela do Google foi fechada antes da autorização.':'a janela do Google não abriu ('+((e&&e.type)||'erro')+'); libere pop-ups para este site.')); } });
+    cli.requestAccessToken({ prompt:E.google.conta?'':'consent' });
+  });
+  if(!google.accounts.oauth2.hasGrantedAllScopes(resp,'https://www.googleapis.com/auth/gmail.send'))
+    throw new Error('a permissão de enviar e-mails não foi marcada na janela do Google.');
+  E.google.token=resp.access_token; E.google.expira=Date.now()+(+resp.expires_in||3600)*1000;
+  try{
+    const u=await fetch('https://openidconnect.googleapis.com/v1/userinfo',{ headers:{ Authorization:'Bearer '+E.google.token } });
+    if(u.ok) E.google.conta=(await u.json()).email||'';
+  }catch(e){}
+  pintarGoogle();
+  return E.google.token;
+}
+function pintarGoogle(){
+  const el=$('#gEstado'); if(!el) return;
+  el.textContent = googlePronto() ? 'Conectado: '+(E.google.conta||'conta Google')+' · até '+new Date(E.google.expira).toTimeString().slice(0,5)
+    : (E.google.clientId ? 'ID do cliente informado · não conectado' : 'ID do cliente não informado');
+}
+async function conectarGoogle(){
+  try{ await obterTokenGoogle(); recado('Google conectado: os e-mails sairão de '+(E.google.conta||'sua conta')+'.'); }
+  catch(err){ recado('Google: '+err.message); }
+  pintarGoogle();
+}
+
+/* ---- Mensagem MIME (RFC 5322 / 2045 / 2047), toda em ASCII ---- */
+function b64Bytes(bytes){
+  let s=''; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+  return btoa(s);
+}
+function linhas76(b64){ return b64.replace(/.{1,76}/g,'$&\r\n'); }
+function cabecalhoMime(txt){ return /^[\x20-\x7e]*$/.test(txt) ? txt : '=?UTF-8?B?'+base64Utf8(txt)+'?='; }
+function enderecoMime(l){ return l.nome ? cabecalhoMime(l.nome.replace(/["\\]/g,''))+' <'+l.email+'>' : l.email; }
+function montarMime(op){
+  const lim='=_saneamento_'+cyrb53(String(Date.now())+Math.random());
+  const bytes = op.anexo.buf instanceof Uint8Array ? op.anexo.buf : new Uint8Array(op.anexo.buf);
+  const h=['MIME-Version: 1.0','To: '+op.para.map(enderecoMime).join(', ')];
+  if(op.cc && op.cc.length) h.push('Cc: '+op.cc.map(enderecoMime).join(', '));
+  h.push('Subject: '+cabecalhoMime(op.assunto),'Content-Type: multipart/mixed; boundary="'+lim+'"');
+  return h.join('\r\n')+'\r\n\r\n'+
+    '--'+lim+'\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+linhas76(base64Utf8(op.texto))+
+    '--'+lim+'\r\nContent-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; name="'+op.anexo.nome+'"\r\n'+
+    'Content-Disposition: attachment; filename="'+op.anexo.nome+'"\r\nContent-Transfer-Encoding: base64\r\n\r\n'+linhas76(b64Bytes(bytes))+
+    '--'+lim+'--\r\n';
+}
+function base64url(txt){ return btoa(txt).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+
+/* Envia pela API do Gmail; repete em limite de taxa ou falha do servidor. */
+async function enviarGmail(mime){
+  const corpo=JSON.stringify({ raw:base64url(mime) });
+  for(let tent=0;;tent++){
+    const token=await obterTokenGoogle();
+    let resp;
+    try{
+      resp=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send',{ method:'POST',
+        headers:{ Authorization:'Bearer '+token, 'Content-Type':'application/json' }, body:corpo });
+    }catch(e){ if(tent<2){ await new Promise(function(r){ setTimeout(r,1500*(tent+1)); }); continue; } throw new Error('sem conexão com o Gmail.'); }
+    if(resp.ok){ const j=await resp.json(); return { id:j.id, conversa:j.threadId }; }
+    if(resp.status===401 && tent<1){ E.google.token=''; continue; }
+    if((resp.status===429 || resp.status>=500) && tent<3){ await new Promise(function(r){ setTimeout(r,2000*Math.pow(2,tent)); }); continue; }
+    let msg='resposta '+resp.status+' do Gmail';
+    try{ const j=await resp.json(); if(j.error && j.error.message) msg+=': '+j.error.message; }catch(e){}
+    if(resp.status===403) msg+=' (a API do Gmail está ativada no projeto e a conta é usuária de teste?)';
+    throw new Error(msg);
+  }
+}
+
+/* ---- Envio da rodada ---- */
+const EMAIL_MODELO={
+  assunto:'Saneamento de MAPPs — manifestação do órgão {orgao} até {dataLimite}',
+  corpo:'Prezados(as),\n\nEncaminhamos em anexo a planilha {arquivo}, com {mapps} MAPP(s) do órgão {orgao} enquadrados nas regras de saneamento, para manifestação até {dataLimite}.\n\n'+
+    'Preencha somente as colunas de resposta e devolva a planilha respondendo a este e-mail, sem alterar o nome do arquivo nem a estrutura das abas.\n\nRodada: {rodada}\n\nAtenciosamente,'
+};
+E.modeloEmail={ assunto:EMAIL_MODELO.assunto, corpo:EMAIL_MODELO.corpo };
+function preencherModelo(txt,v){ return String(txt).replace(/\{(\w+)\}/g,function(t,k){ return v[k]!=null ? String(v[k]) : t; }); }
+function camposModelo(r,a){ return { orgao:a.orgao, mapps:a.mapps, arquivo:a.nome, rodada:r.id, dataLimite:dataISOparaBR(r.dataLimite), prazo:r.prazoDias }; }
+function ultimoEmail(o){ return o.emails && o.emails.length ? o.emails[o.emails.length-1] : null; }
+
+const FASES_EMAIL=[
+  { id:'planilhas', rot:'Montagem das planilhas',  cor:'--latao',   ate:30 },
+  { id:'envio',     rot:'Envio pelo Gmail',        cor:'--petroleo', ate:100 }
+];
+
+/* modo: 'todos' (padrão: pula quem já recebeu), 'falhas' (só onde o último envio falhou). */
+async function enviarRodadaEmail(id,idx,modo){
+  const r=E.rodadas.find(function(x){ return x.id===id; });
+  if(!r){ recado('Rodada não encontrada.'); return; }
+  if(!E.diag){ recado('Importe antes a base de execução.'); return; }
+  if(!E.destinatarios){ recado('Envie antes a planilha de destinatários por órgão (bloco Destinatários, acima). Ela é obrigatória para o envio.'); return; }
+  if(!/\.apps\.googleusercontent\.com$/.test(E.google.clientId||'')){ recado('Informe o ID do cliente do Google em Configurações › E-mail (Google).'); return; }
+  if(typeof ExcelJS==='undefined'){ recado('As bibliotecas de planilha não carregaram. Recarregue a página.'); return; }
+  let alvo = idx==null ? r.orgaos.map(function(o,k){ return k; }) : [idx];
+  if(modo==='falhas') alvo=alvo.filter(function(k){ const u=ultimoEmail(r.orgaos[k]); return u && u.situacao==='falha'; });
+  const jaEnviados=alvo.filter(function(k){ return r.orgaos[k].emails && r.orgaos[k].emails.some(function(x){ return x.situacao==='enviado'; }); });
+  const semCadastro=alvo.filter(function(k){ return !destinatariosDoOrgao(r.orgaos[k].orgao).para.length; });
+  if(!alvo.length){ recado(modo==='falhas'?'Nenhum envio com falha nesta rodada.':'Nada a enviar.'); return; }
+  if(semCadastro.length){
+    await perguntar({ titulo:'Envio bloqueado: órgão(s) sem destinatário', confirmar:false, cancelar:'Fechar',
+      texto:n(semCadastro.length)+' órgão(s) desta seleção não têm e-mail “Para” no cadastro ('+(E.destinatarios.arquivo||'')+'). Complete a planilha de destinatários e envie-a de novo, ou envie órgão a órgão.',
+      corpo:'<ul class="pequeno" style="margin:0 0 0 18px;max-height:40vh;overflow:auto">'+semCadastro.map(function(k){ return '<li>'+esc(r.orgaos[k].orgao)+'</li>'; }).join('')+'</ul>' });
+    return;
+  }
+  const nDest=alvo.reduce(function(t,k){ const d=destinatariosDoOrgao(r.orgaos[k].orgao); return t+d.para.length+d.cc.length; },0);
+  const o0=r.orgaos[alvo[0]], d0=destinatariosDoOrgao(o0.orgao);
+  const v0={ orgao:o0.orgao, mapps:Object.keys(o0.itens).length, arquivo:o0.arquivo, rodada:r.id, dataLimite:dataISOparaBR(r.dataLimite), prazo:r.prazoDias };
+  const conf=await perguntar({ titulo:'Enviar por e-mail — rodada V'+dois(r.versao), largo:true, confirmar:'Enviar '+n(alvo.length)+' e-mail(s)',
+    texto:n(alvo.length)+' órgão(s) · '+n(nDest)+' destinatário(s) · remetente: '+(E.google.conta||'a conta Google que autorizar na janela seguinte')+'.',
+    corpo:campoTexto('assunto','Assunto',E.modeloEmail.assunto,'Campos: {orgao} {mapps} {arquivo} {dataLimite} {prazo} {rodada}')+
+      '<label class="campo" style="margin-bottom:10px"><span>Mensagem</span><textarea data-campo="corpo" rows="9" style="width:100%;font:inherit">'+esc(E.modeloEmail.corpo)+'</textarea></label>'+
+      (jaEnviados.length && modo!=='falhas' ? '<label class="chk" style="margin-bottom:8px"><input type="checkbox" data-campo="reenviar"> Enviar de novo também aos '+n(jaEnviados.length)+' órgão(s) que já receberam</label>' : '')+
+      '<div class="aviso nota"><span class="marca">Exemplo</span><span class="pequeno"><b>Para:</b> '+esc(d0.para.map(function(l){ return l.email; }).join(', '))+
+      (d0.cc.length?' · <b>Cc:</b> '+esc(d0.cc.map(function(l){ return l.email; }).join(', ')):'')+'<br><b>Assunto:</b> '+esc(preencherModelo(E.modeloEmail.assunto,v0))+
+      '<br><b>Anexo:</b> '+esc(o0.arquivo)+'</span></div>' });
+  if(!conf) return;
+  E.modeloEmail={ assunto:limpo(conf.dados.assunto)||EMAIL_MODELO.assunto, corpo:String(conf.dados.corpo||'').trim()||EMAIL_MODELO.corpo };
+  if(!conf.dados.reenviar && modo!=='falhas') alvo=alvo.filter(function(k){ return jaEnviados.indexOf(k)<0; });
+  if(!alvo.length){ recado('Todos os órgãos escolhidos já receberam o e-mail.'); return; }
+  try{ await obterTokenGoogle(); }catch(err){ recado('Google: '+err.message); return; }
+
+  iniciarProcesso('Envio das planilhas por e-mail',FASES_EMAIL);
+  let enviados=0, falhas=0;
+  try{
+    await fase('planilhas','Montando '+n(alvo.length)+' planilha(s)…');
+    const arquivos=[];
+    for(let i=0;i<alvo.length;i++){
+      const p=await planilhasDaRodada(r,alvo[i]);
+      if(p.arquivos.length) arquivos.push(p.arquivos[0]);
+      progressoFase((i+1)/alvo.length);
+    }
+    await fase('envio','Enviando…');
+    for(let i=0;i<arquivos.length;i++){
+      const a=arquivos[i], o=r.orgaos[a.idx], d=destinatariosDoOrgao(o.orgao), v=camposModelo(r,a);
+      $('#cargaTexto').textContent='E-mail '+(i+1)+' de '+arquivos.length+': '+o.orgao;
+      const bytes=a.buf instanceof Uint8Array ? a.buf : new Uint8Array(a.buf);
+      const reg={ em:new Date().toISOString(), remetente:E.google.conta||'', para:d.para.map(function(l){ return l.email; }), cc:d.cc.map(function(l){ return l.email; }),
+        assunto:preencherModelo(E.modeloEmail.assunto,v), arquivo:a.nome, hashPlanilha:cyrb53(b64Bytes(bytes)), cadastro:E.destinatarios.hash,
+        idMensagem:'', idConversa:'', situacao:'', erro:'' };
+      try{
+        const res=await enviarGmail(montarMime({ para:d.para, cc:d.cc, assunto:reg.assunto, texto:preencherModelo(E.modeloEmail.corpo,v), anexo:{ nome:a.nome, buf:bytes } }));
+        reg.idMensagem=res.id; reg.idConversa=res.conversa; reg.situacao='enviado'; enviados++;
+      }catch(err){ console.error(err); reg.situacao='falha'; reg.erro=err.message; falhas++; }
+      (o.emails=o.emails||[]).push(reg);
+      progressoFase((i+1)/arquivos.length);
+      if(i<arquivos.length-1) await new Promise(function(res){ setTimeout(res,400); });
+    }
+    await concluirProcesso(n(enviados)+' e-mail(s) enviado(s)'+(falhas?' · '+n(falhas)+' falha(s)':'')+'.');
+  }catch(err){ console.error(err); falharProcesso('Falha no envio: '+err.message); }
+  renderManifestacoes();
+  if(enviados||falhas) await gravarSessao();
+  if(falhas) recado(n(falhas)+' e-mail(s) não enviado(s). Veja a coluna E-mail nas rodadas e use “Reenviar falhas”.');
 }
 
 /* ------------------------------ Ligações ---------------------------------- */
@@ -7517,12 +7915,30 @@ function ligarManifestacoes(){
   ['dragenter','dragover'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.add('pairando'); }); });
   ['dragleave','drop'].forEach(function(e){ area.addEventListener(e,function(ev){ ev.preventDefault(); area.classList.remove('pairando'); }); });
   area.addEventListener('drop',function(ev){ importarRetornos(ev.dataTransfer.files); });
+  const areaD=$('#areaDestinatarios'), inpD=$('#arqDestinatarios');
+  areaD.addEventListener('click',function(){ inpD.click(); });
+  areaD.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); inpD.click(); } });
+  inpD.addEventListener('change',function(){ const f=inpD.files[0]; inpD.value=''; importarDestinatarios(f); });
+  ['dragenter','dragover'].forEach(function(e){ areaD.addEventListener(e,function(ev){ ev.preventDefault(); areaD.classList.add('pairando'); }); });
+  ['dragleave','drop'].forEach(function(e){ areaD.addEventListener(e,function(ev){ ev.preventDefault(); areaD.classList.remove('pairando'); }); });
+  areaD.addEventListener('drop',function(ev){ importarDestinatarios(ev.dataTransfer.files[0]); });
+  $('#btnModeloDest').addEventListener('click',baixarModeloDestinatarios);
+  pintarDestinatarios();
+  /* Google: ID do cliente (neste navegador e na sessão) e script carregado de antemão,
+     para a janela de autorização abrir ainda dentro do clique. */
+  $('#gClientId').value=E.google.clientId;
+  $('#gClientId').addEventListener('input',function(ev){ E.google.clientId=limpo(ev.target.value); E.google.token=''; guardarClientIdLocal(); pintarGoogle(); });
+  $('#btnConectarGoogle').addEventListener('click',conectarGoogle);
+  if(E.google.clientId) carregarGIS().catch(function(){});
+  pintarGoogle();
   $('#tabManif').addEventListener('click',function(ev){ const tr=ev.target.closest('tr[data-chave]'); if(tr) abrirFicha(tr.getAttribute('data-chave')); });
   $('#btnExportarManif').addEventListener('click',exportarManifestacoes);
   $('#rodadasAcoes').addEventListener('click',function(ev){
+    const e=ev.target.closest('[data-email]'); if(e){ enviarRodadaEmail(e.getAttribute('data-email'),null,e.getAttribute('data-modo')||'todos'); return; }
     const b=ev.target.closest('[data-reemitir]'); if(b) reemitirRodada(b.getAttribute('data-reemitir'),null);
   });
   $('#tabRodadas').addEventListener('click',function(ev){
+    const e=ev.target.closest('[data-email]'); if(e){ enviarRodadaEmail(e.getAttribute('data-email'),+e.getAttribute('data-orgao'),'todos'); return; }
     const b=ev.target.closest('[data-reemitir]'); if(!b) return;
     const k=b.getAttribute('data-orgao'); reemitirRodada(b.getAttribute('data-reemitir'),k==null?null:+k);
   });

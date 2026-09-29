@@ -18,6 +18,10 @@ async function carregar(){
         return XLSX.read(d,o);
       };
       w.XLSX=X;
+      /* ExcelJS e JSZip (CDN no navegador) para as planilhas de manifestação */
+      try{ w.ExcelJS=require('exceljs'); w.JSZip=require('jszip'); }catch(e){}
+      /* presentes em todo navegador, ausentes no jsdom */
+      if(!w.TextEncoder){ const u=require('util'); w.TextEncoder=u.TextEncoder; w.TextDecoder=u.TextDecoder; }
       w.matchMedia=w.matchMedia||function(){ return { matches:false, addEventListener(){}, removeEventListener(){}, addListener(){}, removeListener(){} }; };
       w.IntersectionObserver=function(){ return { observe(){}, disconnect(){}, unobserve(){} }; };
       w.ResizeObserver=function(){ return { observe(){}, disconnect(){}, unobserve(){} }; };
