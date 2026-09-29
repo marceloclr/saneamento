@@ -762,7 +762,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
           <option value="secretaria">Secretaria</option>
           <option value="programa">Programa</option>
           <option value="mapp">MAPP</option>
-          <option value="fonte">Fonte</option>
+          <option value="grupo">Grupo de fonte</option><option value="fonte">Fonte</option>
         </select></label>
       <label class="campo"><span>Conjunto <i class="sigla" tabindex="0" data-tip="Restringe a apuração ao universo submetido às regras ou estende à base integral, inclusive concluídos e cancelados." data-tip-t="Conjunto">?</i></span>
         <select id="saldoConjunto">
@@ -1124,7 +1124,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
           <option value="secretaria">Secretaria</option>
           <option value="programa">Programa</option>
           <option value="mapp">MAPP</option>
-          <option value="fonte">Fonte</option>
+          <option value="grupo">Grupo de fonte</option><option value="fonte">Fonte</option>
         </select></label>
       <label class="campo"><span>Conjunto <i class="sigla" tabindex="0" data-tip="Mesmo conjunto disponível no Saldo: universo submetido às regras ou base integral." data-tip-t="Conjunto">?</i></span>
         <select id="adConjunto">
@@ -3928,7 +3928,8 @@ function apurarSaldo(){
     /* Fonte é N-para-1 com o MAPP: cada MAPP contribui para um grupo por fonte que tiver,
        usando a série (pf.serie) daquela fonte — as demais dimensões contribuem uma única
        vez, com a série do MAPP inteiro (m). */
-    const contribs = campo==='fonte'
+    const contribs = campo==='grupo' ? seriesPorGrupoFonte(m)
+      : campo==='fonte'
       ? m.porFonte.map(function(pf){ return { nome:pf.fonte||'(sem fonte)', serie:pf.serie }; })
       : [{ nome: campo==='mapp' ? (m.codigo+' — '+(m.titulo||'')) : (m[campo]||'(não informado)'), serie:null }];
     contribs.forEach(function(c){
@@ -4072,7 +4073,7 @@ function renderSaldo(){
   E.saldo=a;
   const medida=$('#saldoMedida').value;
   const rotMedida={saldo:'saldo (programado − empenhado)',programado:'programado',empenhado:'empenhado'}[medida];
-  const rotCampo={orgao:'órgão',secretaria:'secretaria',programa:'programa',mapp:'MAPP',fonte:'fonte'}[a.campo];
+  const rotCampo={orgao:'órgão',secretaria:'secretaria',programa:'programa',mapp:'MAPP',grupo:'grupo de fonte',fonte:'fonte'}[a.campo];
   const conjunto=rotuloConjuntoSaldo().toLowerCase();
 
   const anosNovo=a.anosNovo;
@@ -4209,7 +4210,7 @@ function linhasInconsNP(){
 function linhasSaldo(){
   const a=E.saldo||apurarSaldo();
   const medida=$('#saldoMedida').value;
-  const rotCampo={orgao:'ÓRGÃO',secretaria:'SECRETARIA',programa:'PROGRAMA',mapp:'MAPP',fonte:'FONTE'}[a.campo];
+  const rotCampo={orgao:'ÓRGÃO',secretaria:'SECRETARIA',programa:'PROGRAMA',mapp:'MAPP',grupo:'GRUPO DE FONTE',fonte:'FONTE'}[a.campo];
   return a.grupos.map(function(g){
     const o={};
     o[rotCampo]=g.nome;
@@ -5536,7 +5537,7 @@ function fmtAD(v){ return medidaAD()==='valor' ? rsCurto(v) : n(v); }
 function rotuloMedida(){ return medidaAD()==='valor' ? 'saldo do programado' : 'quantidade de MAPPs'; }
 
 const ROTULO_ESTRATO = { secretaria:'Secretaria', orgao:'Órgão', programa:'Programa',
-                         mapp:'MAPP', fonte:'Fonte', ano:'Ano de aprovação', estagio:'Estágio de execução' };
+                         mapp:'MAPP', grupo:'Grupo de fonte', fonte:'Fonte', ano:'Ano de aprovação', estagio:'Estágio de execução' };
 const PLURAL_ESTRATO = { secretaria:'secretarias', orgao:'órgãos', programa:'programas',
                          mapp:'MAPPs', fonte:'fontes', ano:'exercícios de aprovação', estagio:'estágios' };
 function campoEstrato(){ return $('#adEstrato') ? $('#adEstrato').value : 'orgao'; }
@@ -5558,6 +5559,7 @@ function estratoDe(m){
   if(campo==='estagio') return GRUPOS_ESTAGIO[m.estagio].rotulo;
   if(campo==='mapp') return m.codigo+' — '+(m.titulo||'');
   if(campo==='fonte') return '(fonte)';
+  if(campo==='grupo') return '(grupo de fonte)';
   return m[campo]||'(não informado)';
 }
 
@@ -5630,7 +5632,8 @@ function apurarAntesDepois(){
     }
     if(estaOculto(m.chave)){ excluidos.q++; excluidos.v+=m.saldo; }
 
-    const contribs = campo==='fonte'
+    const contribs = campo==='grupo' ? seriesPorGrupoFonte(m)
+      : campo==='fonte'
       ? m.porFonte.map(function(pf){ return {nome:pf.fonte||'(sem fonte)', serie:pf.serie}; })
       : [{nome:estratoDe(m), serie:null}];
 
@@ -8292,6 +8295,19 @@ function cascataGrupoFonte(id,st){
   const ok=new Set(st.lista.map(function(p){ return p[0]; }));
   Array.from(st.escolha).forEach(function(v){ if(!ok.has(v)) st.escolha.delete(v); });
   rotularMulti(id);
+}
+
+/* Agrupamento por grupo de fonte (Saldo e Resultado): as séries das fontes do MAPP
+   somadas por grupo — um MAPP com duas fontes no mesmo grupo entra uma vez nele. */
+function seriesPorGrupoFonte(m){
+  const por=new Map();
+  (m.porFonte||[]).forEach(function(pf){
+    const nome=nomeGrupoFonte(grupoDaFonte(pf.fonte));
+    let s=por.get(nome);
+    if(!s){ s=new Float64Array(pf.serie.length); por.set(nome,s); }
+    for(let i=0;i<s.length;i++) s[i]+=pf.serie[i];
+  });
+  return Array.from(por.entries()).map(function(e){ return { nome:e[0], serie:e[1] }; });
 }
 
 /* Troca de grupos: redesenha os filtros e o que depende deles. */
