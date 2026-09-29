@@ -5,7 +5,8 @@
   "scripts": {
     "filtros": "node --max-old-space-size=4096 teste_filtros.js",
     "todas-fontes": "node --max-old-space-size=4096 teste_todas_fontes.js",
-    "anos-ocultos": "node --max-old-space-size=4096 teste_anos_ocultos.js"
+    "anos-ocultos": "node --max-old-space-size=4096 teste_anos_ocultos.js",
+    "anos-sem-saldo": "node --max-old-space-size=4096 teste_anos_sem_saldo.js"
   },
   "dependencies": {
     "jsdom": "^24.0.0",

@@ -2923,6 +2923,14 @@ function somaSaldo(lista){ let t=0; for(let i=0;i<lista.length;i++) t+=lista[i].
 function saldoDoAno(m,a){
   return a>E.cfg.presenteFim ? somaAno(m,'Programado',a) : somaAno(m,'Programado',a)-somaAno(m,'Empenhado',a);
 }
+/* Exercícios com saldo do programado em ao menos um MAPP da lista. Os demais
+   (programado = empenhado em todos, ou nada programado no futuro) não são exibidos. */
+function anosComSaldo(lista,anos){
+  return (anos||anosExec()).filter(function(a){
+    for(let i=0;i<lista.length;i++) if(Math.abs(saldoDoAno(lista[i],a))>=0.005) return true;
+    return false;
+  });
+}
 function saldoSerie(serie){
   let t=0;
   for(let i=0;i<E.nAnos;i++){ const a=E.anos[i]; t+=a>E.cfg.presenteFim ? somaAnoArray(serie,'Programado',a) : somaAnoArray(serie,'Programado',a)-somaAnoArray(serie,'Empenhado',a); }
@@ -3628,7 +3636,9 @@ function renderSaldoPorRegra(){
         }
       }
     }
-    const desdobra=per.map(function(p,j){ return '  ' + p.rot + ': ' + rs(pp[j]-pe[j]); }).join('\n');
+    const comSaldo=anosComSaldo(lista,per.map(function(p){ return p.anos[0]; }));
+    const desdobra=per.map(function(p,j){ return comSaldo.indexOf(p.anos[0])<0 ? '' : '  ' + p.rot + ': ' + rs(p.futuro?pp[j]:pp[j]-pe[j]); })
+      .filter(Boolean).join('\n') || '  nenhum exercício com saldo';
     const plural=lista.length===1?' MAPP':' MAPPs';
     const dica='Conjunto: '+x.rot+' — '+n(lista.length)+plural+'.\n'+
       'Cálculo: programado de todos os exercícios ('+rs(prog)+') menos empenhado de todos os exercícios ('+rs(emp)+').\n'+
@@ -3805,6 +3815,7 @@ function apurarSaldo(){
   const grupos=new Map();
   const totalProg=new Float64Array(per.length), totalEmp=new Float64Array(per.length);
   const np={ total:0, base:0, incorporado:0, inconsistentes:[] };
+  const comSaldo=new Uint8Array(per.length);
 
   conjuntoSaldo().forEach(function(m){
     const npm=novoProgramadoMapp(m,anosNovo);
@@ -3839,13 +3850,21 @@ function apurarSaldo(){
           prog+=c.serie?somaAnoArray(c.serie,'Programado',p.anos[k]):somaAno(m,'Programado',p.anos[k]);
           emp +=c.serie?somaAnoArray(c.serie,'Empenhado',p.anos[k]):somaAno(m,'Empenhado',p.anos[k]);
         }
+        if(Math.abs(p.futuro?prog:prog-emp)>=NP_TOLERANCIA) comSaldo[i]=1;
         g.prog[i]+=prog; g.emp[i]+=emp;
         totalProg[i]+=prog; totalEmp[i]+=emp;
       });
     });
   });
-  return { per:per, grupos:Array.from(grupos.values()), totalProg:totalProg, totalEmp:totalEmp, campo:campo,
-           anosNovo:anosNovo, np:np };
+  /* Exercício sem saldo do programado em nenhum MAPP do conjunto (programado = empenhado,
+     ou nada programado no futuro) não é exibido: colunas, cartões, totais e exportação. */
+  const manter=[], anosSemSaldo=[];
+  per.forEach(function(p,i){ if(comSaldo[i]) manter.push(i); else anosSemSaldo.push(+p.rot); });
+  const so=function(arr){ return Float64Array.from(manter.map(function(i){ return arr[i]; })); };
+  const lista=Array.from(grupos.values());
+  lista.forEach(function(g){ g.prog=so(g.prog); g.emp=so(g.emp); });
+  return { per:manter.map(function(i){ return per[i]; }), grupos:lista, totalProg:so(totalProg), totalEmp:so(totalEmp), campo:campo,
+           anosNovo:anosNovo, np:np, anosSemSaldo:anosSemSaldo };
 }
 
 
@@ -3953,7 +3972,8 @@ function renderSaldo(){
 
   const anosNovo=a.anosNovo;
   $('#saldoLegenda').textContent='Agrupado por '+rotCampo+' · '+conjunto+' · exibindo '+rotMedida+
-    ' · Novo Programado 2027 com '+rotuloAnosNP(anosNovo);
+    ' · Novo Programado 2027 com '+rotuloAnosNP(anosNovo)+
+    (a.anosSemSaldo.length?' · exercícios sem saldo do programado ocultos: '+faixasTexto(a.anosSemSaldo):'');
   renderInconsistenciasNP(a);
 
   const tot=function(i){ return medida==='programado'?a.totalProg[i]:(medida==='empenhado'?a.totalEmp[i]:a.totalProg[i]-a.totalEmp[i]); };
@@ -4102,6 +4122,7 @@ function linhasSaldo(){
     o['NP — SALDOS INCORPORADOS']=g.npInc;
     o['NP — EXERCÍCIOS INCORPORADOS']=(a.anosNovo||[]).join(', ')||'nenhum';
     o['NP — MAPPS INCONSISTENTES']=g.npIncons;
+    o['EXERCÍCIOS SEM SALDO OCULTOS']=a.anosSemSaldo.length?faixasTexto(a.anosSemSaldo):'nenhum';
     o['TOTAL']=total;
     o['MAPPS']=g.mapps;
     return o;
@@ -4432,13 +4453,14 @@ function abrirFicha(chave){
 
   const tem=['Programado','Empenhado','Pago'].filter(function(x){ return E.idxMet[x]!=null; });
   html+='<div class="ficha-secao"><h4>Saldo do programado por exercício e dados da base</h4>'+
-    '<p class="pequeno tenue" style="margin:0 0 6px">A coluna Saldo é a grandeza com que o sistema trabalha. Programado, empenhado e pago são os valores da base, exibidos como evidência.</p>'+
+    '<p class="pequeno tenue" style="margin:0 0 6px">A coluna Saldo é a grandeza com que o sistema trabalha. Programado, empenhado e pago são os valores da base, exibidos como evidência.'+
+    (function(){ const sem=anosExec().filter(function(a){ return anosComSaldo([m]).indexOf(a)<0 && tem.some(function(t){ return somaAno(m,t,a); }); });
+      return sem.length ? ' Exercícios sem saldo do programado ocultos: '+esc(faixasTexto(sem))+' (entram na linha Total).' : ''; })()+'</p>'+
     '<div class="tabela-caixa" style="max-height:220px"><table><thead><tr><th>Exercício</th>'+
     tem.map(function(t){ return '<th class="num">'+t+'</th>'; }).join('')+
     '<th class="num"'+tip('Até '+E.cfg.presenteFim+': programado − empenhado do exercício (negativo quando o empenho supera o programado). Depois de '+E.cfg.presenteFim+': o próprio programado.','Saldo do programado')+'>Saldo</th></tr></thead><tbody>'+
-    anosExec().map(function(a){
+    anosComSaldo([m]).map(function(a){
       const vals=tem.map(function(t){ return somaAno(m,t,a); });
-      if(vals.every(function(v){ return !v; })) return '';
       const sd=saldoDoAno(m,a);
       return '<tr><td class="mono">'+a+'</td>'+vals.map(function(v){ return '<td class="num">'+rs(v)+'</td>'; }).join('')+
         '<td class="num"'+(sd<-0.005?' style="color:var(--risco)"':'')+'>'+rs(sd)+'</td></tr>';
@@ -4508,7 +4530,7 @@ function abrirFicha(chave){
   E.fichaAtual=m.chave;
 
   if(typeof Chart!=='undefined'){
-    const labels=anosExec();
+    const labels=anosComSaldo([m]);
     grafico('gFicha',{ type:'bar',
       data:{labels:labels,datasets:tem.map(function(t,i){
         return {label:t,data:labels.map(function(a){ return somaAno(m,t,a); }),backgroundColor:PALETA[i],borderWidth:0};
