@@ -738,6 +738,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span>Secretaria <i class="sigla" tabindex="0" data-tip="Restringe toda a aba às secretarias marcadas. As listas de órgão e de programa passam a mostrar só o que pertence a elas. Sem marcação, não há restrição." data-tip-t="Secretaria">?</i></span><select id="panSecretaria"></select></label>
       <label class="campo"><span>Órgão <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos órgãos marcados. A lista de programas passa a mostrar só os deles. Sem marcação, não há restrição." data-tip-t="Órgão">?</i></span><select id="saldoOrgao"></select></label>
       <label class="campo"><span>Programa <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos programas do PPA marcados. Sem marcação, não há restrição." data-tip-t="Programa">?</i></span><select id="panPrograma"></select></label>
+      <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados (Configurações › Grupos de fonte). Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes do grupo." data-tip-t="Grupo de fonte">?</i></span><select id="panGrupoFonte"></select></label>
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mantém os MAPPs com ao menos uma linha nas fontes marcadas, e todos os valores da aba passam a somar só essas fontes." data-tip-t="Fonte">?</i></span><select id="panFonte"></select></label>
       <label class="campo"><span>Estágio <i class="sigla" tabindex="0" data-tip="Restringe toda a aba aos grupos de estágio marcados. Também se marca clicando nos estágios da Carteira por estágio." data-tip-t="Estágio">?</i></span><select id="panEstagio"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa de cada MAPP, e restringe toda a aba aos que casam." data-tip-t="Busca livre">?</i></span><input type="text" id="panBusca" placeholder="código, título, órgão…"></label>
@@ -795,6 +796,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <header><h2>Programação</h2><span class="legenda">Concentração, programação sem execução e ausência de programação futura.</span></header>
     <div class="cartoes" id="cartoesProgramacao"></div>
     <div class="grade g4" style="margin-top:12px">
+      <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados (Configurações › Grupos de fonte). Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes do grupo." data-tip-t="Grupo de fonte">?</i></span><select id="progGrupoFonte"></select></label>
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da grade e os totais passam a somar só as fontes marcadas.">?</i></span><select id="progFonte"></select></label>
     </div>
     <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade, sob o filtro de fonte e o recorte do Panorama — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
@@ -898,6 +900,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <label class="campo"><span><b id="rotFExec" style="font-weight:inherit">Execução no período atual</b> <i class="sigla" tabindex="0" data-tip="Com ou sem execução no período atual resolvido pela âncora, conforme o critério de execução configurado.">?</i></span><select id="fExec"></select></label>
       <label class="campo"><span>Saldo do programado mínimo (R$) <i class="sigla" tabindex="0" data-tip="Considera o saldo do programado do MAPP: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores.">?</i></span><select id="fValorMin"><option value="0" selected>Sem valor mínimo</option><option value="10000">A partir de R$ 10 mil</option><option value="50000">A partir de R$ 50 mil</option><option value="100000">A partir de R$ 100 mil</option><option value="500000">A partir de R$ 500 mil</option><option value="1000000">A partir de R$ 1 milhão</option><option value="5000000">A partir de R$ 5 milhões</option><option value="10000000">A partir de R$ 10 milhões</option><option value="50000000">A partir de R$ 50 milhões</option><option value="100000000">A partir de R$ 100 milhões</option></select></label>
       <label class="campo"><span>Confiança <i class="sigla" tabindex="0" data-tip="Grau de suficiência probatória do enquadramento: alta, média ou baixa.">?</i></span><select id="fConfianca"></select></label>
+      <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados (Configurações › Grupos de fonte). Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes do grupo." data-tip-t="Grupo de fonte">?</i></span><select id="fGrupoFonte"></select></label>
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da linha e os totais passam a somar só as fontes marcadas; a ficha do MAPP mostra a quebra completa.">?</i></span><select id="fFonte"></select></label>
       <label class="campo"><span>Manifestação do órgão <i class="sigla" tabindex="0" data-tip="Situação do MAPP nas rodadas de manifestação: não enviado, aguardando retorno, prazo vencido sem retorno, de acordo com a ação proposta ou contestando (inclui pedidos de reativação)." data-tip-t="Manifestação do órgão">?</i></span><select id="fManif"></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa.">?</i></span><input type="text" id="fBusca" placeholder="código, título, órgão…"></label>
@@ -999,6 +1002,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
         </select></label>
       <label class="campo"><span>Ano de aprovação</span><select id="sAno"></select></label>
       <label class="campo"><span>Estágio</span><select id="sEstagio"></select></label>
+      <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados (Configurações › Grupos de fonte). Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes do grupo." data-tip-t="Grupo de fonte">?</i></span><select id="sGrupoFonte"></select></label>
       <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da linha e os totais passam a somar só as fontes marcadas; a ficha do MAPP mostra a quebra completa.">?</i></span><select id="sFonte"></select></label>
       <label class="campo"><span>Saldo do programado mínimo (R$) <i class="sigla" tabindex="0" data-tip="Considera o saldo do programado do MAPP: Σ (programado − empenhado) até o exercício corrente + programado dos exercícios posteriores.">?</i></span><select id="sValorMin"><option value="0" selected>Sem valor mínimo</option><option value="10000">A partir de R$ 10 mil</option><option value="50000">A partir de R$ 50 mil</option><option value="100000">A partir de R$ 100 mil</option><option value="500000">A partir de R$ 500 mil</option><option value="1000000">A partir de R$ 1 milhão</option><option value="5000000">A partir de R$ 5 milhões</option><option value="10000000">A partir de R$ 10 milhões</option><option value="50000000">A partir de R$ 50 milhões</option><option value="100000000">A partir de R$ 100 milhões</option></select></label>
       <label class="campo"><span>Busca livre <i class="sigla" tabindex="0" data-tip="Procura no código, no título, no órgão, na secretaria e no programa.">?</i></span><input type="text" id="sBusca" placeholder="código, título, órgão…"></label>
@@ -1168,6 +1172,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <div class="cartoes" id="cartoesContinuidade" style="margin-bottom:12px"></div>
     <div class="barra-acoes" style="margin-bottom:10px">
       <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Com empenho em todos os anos de <i class="sigla" tabindex="0" data-tip="O MAPP é sinalizado quando tem empenho em cada um dos anos calendário da faixa escolhida — indício de despesa de natureza continuada." data-tip-t="Faixa de continuidade">?</i></span><select id="continIni"></select></label><label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>até</span><select id="continFim"></select></label>
+      <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados (Configurações › Grupos de fonte). Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes do grupo." data-tip-t="Grupo de fonte">?</i></span><select id="continGrupoFonte"></select></label>
       <label class="campo" style="flex-direction:row;align-items:center;gap:8px"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da grade e os totais passam a somar só as fontes marcadas.">?</i></span><select id="continFonte"></select></label>
       <button class="btn" id="btnRecalcFase2" data-tip="Recalcula os indícios da segunda fase com os limiares informados.">Recalcular indícios</button>
       <button class="btn" id="btnExportContinuidade" data-tip="Exporta os candidatos a despesa de continuidade.">Exportar</button>
@@ -1830,6 +1835,7 @@ function montarMulti(idSel){
   const validos=new Set(lista.map(function(p){ return p[0]; }));
   Array.from(st.escolha).forEach(function(v){ if(!validos.has(v)) st.escolha.delete(v); });
   rotularMulti(id);
+  if(typeof cascataGrupoFonte==='function') cascataGrupoFonte(id,st);   /* Grupo de fonte → Fonte */
 }
 
 function visiveisMulti(id){
@@ -3203,7 +3209,7 @@ function calcularFase2(){
    devolvem a base e o diagnóstico inteiros quando não há recorte. */
 function recortePanorama(){
   const r={ secretarias:valoresMulti('#panSecretaria'), orgaos:valoresMulti('#saldoOrgao'),
-            programas:valoresMulti('#panPrograma'), fontes:valoresMulti('#panFonte'),
+            programas:valoresMulti('#panPrograma'), fontes:fontesDoFiltro('#panFonte'),
             estagios:valoresMulti('#panEstagio'), busca:norm($('#panBusca')?$('#panBusca').value:'') };
   r.ativo=!!(r.secretarias.length||r.orgaos.length||r.programas.length||r.fontes.length||r.estagios.length||r.busca);
   return r;
@@ -3251,7 +3257,7 @@ function legendaRecortePanorama(){
   if(r.secretarias.length) partes.push('secretaria: '+r.secretarias.join(', '));
   if(r.orgaos.length) partes.push('órgão: '+r.orgaos.join(', '));
   if(r.programas.length) partes.push('programa: '+r.programas.join(', '));
-  if(r.fontes.length) partes.push('fonte: '+r.fontes.join(', ')+' (valores só dessas fontes)');
+  if(r.fontes.length) partes.push(textoFiltroFonte('#panFonte')+' (valores só dessas fontes)');
   if(r.estagios.length) partes.push('estágio: '+r.estagios.map(function(g){ return GRUPOS_ESTAGIO[g]?GRUPOS_ESTAGIO[g].rotulo:g; }).join(', '));
   if(r.busca) partes.push('busca: “'+$('#panBusca').value.trim()+'”');
   el.textContent = r.ativo
@@ -4302,7 +4308,7 @@ function lerFiltros(){
     secretaria:valoresMulti('#fSecretaria'), orgao:valoresMulti('#fOrgao'), programa:valoresMulti('#fPrograma'),
     ano:valoresMulti('#fAno'), regra:valoresMulti('#fRegra'), estagio:valoresMulti('#fEstagio'),
     revisao:valoresMulti('#fRevisao'), exec:valoresMulti('#fExec'), confianca:valoresMulti('#fConfianca'),
-    fonte:valoresMulti('#fFonte'), manif:valoresMulti('#fManif'),
+    fonte:fontesDoFiltro('#fFonte'), manif:valoresMulti('#fManif'),
     valorMin:parseFloat($('#fValorMin').value)||0,
     busca:norm($('#fBusca').value)
   };
@@ -4398,7 +4404,7 @@ function renderDiagnostico(){
   const pagina=lista.slice(ini,fim);
 
   $('#contagemFiltro').textContent = n(total)+' de '+n(E.diag.noUniverso.length)+' MAPPs do universo';
-  $('#resumoFiltro').textContent = 'Saldo do programado filtrado: '+rs(somaSaldo(lista))+notaFontes(E.filtro.fonte);
+  $('#resumoFiltro').textContent = 'Saldo do programado filtrado: '+rs(somaSaldo(lista))+(E.filtro.fonte.length?' · valores só de '+textoFiltroFonte('#fFonte'):'');
   $('#infoPagina').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
 
   let tAte=0,tFut=0,tSaldo=0;
@@ -4818,7 +4824,7 @@ function renderFase2(){
   const fontesOpcoes=Array.from(fontesSet).sort().map(function(v){ return [v,v]; });
   opcoes('#continFonte',fontesOpcoes,'Todas as fontes'); montarMulti('#continFonte');
   opcoes('#progFonte',fontesOpcoes,'Todas as fontes'); montarMulti('#progFonte');
-  const contFiltro=valoresMulti('#continFonte');
+  const contFiltro=fontesDoFiltro('#continFonte');
   const f={
     continuidade: contFiltro.length ? fAll.continuidade.filter(function(c){ return casaFonte(contFiltro,c.m); })
       .map(function(c){ return { m:mappNaFonte(c.m,contFiltro), anos:c.anos, seq:c.seq }; }) : fAll.continuidade,
@@ -4897,7 +4903,7 @@ function renderFase2(){
    e o recorte do Panorama (secretaria, órgão e busca). */
 function programacaoFiltrada(){
   if(!E.fase2) return [];
-  const r=recortePanorama(), prog=valoresMulti('#progFonte');
+  const r=recortePanorama(), prog=fontesDoFiltro('#progFonte');
   /* Fontes efetivas: as da grade e as do recorte; marcadas nos dois, a interseção. */
   const fontes = prog.length && r.fontes.length ? prog.filter(function(x){ return r.fontes.indexOf(x)>=0; })
     : (prog.length ? prog : r.fontes);
@@ -5027,7 +5033,7 @@ function filtrarSaneamento(){
   const f={
     regra:valoresMulti('#sRegra'), secretaria:valoresMulti('#sSecretaria'), orgao:valoresMulti('#sOrgao'),
     situacao:valoresMulti('#sSituacao'), ano:valoresMulti('#sAno'), estagio:valoresMulti('#sEstagio'),
-    fonte:valoresMulti('#sFonte'),
+    fonte:fontesDoFiltro('#sFonte'),
     valorMin:parseFloat($('#sValorMin').value)||0, busca:norm($('#sBusca').value)
   };
   E.filtroSan=f;
@@ -5117,7 +5123,7 @@ function renderSaneamento(){
 
   $('#contagemSaneamento').textContent=n(total)+' de '+n(base.length)+' MAPPs enquadrados';
   $('#resumoSaneamento').textContent='Saldo do programado filtrado: '+rs(somaSaldo(lista))+' · ocultados no filtro: '+
-    n(lista.filter(function(m){ return estaOculto(m.chave); }).length)+notaFontes(E.filtroSan.fonte);
+    n(lista.filter(function(m){ return estaOculto(m.chave); }).length)+(E.filtroSan.fonte.length?' · valores só de '+textoFiltroFonte('#sFonte'):'');
   $('#infoPaginaSan').textContent = total? ('Exibindo '+n(ini+1)+'–'+n(fim)+' de '+n(total)) : 'Nenhum MAPP corresponde aos filtros';
   $('#tabSaneamento').querySelector('tfoot').innerHTML = total
     ? '<tr><td colspan="10">Total filtrado ('+n(total)+' MAPPs)</td><td class="num">'+rsCurto(somaSaldo(lista))+'</td><td></td></tr>'
@@ -8199,6 +8205,61 @@ function baixarJsonGruposFonte(){
   const j=gruposVigentes(); if(!j){ recado('Nenhum grupo de fonte carregado.'); return; }
   baixarBlob(new Blob([JSON.stringify(j)],{type:'application/json'}),'grupos-fonte_'+hojeISO()+'.json');
 }
+/* ---------------------------- Filtro Grupo → Fonte ----------------------
+   Cada filtro de Fonte tem o seu Grupo, sempre antes dele. As telas leem as
+   fontes por fontesDoFiltro: fontes marcadas; sem elas, todas as fontes dos
+   grupos marcados; sem nada, [] (sem restrição). */
+const PARES_FONTE={ panFonte:'panGrupoFonte', progFonte:'progGrupoFonte', fFonte:'fGrupoFonte',
+  sFonte:'sGrupoFonte', continFonte:'continGrupoFonte', adFonte:'adGrupoFonte' };
+const NENHUMA_FONTE='\u0000nenhuma fonte';   /* grupo marcado sem fonte na base: restringe a nada */
+
+function fontesDoFiltro(idF){
+  const id=idF.replace('#',''), f=valoresMulti('#'+id);
+  if(f.length) return f;
+  const g=PARES_FONTE[id], gs=g && $('#'+g) ? valoresMulti('#'+g) : [];
+  if(!gs.length) return [];
+  const lista=fontesDaBase().filter(function(nm){ return gs.indexOf(grupoDaFonte(nm))>=0; });
+  return lista.length ? lista : [NENHUMA_FONTE];
+}
+/* Texto do filtro para legendas e parâmetros: grupos e fontes marcados. */
+function textoFiltroFonte(idF){
+  const id=idF.replace('#',''), g=PARES_FONTE[id], gs=g && $('#'+g) ? valoresMulti('#'+g) : [], f=valoresMulti('#'+id);
+  const p=[];
+  if(gs.length) p.push('grupo de fonte: '+gs.map(nomeGrupoFonte).join(', '));
+  if(f.length) p.push('fonte: '+f.join(', '));
+  return p.join(' · ');
+}
+function prepararGrupo(idG){
+  if(!$('#'+idG)) return;
+  const tem=temGruposFonte();
+  opcoes('#'+idG,opcoesGrupoFonte(),tem?'Todos os grupos':'Nenhum grupo carregado');
+  montarMulti('#'+idG);
+  const st=MULTIS[idG]; if(!st) return;
+  st._chave=(gruposVigentes()||{}).hash||'';
+  st._dic=E.dic;
+  st.bt.disabled=!tem;
+  if(!tem) st.bt.setAttribute('data-tip','Carregue os grupos de fonte em Configurações › Grupos de fonte para usar este filtro.');
+  if(!st._ligado){
+    st._ligado=true;
+    st.sel.addEventListener('change',function(){
+      const idF=Object.keys(PARES_FONTE).find(function(k){ return PARES_FONTE[k]===idG; });
+      if(idF && MULTIS[idF]){ montarMulti('#'+idF); aplicarMulti(idF); }
+    });
+  }
+}
+function prepararFiltrosGrupo(){ Object.keys(PARES_FONTE).forEach(function(idF){ prepararGrupo(PARES_FONTE[idF]); if(MULTIS[idF]) montarMulti('#'+idF); }); }
+/* Chamada ao fim de montarMulti: restringe a lista de Fonte aos grupos marcados. */
+function cascataGrupoFonte(id,st){
+  const g=PARES_FONTE[id]; if(!g) return;
+  const sg=MULTIS[g];
+  if(!sg || sg._chave!==((gruposVigentes()||{}).hash||'') || sg._dic!==E.dic) prepararGrupo(g);
+  const gs=valoresMulti('#'+g); if(!gs.length) return;
+  st.lista=st.lista.filter(function(p){ return gs.indexOf(grupoDaFonte(p[0]))>=0; });
+  const ok=new Set(st.lista.map(function(p){ return p[0]; }));
+  Array.from(st.escolha).forEach(function(v){ if(!ok.has(v)) st.escolha.delete(v); });
+  rotularMulti(id);
+}
+
 /* Troca de grupos: redesenha os filtros e o que depende deles. */
 function aoMudarGruposFonte(){
   _gfCache=null;
