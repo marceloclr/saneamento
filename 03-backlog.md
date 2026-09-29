@@ -1,5 +1,18 @@
 # Backlog
 
+## Lote de 29/09/2026 — envio das planilhas por e-mail
+
+Plano: [`docs/planos/envio-email-orgaos.md`](docs/planos/envio-email-orgaos.md).
+- Cadastro de destinatários por órgão (.xlsx obrigatório, modelo, crítica com erros e avisos, na sessão).
+- `planilhasDaRodada` extraída de `reemitirRodada`.
+- Envio pelo Gmail direto do navegador (Google Identity Services, escopo `gmail.send`), com
+  modelo de assunto e mensagem, reenvio de falhas, coluna E-mail nas rodadas, registro em
+  `rodada.orgaos[k].emails` e aba ENVIOS POR EMAIL em Exportar manifestações.
+- **Pendente (usuário):** criar o ID do cliente OAuth — primeiro na conta Gmail pessoal (Externo, em
+  teste), depois na conta da SEPLAG (Interno) — e fazer o ensaio real de envio.
+- Exercícios sem saldo do programado ocultos em todo o sistema (grade, exportação, dicas por regra,
+  ficha, quadro por MAPP, carteira e gráfico de evolução).
+
 ## Lote de 28/09/2026 — resultado centrado no Novo Programado 2027
 
 - Núcleo único de **sobreviventes às regras** (sem regra, ocultados ou com recomendação rejeitada) e

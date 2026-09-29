@@ -10,7 +10,7 @@ Disponível em: https://marceloclr.github.io/saneamento
 
 ## Como usar
 
-Abra `index.html` diretamente no navegador (ou acesse a URL acima) e importe a planilha (`.xlsx`) com os dados a serem processados. Nenhum dado é enviado a servidores — todo o processamento ocorre localmente no navegador.
+Abra `index.html` diretamente no navegador (ou acesse a URL acima) e importe a planilha (`.xlsx`) com os dados a serem processados. Todo o processamento ocorre localmente no navegador. Dados só saem por ação explícita do usuário: a sessão, quando gravada no GitHub, e as planilhas de manifestação, quando enviadas por e-mail pelo Gmail da conta de quem envia.
 
 ## Arquitetura
 
@@ -21,6 +21,8 @@ Arquivo único de aproximadamente 300 KB, sem dependências de build: `<head>` c
 A aba **Manifestação**, entre Análise e Decisão, gera uma planilha protegida por órgão (só as colunas de resposta são editáveis) com os MAPPs enquadrados nas Regras 1 a 4, e grava junto a nova versão da sessão, com nomes casados `DDMMAAAA-HHMM-Vnn.json` e `DDMMAAAA-HHMM-Vnn-ÓRGÃO.xlsx`. Os órgãos devolvem as planilhas pelo canal oficial; o sistema confere cada uma pelo controle interno (rodada e token por linha), registra as manifestações e as mostra na ficha e no filtro do diagnóstico. Cada planilha informa, por MAPP, o Programado 2027 e o Novo Programado 2027. A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.
 
 A geração exige uma sessão gravada ou retomada na janela (é ela que dá a versão e casa os nomes); gravar não descarta nada, então não é preciso recarregar o .json recém-gerado. **Baixar de novo** refaz, idênticas, as planilhas de uma rodada.
+
+**Envio por e-mail.** Com o cadastro de destinatários por órgão (planilha .xlsx criticada pelo sistema: ÓRGÃO, NOME, E-MAIL, TIPO Para/Cc), o botão **Enviar por e-mail** manda a cada órgão a sua planilha anexa, pela API do Gmail da conta Google de quem envia — sem servidor próprio. Basta criar uma vez um ID do cliente OAuth no Google Cloud (passo a passo no manual técnico, “Configurar o Google”) e informá-lo em Configurações › E-mail (Google). Cada envio (destinatários, data, situação, identificador da mensagem) fica registrado na sessão. Plano em [`docs/planos/envio-email-orgaos.md`](docs/planos/envio-email-orgaos.md).
 
 A sessão pode ser gravada e retomada **no computador, num repositório GitHub privado ou nos dois**, à escolha do usuário a cada gravação. O acesso ao GitHub é pedido na hora ou em Configurações › Sessão e armazenamento; o token fica na memória da janela, ou no navegador se o usuário marcar *Lembrar neste computador*.
 

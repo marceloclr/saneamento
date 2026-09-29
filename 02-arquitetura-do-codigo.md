@@ -54,6 +54,11 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    (`importarRetornos`, `aplicarRetornos`), situação por MAPP (`situacaoManif`),
    sessão versionada (`gravarSessao`, `aplicarSessao`) e GitHub (`githubGravar`,
    `githubListar`, `githubLer`); diálogo de escolha `perguntar`, sobre o `#modal`.
+   Envio por e-mail: cadastro de destinatários (`importarDestinatarios`,
+   `criticarDestinatarios`, `destinatariosDoOrgao`, `baixarModeloDestinatarios`),
+   planilhas refeitas por `planilhasDaRodada` (a mesma do **Baixar de novo**), Google
+   Identity Services (`obterTokenGoogle`, script carregado sob demanda), `montarMime`,
+   `enviarGmail` e `enviarRodadaEmail`; registro em `rodada.orgaos[k].emails`.
 
 ## Estado global `E`
 
