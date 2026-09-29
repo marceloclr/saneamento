@@ -1,5 +1,19 @@
 # Backlog
 
+## Lote de 29/09/2026 — Excluir pelo usuário (auditoria SEPA)
+
+Plano: [`docs/planos/excluir-pelo-usuario.md`](docs/planos/excluir-pelo-usuario.md).
+- **Ocultar vira Excluir**, e o excluído, com ou sem regra, sai como os MAPPs das regras
+  (completa) ou entra na base saneada com a ação “excluído pelo usuário” (simplificada).
+- Sobrevive só quem não tem regra e não foi excluído: acatar e rejeitar passam a ser registro
+  (a rejeição não salva mais o MAPP).
+- Decisão: `conjuntoSaneamento()`; coluna Regra com “Excluído pelo usuário”; cartões que somam
+  (Mantidos no saneamento = todos que saem; Excluídos individualmente = a parte excluída).
+- Resultado: situação “Excluído pelo usuário”; o excluído conta só na coluna Excluídos; sai o
+  seletor Base da projeção. Exportação Exceções → Excluídos pelo usuário.
+- Ficha do MAPP sem os botões Acatar, Rejeitar e Ocultar/Restabelecer (nas duas versões).
+- Testes `teste_exclusao.js` e `teste_exclusao_simplificado.js` com os MAPPs da SEPA.
+
 ## Lote de 29/09/2026 — envio das planilhas por e-mail
 
 Plano: [`docs/planos/envio-email-orgaos.md`](docs/planos/envio-email-orgaos.md).

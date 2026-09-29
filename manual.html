@@ -353,7 +353,7 @@ const PRINCIPIO = [
   ['CÁLCULO','Somatórios por exercício e aferição da execução segundo o critério em vigor.','var(--ardosia)'],
   ['REGRA','Enquadramento nas Regras 1, 2, 3 e 4, com a âncora temporal resolvida.','var(--latao)'],
   ['RECOMENDAÇÃO','Ação que a regra indica para o MAPP, acompanhada de evidência e grau de confiança.','var(--ameixa)'],
-  ['DECISÃO HUMANA','Único ato que produz efeito: acatar, rejeitar ou ocultar. O que sobrevive às regras leva o Novo Programado 2027.','var(--musgo)']
+  ['DECISÃO HUMANA','Acatar ou rejeitar registra a revisão; excluir tira o MAPP do conjunto ativo, como uma regra. Só o que sobrevive (sem regra e não excluído) leva o Novo Programado 2027.','var(--musgo)']
 ];
 function cadeiaPrincipio(){
   return '<div class="apr-cadeia">'+PRINCIPIO.map(function(p,i){
@@ -379,7 +379,7 @@ const GUIA_COMPLETA = [
   { t:'Ler a Visão Geral e a prévia do resultado', cor:'var(--musgo)', ir:['panorama'], onde:'Visão Geral',
     fazer:['Usar o **Recorte do Panorama** (secretaria, órgão, programa, fonte, estágio e busca) para restringir toda a aba.','Ler a **Prévia do resultado**: universo, sobreviventes às regras e retirados, com o **Programado 2027** contra o **Novo Programado 2027**.','Em **Exercícios de execução considerados**, no Saldo, marcar na régua os anos que entram no processamento e no Novo Programado.'],
     conferir:['O Saldo por exercício, com o conjunto **Sobreviventes às regras**, e as inconsistências do Novo Programado, se houver.','Exercícios sem saldo do programado (programado − empenhado igual a zero em todos os MAPPs do conjunto) não aparecem na grade, na exportação, nas dicas do saldo por regra nem na ficha do MAPP; a legenda diz quais foram ocultados.','A Carteira por estágio e a Programação.'],
-    cautela:['A prévia é preliminar: muda com as decisões e exceções até o saneamento ser concluído.','Blocos secundários abrem recolhidos: clique no título para expandir.'] },
+    cautela:['A prévia é preliminar: muda com as exclusões pelo usuário até o saneamento ser concluído.','Blocos secundários abrem recolhidos: clique no título para expandir.'] },
   { t:'Analisar', cor:'var(--ardosia)', ir:['diagnostico'], onde:'Análise',
     fazer:['No **Quadro de diagnóstico**, filtrar e abrir a ficha de cada MAPP para ver as regras testadas e a evidência.','Expandir, quando útil, **Revisão da base**, **Títulos não comunicativos** e **Despesas de continuidade**.'],
     conferir:['A ação recomendada e o grau de confiança.','Sobreposições, paralisados e dados insuficientes, que pedem exame manual.'],
@@ -392,13 +392,13 @@ const GUIA_COMPLETA = [
     conferir:['Cada planilha traz, por MAPP, o **Programado 2027** e o **Novo Programado 2027**.','A coluna **E-mail** das rodadas mostra enviado (data e hora) ou falha; a dica traz destinatários e o erro. Os envios ficam no .json da sessão e na aba ENVIOS POR EMAIL de **Exportar manifestações**.','A manifestação aparece na ficha e no filtro do diagnóstico.'],
     cautela:['Guarde o .json da rodada: sem ele, os retornos não são aceitos.','O envio fica bloqueado se algum órgão escolhido não tiver e-mail Para no cadastro. Quem já recebeu não recebe de novo, salvo se marcar o reenvio.','O e-mail sai da conta Google de quem envia; o primeiro uso pede o ID do cliente em Configurações › E-mail (Google) — ver “Configurar o Google” no manual técnico.','A manifestação não decide: acatar ou rejeitar continua sendo ato humano.'] },
   { t:'Decidir', cor:'var(--ameixa)', ir:['saneamento'], onde:'Análise › Diagnóstico e Decisão',
-    fazer:['Selecionar MAPPs e **Acatar** ou **Rejeitar** a recomendação, com justificativa.','Na Decisão, **Ocultar** do saneamento o enquadrado que não deve sair.'],
-    conferir:['Rejeitado ou ocultado volta a **sobreviver** às regras e passa a levar o Novo Programado 2027.'],
-    cautela:['Ocultar e rejeitar são reversíveis; a base original nunca é alterada.'] },
+    fazer:['Selecionar MAPPs e **Acatar** ou **Rejeitar** a recomendação, com justificativa (registro da revisão).','Na Decisão ou na Análise, **Excluir** o MAPP que também deve sair, com ou sem regra.'],
+    conferir:['Todo MAPP com regra sai do conjunto ativo, com ou sem decisão; o excluído também sai e aparece na coluna Regra como **Excluído pelo usuário**. Só sobrevive quem não tem regra e não foi excluído.'],
+    cautela:['A exclusão é reversível (Restabelecer); a base original nunca é alterada.','Rejeitar não salva o MAPP: é só o registro de que o revisor discorda da ação recomendada.'] },
   { t:'Exportar o resultado', cor:'var(--musgo)', ir:['antesdepois'], onde:'Resultado',
     fazer:['Conferir o **Quadro por órgão** (Programado 2027 e Novo Programado 2027) e o **Quadro por MAPP dos ativos depois**.','Acionar **Exportar resultado — Novo Programado 2027**, no alto da aba, ou **Concluir e exportar resultado**, na Decisão, para declarar o saneamento concluído.'],
     conferir:['O arquivo traz as abas NP 2027 POR MAPP (MAPP, órgão, fonte, Programado 2027, Novo Programado 2027), QUADRO POR MAPP, QUADRO POR ORGAO e PARAMETROS.','No Quadro por MAPP (tela e arquivo), os exercícios anteriores a 2027 sem saldo a programar (programado − empenhado igual a zero em todas as linhas) ficam ocultos; a legenda e a aba PARAMETROS dizem quais foram.'],
-    cautela:['As demais relações (regras, situações à margem, indícios, exceções e saldo) ficam no box **Exportações**, no fim da aba.','Guarde a sessão (.json) ao fim da jornada: sem ela, o trabalho se perde ao fechar a página.'] }
+    cautela:['As demais relações (regras, situações à margem, indícios, excluídos pelo usuário e saldo) ficam no box **Exportações**, no fim da aba.','Guarde a sessão (.json) ao fim da jornada: sem ela, o trabalho se perde ao fechar a página.'] }
 ];
 
 const GUIA_ESSENCIAL = [
@@ -417,8 +417,8 @@ const GUIA_ESSENCIAL = [
     cautela:['Filtro vazio significa ausência de restrição.','O filtro de fonte seleciona MAPPs, mas o saldo exibido soma todas as fontes do MAPP; a ficha mostra a quebra por fonte.'] },
   { t:'Excluir ou retornar MAPPs', cor:'var(--carmim)', ir:['saneamento'], onde:'2 · Exclusão e retorno',
     fazer:['Usar a coluna **Providência** para excluir ou retornar um MAPP.','Para vários, marcar as caixas e acionar **Excluir selecionados**, **Retornar selecionados** ou **Retornar todos**.'],
-    conferir:['A situação passa a “Excluído do saneamento”, e o selo no alto atualiza a contagem.'],
-    cautela:['Só MAPPs alcançados por regra podem ser excluídos.','O MAPP excluído não recebe a ação da regra e permanece na base como está.','A ação é imediata e não pede responsável nem justificativa.'] },
+    conferir:['A situação passa a “Excluído pelo usuário”, o MAPP entra na base saneada com essa ação e o selo no alto atualiza a contagem.'],
+    cautela:['Qualquer MAPP do universo pode ser excluído, com ou sem regra.','O excluído tem o mesmo tratamento dos MAPPs das regras: entra na base saneada, e a ação “excluído pelo usuário” prevalece sobre a da regra.','A exclusão pede responsável e motivo; dá para repetir o motivo nas próximas sem perguntar de novo.'] },
   { t:'Conferir e exportar a base saneada', cor:'var(--musgo)', ir:['saneada'], onde:'3 · Base saneada',
     fazer:['Examinar os cartões de composição da base saneada.','Na grade, escolher recorte, órgão, regra, exercícios exibidos e busca.','Acionar **Exportar base saneada**.'],
     conferir:['O arquivo exportado em duas abas: RESULTADO DO SANEAMENTO e EXCLUIDOS.','O quadro Excluídos do saneamento, de onde também é possível retornar o MAPP.'],
@@ -471,7 +471,7 @@ const COMPARATIVO = [
   ['Indicadores, universo, saldo por exercício e programação','sim','—'],
   ['Novo Programado 2027','sim','—'],
   ['Decisão humana (acatar ou rejeitar)','sim, com justificativa','—'],
-  ['Retirada de MAPPs do resultado','ocultar e restabelecer','excluir e retornar'],
+  ['Exclusão de MAPPs pelo usuário','excluir e restabelecer','excluir e retornar'],
   ['Revisão de consistência da base','sim','—'],
   ['Despesas de continuidade (segunda fase)','sim','—'],
   ['Antes e depois','sim','—'],
@@ -495,8 +495,8 @@ const GLOSSARIO = [
   ['Confiança','Alta, média ou baixa, conforme a completude e a coerência dos dados.','ambas'],
   ['Novo Programado 2027','VLR_PLANEJADO_27 somado aos saldos (programado − empenhado) de todos os exercícios anteriores a 2027 marcados na régua; saldo negativo não é somado e o MAPP é apontado como inconsistente.','completa'],
   ['Providência','Coluna que retira um MAPP do resultado ou o devolve a ele, de imediato e de forma reversível.','ambas'],
-  ['Sobrevivente','MAPP do universo que não atende a regra alguma, ou enquadrado que foi ocultado ou teve a recomendação rejeitada. Leva o Novo Programado 2027.','completa'],
-  ['Excluído do saneamento','Na versão essencial, MAPP alcançado por regra que não recebe a ação da regra e permanece na base como está.','essencial'],
+  ['Sobrevivente','MAPP do universo que não atende a regra alguma e não foi excluído pelo usuário. Leva o Novo Programado 2027.','completa'],
+  ['Excluído pelo usuário','MAPP retirado individualmente, com ou sem regra. Sai do conjunto ativo como os das regras (completa) e entra na base saneada com a ação “excluído pelo usuário” (essencial).','ambas'],
   ['Rodada','Envio de planilhas protegidas aos órgãos, com identificador próprio, data-limite e a versão da sessão em que foi gerada.','completa'],
   ['Manifestação do órgão','Resposta do órgão na planilha da rodada: de acordo com a ação proposta, ou contestação (inclui pedido de reativação), com justificativa e previsão de execução.','completa'],
   ['Intempestiva','Manifestação com data posterior à data-limite da rodada; é aceita e sinalizada.','completa'],
@@ -506,7 +506,7 @@ const GLOSSARIO = [
 function htmlNovoProgramado(){
   return '<p>'+fmtTexto('A finalidade do sistema é entregar os MAPPs que **sobrevivem às Regras 1 a 4**, cada um com o **Novo Programado 2027**:')+'</p>'+
     '<ul>'+[
-      '**Sobrevive** o MAPP do universo que não atende a regra alguma, ou que, enquadrado, foi ocultado do saneamento ou teve a recomendação rejeitada.',
+      '**Sobrevive** o MAPP do universo que não atende a regra alguma e não foi excluído pelo usuário. Acatar ou rejeitar a recomendação é registro da revisão e não muda quem sai.',
       '**Novo Programado 2027** = `VLR_PLANEJADO_27` + Σ (`VLR_PLANEJADO` − `VLR_EMPENHO`) dos anos anteriores marcados na régua.',
       'Ano com empenho acima do programado não é somado nem subtraído; o MAPP é sinalizado como inconsistente.',
       'Por fonte, o cálculo usa os mesmos anos do MAPP, e a soma das fontes reproduz o valor do MAPP.'
@@ -580,7 +580,7 @@ const BLOCOS_SCRIPT = [
   ['4','Saldo','Saldo do programado por exercício, filtros, Novo Programado 2027 e exportação.','`periodosSaldo` `apurarSaldo` `renderSaldo` `exportarSaldo`'],
   ['5','Diagnóstico','Filtros, grade, decisão humana e ficha do MAPP.','`prepararFiltros` `filtrar` `renderDiagnostico` `registrarDecisao` `abrirFicha`'],
   ['6','Universo e revisão','Demonstração do universo, regras aplicadas, achados de consistência, segunda fase.','`renderUniverso` `renderRegrasAplicadas` `renderQualidade` `mostrarAchado` `renderFase2`'],
-  ['7','Saneamento final','Conjunto enquadrado, exclusão individual, encerramento e exportação do resultado.','`conjuntoEnquadrado` `celulaProvidencia` `ocultarMapps` `restabelecerMapps` `finalizarSaneamento` `exportarResultadoFinal`'],
+  ['7','Saneamento final','Conjunto enquadrado, conjunto do saneamento (regras e exclusões), exclusão individual, encerramento e exportação do resultado.','`conjuntoEnquadrado` `conjuntoSaneamento` `estaExcluido` `celulaProvidencia` `ocultarMapps` `restabelecerMapps` `finalizarSaneamento` `exportarResultadoFinal`'],
   ['8','Antes e Depois','Situação antes e depois das decisões, por medida e por órgão (ou outro agrupamento).','`situacaoAntes` `situacaoDepois` `apurarAntesDepois` `renderAntesDepois`'],
   ['9','Exportações e ligações','Relações exportáveis, configurações, sessão em .json, ligação de eventos e inicialização.','`linhasMapp` `conjuntos` `exportar` `cfgParaTela` `aplicarConfig` `guardarSessao` `retomarSessao` `ligarEventos` `iniciar`'],
   ['10','Boas-vindas, apresentação e manual','Boas-vindas de abertura, apresentação completa e ligação com o manual único (`manual.html`). Somente leitura do estado.','`abrirBoasVindas` `abrirApresentacao` `abrirManual` `estadoParaManual` `enviarEstadoManual` `iniciarManual`'],
@@ -665,7 +665,7 @@ const TECNICO = [
       codigo("{ id:'exemplo', nome:'Relação de exemplo', aba:'EXEMPLO',\n  dica:'O que a relação contém.',\n  dados:function(){ return linhasMapp(E.diag.paralisados); } }");
   }},
   { id:'t-manif', t:'Manifestações, sessão versionada e GitHub', cor:'var(--petroleo)', html:function(){
-    return '<p>'+fmtTexto('**Rodada.** `gerarRodada` agrupa por órgão os MAPPs de `conjuntoEnquadrado()` não ocultados e chama `montarPlanilhaOrgao` (ExcelJS) para cada um. Cada planilha tem as abas INSTRUÇÕES, MAPPS e CONTROLE (`veryHidden`). Na aba MAPPS, só as colunas H a L têm `protection.locked=false`; as listas de manifestação vêm de `RESPOSTAS[regra]` e a coluna oculta CONTROLE traz `cyrb53(rodada|órgão|chave)`. As planilhas vão num .zip (JSZip) quando há mais de um órgão.')+'</p>'+
+    return '<p>'+fmtTexto('**Rodada.** `gerarRodada` agrupa por órgão os MAPPs de `conjuntoEnquadrado()` não excluídos e chama `montarPlanilhaOrgao` (ExcelJS) para cada um. Cada planilha tem as abas INSTRUÇÕES, MAPPS e CONTROLE (`veryHidden`). Na aba MAPPS, só as colunas H a L têm `protection.locked=false`; as listas de manifestação vêm de `RESPOSTAS[regra]` e a coluna oculta CONTROLE traz `cyrb53(rodada|órgão|chave)`. As planilhas vão num .zip (JSZip) quando há mais de um órgão.')+'</p>'+
       '<p>'+fmtTexto('**Retorno.** `importarRetornos` lê cada arquivo com o SheetJS, localiza a rodada pelo CONTROLE (nunca pelo nome), confere o token de cada linha e as exigências da regra, mostra a conferência em `perguntar` e, confirmada, `aplicarRetornos` grava `E.manifestacoes` e atualiza os retornos da rodada.')+'</p>'+
       '<p>'+fmtTexto('**Sessão formato 2.** `gravarSessao` incrementa `E.versaoSessao`, nomeia `DDMMAAAA-HHMM-Vnn.json` e grava no destino escolhido; `aplicarSessao` aceita os formatos 1 e 2 e avisa quando `assinaturaBase` não bate com a base importada.')+'</p>'+
       codigo("{ formato:2, versao:3, nome:'23092026-1435-V03.json', assinaturaBase:'…',\n  cfg, decisoes, exclusoes, encerramento, responsavel, seq, npAnos,\n  rodadas:[{ id, versao, geradaEm, prazoDias, dataLimite,\n    orgaos:[{ orgao, arquivo, itens:{ chave: regra }, hash, retornos:[] }] }],\n  manifestacoes:{ chave:{ rodada, orgao, regra, resposta, sentido, justificativa,\n    previsao, responsavelOrgao, dataOrgao, arquivo, intempestiva, pendencias, historico } },\n  cfgSessao:{ destino, github:{ repo, branch, pasta } } }")+

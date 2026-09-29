@@ -33,9 +33,10 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    `registrarDecisao`, `abrirFicha`.
 6. **Universo e qualidade** — `renderUniverso`, `renderQualidade`,
    `mostrarAchado`, `renderFase2`.
-7. **Saneamento final** — grade do conjunto enquadrado, `ocultarMapps`,
-   `restabelecerMapps`, `finalizarSaneamento`; núcleo do resultado: `sobrevive`,
-   `sobreviventes`, `retiradosPelasRegras`, `excecaoRegra`, `npDoMapp` (cache de
+7. **Saneamento final** — grade do conjunto do saneamento (`conjuntoSaneamento`:
+   enquadrados e excluídos pelo usuário), `ocultarMapps` (Excluir), `restabelecerMapps`,
+   `finalizarSaneamento`; núcleo do resultado: `sobrevive` (sem regra e não excluído),
+   `sobreviventes`, `retirados`, `excluidos`, `linhasExcluidos`, `npDoMapp` (cache de
    `novoProgramadoMapp`), `npDaLinha`, `totaisNP` e `exportarResultadoNP`.
 8. **Antes e Depois** — `situacaoAntes`, `situacaoDepois`, `apurarAntesDepois`,
    `renderAntesDepois`, `desenharAntesDepois`, `renderQuadroMapp` (linhas originais

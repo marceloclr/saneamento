@@ -2,7 +2,7 @@
 
 Aplicação web de página única (`index.html`) para importação, consolidação e saneamento de MAPPs (Monitoramento de Ações e Projetos Prioritários), com motor de regras, diagnóstico, apuração de saldo e exportações.
 
-**Finalidade:** entregar os MAPPs que **sobrevivem às Regras 1 a 4**, cada um com o **Novo Programado 2027** (`VLR_PLANEJADO_27` + Σ (`VLR_PLANEJADO` − `VLR_EMPENHO`) dos anos anteriores marcados na régua; ano com saldo negativo não é somado e o MAPP é sinalizado). Sobrevive o MAPP do universo que não atende a regra alguma, ou que, enquadrado, foi ocultado do saneamento ou teve a recomendação rejeitada.
+**Finalidade:** entregar os MAPPs que **sobrevivem às Regras 1 a 4**, cada um com o **Novo Programado 2027** (`VLR_PLANEJADO_27` + Σ (`VLR_PLANEJADO` − `VLR_EMPENHO`) dos anos anteriores marcados na régua; ano com saldo negativo não é somado e o MAPP é sinalizado). Sobrevive o MAPP do universo que não atende a regra alguma e não foi excluído pelo usuário; acatar ou rejeitar a recomendação é registro da revisão e não muda quem sai. O excluído pelo usuário, com ou sem regra, sai como os das regras (na versão simplificada, entra na base saneada com a ação “excluído pelo usuário”).
 
 A **Visão Geral** traz uma prévia do resultado (Programado 2027 × Novo Programado 2027); a aba **Resultado** traz o quadro por órgão, o quadro por MAPP dos ativos depois (colunas da planilha original com o Novo Programado 2027 logo após `VLR_PLANEJADO_27`) e o botão **Exportar resultado — Novo Programado 2027**, que gera as abas NP 2027 POR MAPP (MAPP, órgão, fonte, Programado 2027, Novo Programado 2027), QUADRO POR MAPP, QUADRO POR ORGAO e PARAMETROS. As demais relações ficam no box Exportações, no fim da aba Resultado, em seis arquivos com colunas enxutas.
 
