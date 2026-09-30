@@ -703,7 +703,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   </div>
   <nav class="abas" role="tablist" id="abas" aria-label="Fluxo principal">
     <button class="aba" role="tab" id="aba-visao" aria-controls="p-panorama" aria-selected="true" style="--cor:var(--grafite)" data-nav="visao" data-tip="Base, indicadores, universo, regras, saldo e programação em uma única visão de entrada." data-tip-t="Visão Geral"><span class="n">1</span><span class="t"><strong>Visão Geral</strong><small>Base e universo</small></span></button>
-    <button class="aba" role="tab" id="aba-analise" aria-controls="p-diagnostico" aria-selected="false" style="--cor:var(--ardosia)" data-nav="analise" data-tip="Análise dos MAPPs, filtros, qualidade da base e despesas de continuidade." data-tip-t="Análise"><span class="n">2</span><span class="t"><strong>Análise</strong><small>Achados e MAPPs</small></span></button>
+    <button class="aba" role="tab" id="aba-analise" aria-controls="p-diagnostico" aria-selected="false" style="--cor:var(--ardosia)" data-nav="analise" data-tip="Análise dos MAPPs, filtros, qualidade da base, despesas de continuidade e contratos de gestão." data-tip-t="Análise"><span class="n">2</span><span class="t"><strong>Análise</strong><small>Achados e MAPPs</small></span></button>
     <button class="aba" role="tab" id="aba-manifestacao" aria-controls="p-manifestacao" aria-selected="false" style="--cor:var(--petroleo)" data-nav="manifestacao" data-tip="Envio de planilhas protegidas aos órgãos e registro das manifestações devolvidas. Exige sessão gravada ou retomada nesta janela." data-tip-t="Manifestação"><span class="n">3</span><span class="t"><strong>Manifestação</strong><small>Planilhas dos órgãos</small></span></button>
     <button class="aba" role="tab" id="aba-decisao" aria-controls="p-saneamento" aria-selected="false" style="--cor:var(--sepia)" data-nav="decisao" data-tip="MAPPs que saem do conjunto ativo: enquadrados pelas regras e excluídos pelo usuário. Aqui se exclui ou restabelece cada MAPP." data-tip-t="Decisão"><span class="n">4</span><span class="t"><strong>Decisão</strong><small>Deliberação humana</small></span></button>
     <button class="aba" role="tab" id="aba-resultado" aria-controls="p-antesdepois" aria-selected="false" style="--cor:var(--musgo)" data-nav="resultado" data-tip="Antes e depois, Novo Programado 2027 e exportações do resultado final." data-tip-t="Resultado"><span class="n">5</span><span class="t"><strong>Resultado</strong><small>Consolidação e exportação</small></span></button>
@@ -1185,6 +1185,29 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
   </div>
 </section>
 
+<!-- ============================ CONTRATOS DE GESTÃO ============================ -->
+<section role="tabpanel" id="p-contratos" class="oculto" aria-labelledby="aba-contratos" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
+  <div class="bloco recolhivel">
+    <header><h2>Contratos de Gestão (C.G.)</h2><span class="legenda">Marcação informativa — não interfere no saneamento.</span></header>
+    <div class="aviso nota"><span class="marca">C.G.</span><span>Ao carregar a base, o sistema procura no título de todos os MAPPs menções a <strong>Contrato de Gestão</strong> ou à sigla <strong>C.G.</strong> (C.G, CG, C.G.). Aqui se marca individualmente o MAPP que a varredura não identificou e se remove a marcação indevida. A marcação vai para a sessão e para a aba CONTRATOS DE GESTAO da exportação do resultado; regras, exclusões e Novo Programado 2027 não mudam.</span></div>
+    <div class="cartoes" id="cartoesContratos" style="margin-bottom:12px"></div>
+    <div class="barra-acoes" style="margin-bottom:10px">
+      <label class="campo"><span>Busca nos marcados <i class="sigla" tabindex="0" data-tip="Filtra a grade pelo código, título ou órgão.">?</i></span><input type="text" id="cgBusca" placeholder="código, título, órgão…"></label>
+      <button class="btn" id="btnExportContratos" data-tip="Exporta os MAPPs marcados como Contrato de Gestão.">Exportar</button>
+    </div>
+    <div class="tabela-caixa" style="max-height:42vh"><table id="tabContratos"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. A chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão. É nela que a varredura procura a menção a Contrato de Gestão." data-tip-t="Título">Título</th><th data-tip="Automática: o título menciona Contrato de Gestão (ou C.G.). Manual: marcado pelo usuário nesta tela." data-tip-t="Origem">Origem</th><th data-tip="Apenas informativo: regras atendidas, exclusão pelo usuário, sobrevivente ou fora do universo. A marcação C.G. não altera essa situação." data-tip-t="Situação no saneamento">Situação no saneamento</th><th class="num" data-tip="VLR_PLANEJADO_27 do MAPP." data-tip-t="Programado 2027">Programado 2027</th><th class="num" data-tip="Programado 2027 somado ao saldo dos anos incorporados, como no Resultado." data-tip-t="Novo Programado 2027">Novo Programado 2027</th><th data-tip="Remove a marcação C.G. do MAPP. Não afeta o saneamento." data-tip-t="Providência">Providência</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <h3 style="margin:18px 0 6px">Marcar MAPP como C.G.</h3>
+    <div class="barra-acoes" style="margin-bottom:10px">
+      <label class="campo" style="min-width:320px"><span>Procurar MAPP não marcado <i class="sigla" tabindex="0" data-tip="Procura entre todos os MAPPs da base que ainda não estão marcados, pelo código, título ou órgão. Mostra até 20 resultados.">?</i></span><input type="text" id="cgProcura" placeholder="ex.: SDA 758, instituto, organização social…"></label>
+    </div>
+    <div id="cgResultados"></div>
+    <div id="cgRemovidosCaixa" class="oculto">
+      <h3 style="margin:18px 0 6px">Marcações automáticas removidas</h3>
+      <div class="tabela-caixa" style="max-height:30vh"><table id="tabContratosRemovidos"><thead><tr><th data-tip="Código do projeto." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor." data-tip-t="Órgão">Órgão</th><th data-tip="Título do MAPP, com a menção que levou à identificação automática." data-tip-t="Título">Título</th><th data-tip="Devolve a marcação automática ao MAPP." data-tip-t="Providência">Providência</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</section>
+
 
 </main>
 
@@ -1489,6 +1512,8 @@ const E = {
   cfg:Object.assign({},CFG_OFICIAL),
   decisoes:{},
   exclusoes:{}, encerramento:null, motivoExclusao:'', perguntarExclusao:true,
+  cg:{ incluidos:{}, removidos:{} },   /* marcação Contrato de Gestão: manuais e automáticos removidos, por chave */
+  cgAuto:new Map(),                    /* chave → trecho do título que casou com o padrão C.G. */
   filtroSan:{}, paginaSan:1, porPaginaSan:100, ordemSan:{campo:'programado',desc:true}, selecionadosSan:new Set(),
   responsavel:'', seq:1,
   npAnos:null,   /* exercícios incorporados ao Novo Programado 2027 (comum ao Saldo e ao Resultado); null = ainda não iniciado */
@@ -2074,12 +2099,12 @@ function dataReferencia(){
 function irParaAba(id){
   const grupos={
     visao:['panorama'],
-    analise:['diagnostico','qualidade','fase2'],
+    analise:['diagnostico','qualidade','fase2','contratos'],
     manifestacao:['manifestacao'],
     decisao:['saneamento'],
     resultado:['antesdepois']
   };
-  const aliases={panorama:'visao',diagnostico:'analise',qualidade:'analise',fase2:'analise',saneamento:'decisao',antesdepois:'resultado'};
+  const aliases={panorama:'visao',diagnostico:'analise',qualidade:'analise',fase2:'analise',contratos:'analise',saneamento:'decisao',antesdepois:'resultado'};
   id=aliases[id]||id;
   const ids=grupos[id]||[id];
   $$('.aba').forEach(function(b){
@@ -2100,7 +2125,7 @@ function irParaAba(id){
   const etapa=document.querySelector('.fluxo-etapa[data-nav-go="'+id+'"]');
   $$('.fluxo-etapa').forEach(function(e){ e.classList.toggle('atual',e===etapa); });
   if(id==='visao' && E.diag){ renderPrevia(); desenharGraficos(); }
-  if(id==='analise' && E.diag) { renderDiagnostico(); if(typeof renderQualidade==='function') renderQualidade(); if(typeof renderFase2==='function') renderFase2(); }
+  if(id==='analise' && E.diag) { renderDiagnostico(); if(typeof renderQualidade==='function') renderQualidade(); if(typeof renderFase2==='function') renderFase2(); renderContratos(); }
   if(id==='manifestacao') renderManifestacoes();
   if(id==='resultado' && E.diag) { renderAntesDepois(); renderExportacoes(); }
   window.scrollTo({top:0,behavior:'instant'});
@@ -3010,6 +3035,7 @@ function diagnosticar(){
   E.diag=res;
   calcularQualidade();
   calcularFase2();
+  calcularCG();
   marcarPasso(5);
   return res;
 }
@@ -3203,6 +3229,43 @@ function calcularFase2(){
   titulos.sort(function(a,b){ return a.palavras-b.palavras; });
 
   E.fase2={ continuidade:continuidade, programacao:programacao, titulos:titulos, contIni:faixaC.ini, contFim:faixaC.fim };
+}
+
+/* ------------------------- Contratos de Gestão (C.G.) --------------------
+   Varredura do título de todos os MAPPs por menção a Contrato de Gestão ou à
+   sigla C.G. (C.G, CG, C.G.). Informativa: não entra em regra, exclusão,
+   sobrevivência nem Novo Programado. O usuário marca ou desmarca em E.cg. */
+const RE_CG=[/CONTRATOS? DE GESTAO/, /(^|[^A-Z0-9])(C\.? ?G\.?)(?![A-Z0-9])/];
+const CRITERIO_CG='Título com “Contrato(s) de Gestão” ou a sigla C.G. (C.G, CG, C.G.), sem distinção de acento ou caixa';
+function mencionaCG(titulo){
+  const t=norm(titulo);
+  for(let i=0;i<RE_CG.length;i++){ const r=RE_CG[i].exec(t); if(r) return (r[2]||r[0]).trim(); }
+  return '';
+}
+function calcularCG(){
+  const auto=new Map();
+  E.mapps.forEach(function(m){ const t=mencionaCG(m.titulo); if(t) auto.set(m.chave,t); });
+  E.cgAuto=auto;
+}
+function ehCG(m){ return !E.cg.removidos[m.chave] && (E.cgAuto.has(m.chave) || !!E.cg.incluidos[m.chave]); }
+function origemCG(m){ return E.cgAuto.has(m.chave) ? 'Automática' : 'Manual'; }
+function listaCG(){ return E.mapps.filter(ehCG); }
+function listaCGRemovidos(){ return E.mapps.filter(function(m){ return E.cgAuto.has(m.chave) && !!E.cg.removidos[m.chave]; }); }
+function marcarCG(chave){
+  if(!E.indice.has(chave)) return;
+  if(E.cgAuto.has(chave)) delete E.cg.removidos[chave];
+  else E.cg.incluidos[chave]={ data:new Date().toISOString() };
+}
+function desmarcarCG(chave){
+  if(E.cgAuto.has(chave)) E.cg.removidos[chave]={ data:new Date().toISOString() };
+  else delete E.cg.incluidos[chave];
+}
+/* Situação do MAPP no saneamento, só para informar ao lado da marcação. */
+function situacaoSaneamentoCG(m){
+  if(estaExcluido(m.chave)) return 'Excluído pelo usuário';
+  if(!m.dentroUniverso) return 'Fora do universo';
+  if(m.d && m.d.regras.length) return m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + ');
+  return 'Sobrevive';
 }
 
 /* --------------------------- Composição do universo ---------------------- */
@@ -3581,7 +3644,7 @@ function renderTudo(){
     ['Regras aplicadas',renderRegrasAplicadas], ['Revisão',renderQualidade],
     ['Saldo por exercício',renderSaldo], ['Filtros do saneamento',prepararFiltrosSaneamento],
     ['Saneamento',renderSaneamento], ['Resultado',renderAntesDepois],
-    ['Despesas de continuidade',renderFase2], ['Exportações',renderExportacoes], ['Selo da base',atualizarSelo],
+    ['Despesas de continuidade',renderFase2], ['Contratos de Gestão',renderContratos], ['Exportações',renderExportacoes], ['Selo da base',atualizarSelo],
     ['Gráficos',desenharGraficos], ['Cabeçalhos',prepararCabecalhos],
     ['Manifestações',function(){ prepararFiltrosManif(); renderManifestacoes(); }],
     ['Manual',enviarEstadoManual]
@@ -4905,6 +4968,85 @@ function renderFase2(){
 
 /* Apontamentos de programação sob os filtros da grade: a fonte, próprio do bloco,
    e o recorte do Panorama (secretaria, órgão e busca). */
+
+/* ------------------------- Tela Contratos de Gestão ---------------------- */
+/* Busca por palavras, em qualquer ordem: “SDA 758” acha o MAPP 758 da SDA. */
+function casaBuscaCG(m,q){
+  if(!q) return true;
+  const alvo=' '+norm(m.codigo+' '+m.orgao+' '+m.titulo).replace(/[^A-Z0-9]+/g,' ')+' ';
+  /* número casa com palavra inteira (758 não acha 1758); texto, com qualquer trecho */
+  return q.replace(/[^A-Z0-9]+/g,' ').trim().split(' ').every(function(p){ return alvo.indexOf(/^\d+$/.test(p) ? ' '+p+' ' : p)>=0; });
+}
+function renderContratos(){
+  if(!$('#tabContratos')) return;
+  if(!E.diag){ $('#cartoesContratos').innerHTML=''; $('#tabContratos tbody').innerHTML=''; $('#tabContratos tfoot').innerHTML=''; $('#cgResultados').innerHTML=''; return; }
+  const todos=listaCG(), q=norm($('#cgBusca').value);
+  const lista=todos.filter(function(m){ return casaBuscaCG(m,q); })
+    .sort(function(a,b){ return a.orgao.localeCompare(b.orgao) || (+a.codigo||0)-(+b.codigo||0); });
+  const auto=todos.filter(function(m){ return E.cgAuto.has(m.chave); }).length;
+  const orgaos=new Set(todos.map(function(m){ return m.orgao; }));
+  let p27=0, np=0; todos.forEach(function(m){ const v=npDoMapp(m); p27+=v.base; np+=v.valor; });
+  const retirados=todos.filter(function(m){ return m.dentroUniverso && !sobrevive(m); }).length;
+  $('#cartoesContratos').innerHTML=
+    cartao('MAPPs marcados',n(todos.length),n(auto)+' automáticos · '+n(todos.length-auto)+' manuais','var(--latao)',
+      'MAPPs marcados como Contrato de Gestão: os identificados pela varredura do título, menos as marcações removidas, mais os marcados manualmente.')+
+    cartao('Órgãos envolvidos',n(orgaos.size),'entre os MAPPs marcados','var(--ardosia)',
+      'Quantidade de órgãos distintos com ao menos um MAPP marcado como Contrato de Gestão.')+
+    cartao('Programado 2027',rsCurto(p27),'soma dos MAPPs marcados','var(--musgo)',
+      'Soma de VLR_PLANEJADO_27 dos MAPPs marcados, sobreviventes ou não.',true)+
+    cartao('Novo Programado 2027',rsCurto(np),'soma dos MAPPs marcados','var(--petroleo)',
+      'Soma do Novo Programado 2027 dos MAPPs marcados, calculado como no Resultado, sobreviventes ou não.',true)+
+    cartao('Retirados no saneamento',n(retirados),'enquadrados em regra ou excluídos','var(--sepia)',
+      'MAPPs marcados que o saneamento retira (regra ou exclusão pelo usuário). Só para informar: a marcação C.G. não muda isso.');
+  $('#tabContratos tbody').innerHTML = lista.length ? lista.map(function(m){
+    const v=npDoMapp(m), o=origemCG(m);
+    return '<tr class="linha-clicavel" data-chave="'+esc(m.chave)+'"><td class="mono">'+esc(m.codigo)+'</td><td>'+esc(m.orgao)+
+      '</td><td class="titulo-mapp">'+esc(m.titulo)+seloFontes(m)+'</td><td>'+(o==='Automática'
+        ? '<span data-tip="Trecho identificado no título: '+esc(E.cgAuto.get(m.chave))+'">Automática</span>' : 'Manual')+
+      '</td><td>'+esc(situacaoSaneamentoCG(m))+'</td><td class="num">'+rsCurto(v.base)+'</td><td class="num">'+rsCurto(v.valor)+
+      '</td><td><button class="btn pequeno risco" data-cg-remover="'+esc(m.chave)+'" data-tip="Remove a marcação C.G. deste MAPP. O saneamento não muda.">Remover marcação</button></td></tr>';
+  }).join('') : '<tr><td colspan="8" class="vazio">'+(todos.length?'Nenhum MAPP marcado corresponde à busca.':'Nenhum MAPP marcado como Contrato de Gestão.')+'</td></tr>';
+  let lp=0, ln=0; lista.forEach(function(m){ const v=npDoMapp(m); lp+=v.base; ln+=v.valor; });
+  $('#tabContratos tfoot').innerHTML = lista.length
+    ? '<tr><td colspan="5">Total ('+n(lista.length)+' MAPPs)</td><td class="num">'+rsCurto(lp)+'</td><td class="num">'+rsCurto(ln)+'</td><td></td></tr>' : '';
+  const rem=listaCGRemovidos();
+  $('#cgRemovidosCaixa').classList.toggle('oculto',!rem.length);
+  $('#tabContratosRemovidos tbody').innerHTML=rem.map(function(m){
+    return '<tr class="linha-clicavel" data-chave="'+esc(m.chave)+'"><td class="mono">'+esc(m.codigo)+'</td><td>'+esc(m.orgao)+
+      '</td><td class="titulo-mapp">'+esc(m.titulo)+'</td><td><button class="btn pequeno" data-cg-marcar="'+esc(m.chave)+'" data-tip="Devolve a marcação automática a este MAPP.">Restaurar</button></td></tr>';
+  }).join('');
+  renderProcuraCG();
+}
+function renderProcuraCG(){
+  const q=norm($('#cgProcura').value), caixa=$('#cgResultados');
+  if(!E.diag || q.length<2){ caixa.innerHTML = E.diag ? '<p class="pequeno tenue">Digite ao menos dois caracteres para procurar entre os MAPPs ainda não marcados.</p>' : ''; return; }
+  const achados=[]; let total=0;
+  E.mapps.forEach(function(m){ if(!ehCG(m) && casaBuscaCG(m,q)){ total++; if(achados.length<20) achados.push(m); } });
+  caixa.innerHTML = achados.length
+    ? '<div class="tabela-caixa" style="max-height:34vh"><table><thead><tr><th>MAPP</th><th>Órgão</th><th>Título</th><th>Providência</th></tr></thead><tbody>'+
+      achados.map(function(m){
+        return '<tr><td class="mono">'+esc(m.codigo)+'</td><td>'+esc(m.orgao)+'</td><td class="titulo-mapp">'+esc(m.titulo)+
+          '</td><td><button class="btn pequeno" data-cg-marcar="'+esc(m.chave)+'" data-tip="Marca este MAPP como Contrato de Gestão.">Marcar como C.G.</button></td></tr>';
+      }).join('')+'</tbody></table></div>'+(total>achados.length?'<p class="pequeno tenue">Mostrando 20 de '+n(total)+' MAPPs. Refine a busca.</p>':'')
+    : '<p class="pequeno tenue">Nenhum MAPP não marcado corresponde à busca.</p>';
+}
+function aoMudarCG(msg){ renderContratos(); renderExportacoes(); if(msg) recado(msg); }
+function ligarEventosContratos(){
+  let t=null;
+  $('#cgBusca').addEventListener('input',function(){ clearTimeout(t); t=setTimeout(renderContratos,220); });
+  let t2=null;
+  $('#cgProcura').addEventListener('input',function(){ clearTimeout(t2); t2=setTimeout(renderProcuraCG,220); });
+  $('#p-contratos').addEventListener('click',function(ev){
+    const r=ev.target.closest('[data-cg-remover]');
+    if(r){ ev.stopPropagation(); desmarcarCG(r.getAttribute('data-cg-remover')); aoMudarCG('Marcação C.G. removida.'); return; }
+    const a=ev.target.closest('[data-cg-marcar]');
+    if(a){ ev.stopPropagation(); marcarCG(a.getAttribute('data-cg-marcar')); aoMudarCG('MAPP marcado como Contrato de Gestão.'); return; }
+    const tr=ev.target.closest('#tabContratos tr[data-chave], #tabContratosRemovidos tr[data-chave]');
+    if(tr) abrirFicha(tr.getAttribute('data-chave'));
+  });
+  $('#btnExportContratos').addEventListener('click',function(){ exportarAbas('contratos_de_gestao',[conjuntos()[0]._abaCG],'Contratos de Gestão (C.G.)'); });
+}
+
 function programacaoFiltrada(){
   if(!E.fase2) return [];
   const r=recortePanorama(), prog=fontesDoFiltro('#progFonte');
@@ -5405,7 +5547,13 @@ function linhasParametrosResultado(anosOcultos){
     ['Programado 2027 — universo (R$)', tU.p27],
     ['Programado 2027 — sobreviventes (R$)', tS.p27],
     ['Programado 2027 — retirados (R$)', tR.p27],
-    ['Novo Programado 2027 — sobreviventes (R$)', tS.np]
+    ['Novo Programado 2027 — sobreviventes (R$)', tS.np],
+    ['Contratos de Gestão (aba CONTRATOS DE GESTAO)', 'marcação informativa, não interfere no saneamento; todos os MAPPs marcados, sem os filtros do Cenário projetado'],
+    ['Critério da identificação automática de C.G.', CRITERIO_CG],
+    ['MAPPs marcados como C.G.', listaCG().length],
+    ['— identificados automaticamente', listaCG().filter(function(m){ return E.cgAuto.has(m.chave); }).length],
+    ['— marcados manualmente', listaCG().filter(function(m){ return !E.cgAuto.has(m.chave); }).length],
+    ['— marcações automáticas removidas', listaCGRemovidos().length]
   ].map(function(l){ return {'ITEM':l[0],'VALOR':l[1]}; });
 }
 async function exportarResultadoNP(){
@@ -5418,6 +5566,8 @@ async function exportarResultadoNP(){
     const qv=colunasExportaveisAoa('tabQuadroMapp',q.cab,q.linhas);
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([qv.cab].concat(qv.linhas)),'QUADRO POR MAPP');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasResultadoPorOrgao()),'QUADRO POR ORGAO');
+    const cg=linhasCG();
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(cg.length?cg:[{'MAPP':'(nenhum MAPP marcado como Contrato de Gestão)'}]),'CONTRATOS DE GESTAO');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(linhasParametrosResultado(q.anosOcultos)),'PARAMETROS');
     XLSX.writeFile(wb,'resultado_np2027_'+hojeISO()+'.xlsx');
     marcarPasso(9);
@@ -5993,6 +6143,12 @@ function linhasMapp(lista,extra){
     return extra ? Object.assign(o,extra(m)) : o;
   });
 }
+/* MAPPs marcados como Contrato de Gestão, com origem, trecho e situação no saneamento. */
+function linhasCG(){
+  return linhasMapp(listaCG().sort(function(a,b){ return a.orgao.localeCompare(b.orgao) || (+a.codigo||0)-(+b.codigo||0); }),function(m){
+    return { 'ORIGEM DA MARCAÇÃO':origemCG(m), 'TRECHO IDENTIFICADO':E.cgAuto.get(m.chave)||'',
+      'SITUAÇÃO NO SANEAMENTO':situacaoSaneamentoCG(m) }; });
+}
 function contextoRegra(m){
   return { 'REGRAS ATENDIDAS':m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + '), 'AÇÃO RECOMENDADA':m.d.acao };
 }
@@ -6115,6 +6271,7 @@ function conjuntos(){
     const cont=continuidadeFiltrada(), idx=new Map(cont.map(function(c){ return [c.m.chave,c]; }));
     return linhasMapp(cont.map(function(c){ return c.m; }),function(m){
       const c=idx.get(m.chave); return { 'ANOS COM EMPENHO':c.anos, 'SEQUÊNCIA MÁXIMA':c.seq }; }); } };
+  const abaCG={ aba:'CONTRATOS DE GESTAO', tabela:'tabContratos', dados:linhasCG };
   const abaTitulos={ aba:'TITULOS NAO COMUNICATIVOS', tabela:'tabTitulos', dados:function(){ return f.titulos.map(function(t){ return {
     'MAPP':t.m.codigo,'ÓRGÃO':t.m.orgao,'TÍTULO':t.m.titulo,'APONTAMENTO':t.apontamentos.join(' · '),'SUGESTÃO':t.sugestao }; }); } };
   return [
@@ -6137,6 +6294,10 @@ function conjuntos(){
       dica:'Despesas de continuidade, programação e títulos não comunicativos, cada um em sua aba.',
       contagem:function(){ return f.continuidade.length+f.programacao.length+f.titulos.length; },
       abas:[abaContin, { aba:'PROGRAMACAO', tabela:'tabProgramacao', dados:linhasProgramacao }, abaTitulos] },
+    { id:'contratos', nome:'Contratos de Gestão (C.G.)', arquivo:'contratos_de_gestao',
+      dica:'MAPPs marcados como Contrato de Gestão (automáticos e manuais), com a situação de cada um no saneamento. Marcação informativa.',
+      contagem:function(){ return listaCG().length; },
+      abas:[abaCG] },
     { id:'excluidos', nome:'Excluídos pelo usuário', arquivo:'excluidos_pelo_usuario',
       dica:'MAPPs excluídos individualmente, com ou sem regra, com motivo, responsável e data. Saem do conjunto ativo como os das regras.',
       contagem:function(){ return excluidos().length; },
@@ -6145,7 +6306,7 @@ function conjuntos(){
       dica:'Saldo do programado por exercício e Novo Programado 2027, no agrupamento e no conjunto em vigor no Panorama.',
       contagem:function(){ return apurarSaldo().grupos.length; },
       abas:[{ aba:'SALDO', tabela:'tabSaldo', dados:linhasSaldo }] }
-  ].map(function(c){ c._abaContin=abaContin; c._abaTitulos=abaTitulos; return c; });
+  ].map(function(c){ c._abaContin=abaContin; c._abaTitulos=abaTitulos; c._abaCG=abaCG; return c; });
 }
 
 function renderExportacoes(){
@@ -6443,6 +6604,7 @@ function ligarEventos(){
   $('#btnFecharConfig').addEventListener('click',fecharConfig);
   ligarEventosSaldo();
   ligarEventosSaneamento();
+  ligarEventosContratos();
   ligarEventosAntesDepois();
   ligarOrdenacaoGenerica();
   document.addEventListener('click',function(ev){
@@ -7009,7 +7171,7 @@ function montarSessao(nome){
     formato:2, versao:E.versaoSessao, nome:nome, gerado:new Date().toISOString(),
     arquivo:E.arquivo?E.arquivo.name:'', assinaturaBase:assinaturaBase(),
     cfg:E.cfg, decisoes:E.decisoes, responsavel:E.responsavel, seq:E.seq,
-    exclusoes:E.exclusoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao, npAnos:E.npAnos,
+    exclusoes:E.exclusoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao, npAnos:E.npAnos, cg:E.cg,
     rodadas:E.rodadas, manifestacoes:E.manifestacoes, destinatarios:E.destinatarios, gruposFonte:E.gruposFonte||null,
     cfgSessao:{ destino:E.destinoSessao, github:{ repo:E.github.repo, branch:E.github.branch, pasta:E.github.pasta },
       google:{ clientId:E.google?E.google.clientId:'' }, modeloEmail:E.modeloEmail||null }
@@ -7118,6 +7280,7 @@ function aplicarSessao(d,origem){
   E.decisoes=d.decisoes||{};
   E.responsavel=d.responsavel||'';   /* sessões antigas trazem "auditoria": ignorada */ E.seq=d.seq||1;
   E.exclusoes=d.exclusoes||{}; E.encerramento=d.encerramento||null; E.motivoExclusao=d.motivoExclusao||'';
+  E.cg={ incluidos:(d.cg&&d.cg.incluidos)||{}, removidos:(d.cg&&d.cg.removidos)||{} };
   if(Array.isArray(d.npAnos)) E.npAnos=d.npAnos.slice();
   E.versaoSessao=d.formato===2 ? (d.versao||0) : 0;
   E.rodadas=Array.isArray(d.rodadas)?d.rodadas:[];
@@ -8359,7 +8522,7 @@ function aoMudarGruposFonte(){
    ========================================================================== */
 const TABELAS_COLUNAS=['tabSaldo','tabInconsNP','tabProgramacao','tabCarCruzada','tabCarTop','tabEstagios',
   'tabIntersecoes','tabClassificacao','tabDiag','tabAchado','tabTitulos','tabSaneamento','tabRodadas','tabManif',
-  'tabAntesDepois','tabQuadroMapp','tabContinuidade'];
+  'tabAntesDepois','tabQuadroMapp','tabContinuidade','tabContratos'];
 E.colunasOcultas={};   /* idTabela → Set(rótulo normalizado) */
 const _colsInfo={};    /* idTabela → { cols:[{chave,rot,fixa}], ... } */
 

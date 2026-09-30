@@ -7,7 +7,8 @@
     "todas-fontes": "node --max-old-space-size=4096 teste_todas_fontes.js",
     "anos-ocultos": "node --max-old-space-size=4096 teste_anos_ocultos.js",
     "anos-sem-saldo": "node --max-old-space-size=4096 teste_anos_sem_saldo.js",
-    "email-orgaos": "node --max-old-space-size=4096 teste_email_orgaos.js"
+    "email-orgaos": "node --max-old-space-size=4096 teste_email_orgaos.js",
+    "contratos-gestao": "node --max-old-space-size=4096 teste_contratos_gestao.js"
   },
   "dependencies": {
     "exceljs": "^4.4.0",
