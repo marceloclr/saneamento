@@ -23,7 +23,10 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    versões; na completa, fica no bloco do Saldo e aplica na hora (`aplicarExecAnos`,
    na hora); na essencial, em Regras aplicadas, também na hora.
 2. **Regras** — `executou`, `noUniverso`, `avaliar`, `diagnosticar`,
-   `calcularQualidade`, `calcularFase2`, `composicaoUniverso`, e os textos
+   `calcularQualidade`, `calcularFase2`, `composicaoUniverso`,
+   **Contratos de Gestão** (`RE_CG`, `mencionaCG`, `calcularCG` — chamado em `diagnosticar`
+   logo após `calcularFase2` —, `ehCG`, `origemCG`, `listaCG`, `listaCGRemovidos`, `marcarCG`,
+   `desmarcarCG`, `situacaoSaneamentoCG`; informativo, fora de `avaliar` e `sobrevive`), e os textos
    explicativos `dicaRegra`, `dicaEstagio`, `dicaAcao`, `dicaConfianca`.
 3. **Painel** — `cartao`, `renderTudo`, `renderResumoImport`, `renderPainel`,
    `desenharGraficos`, `tiposGrafico`, paleta dos gráficos.
@@ -78,7 +81,8 @@ GitHub quando o usuário marca *Lembrar neste computador*.
 
 `arquivo`, `buffer`, `colunas`, `anos`, `metricas`, `dic` (dicionários de strings),
 `linhas` (registros dicionarizados, valores em `Float64Array`), `mapps`
-(consolidados), `indice`, `cfg`, `decisoes`, `exclusoes`,
+(consolidados), `indice`, `cfg`, `decisoes`, `exclusoes`, `cg` (`incluidos` e `removidos`, por chave; vai à sessão),
+`cgAuto` (chave → trecho identificado),
 `encerramento`, `diag`, `qualidade`, `fase2`, `saldo`, `ad`, filtros, paginação e
 gráficos; no bloco 11, `versaoSessao`, `rodadas`, `manifestacoes`, `destinoSessao` e
 `github` (o token nunca vai ao `.json`; vai ao `localStorage` só se o usuário marcar). A base original é reconstruída para exportação a partir dos dicionários.
@@ -87,7 +91,10 @@ gráficos; no bloco 11, `versaoSessao`, `rodadas`, `manifestacoes`, `destinoSess
 
 `p-panorama` (segmentos `seg-importacao`, `seg-indicadores`, `seg-universo`,
 `seg-saldo`), `p-diagnostico`, `p-qualidade` (rótulo “Revisão”), `p-saneamento`,
-`p-antesdepois` (Resultado, com o box Exportações), `p-fase2` (rótulo “Despesas de continuidade”) e
+`p-antesdepois` (Resultado, com o box Exportações), `p-fase2` (rótulo “Despesas de continuidade”),
+`p-contratos` (Contratos de Gestão, no grupo da Análise; `renderContratos`, `renderProcuraCG`,
+`ligarEventosContratos`; exportação `linhasCG`, aba CONTRATOS DE GESTAO em `exportarResultadoNP` e
+cartão `contratos` em `conjuntos()`) e
 `p-manifestacao` (aba própria “Manifestação”, entre Análise e Decisão; habilita a geração
 só com sessão ativa, `sessaoAtiva()`).
 Boas-vindas de abertura `modalBV` (véu `veuBV`), exibidas só no carregamento;

@@ -1,5 +1,20 @@
 # Backlog
 
+## Lote de 30/09/2026 — Contratos de Gestão (C.G.)
+
+Plano: [`docs/planos/contratos-de-gestao.md`](docs/planos/contratos-de-gestao.md).
+- Versão completa: varredura do título de **todos os MAPPs** por “Contrato(s) de Gestão” ou pela
+  sigla C.G. (C.G, CG, C.G.), feita no `diagnosticar`, logo depois das Regras 1 a 4 — 42 MAPPs de
+  12 órgãos na base de 18/09.
+- Tela **Análise › Contratos de Gestão (C.G.)**: cartões, grade com origem (automática ou manual) e
+  situação no saneamento, **Remover marcação**, **Marcar MAPP como C.G.** (busca por palavras entre
+  os não marcados) e **Marcações automáticas removidas**, com **Restaurar**.
+- Marcação informativa, em `E.cg` e na sessão (`cg`); não muda regra, exclusão, sobrevivência
+  nem Novo Programado 2027.
+- Exportação: aba **CONTRATOS DE GESTAO** em Exportar resultado — Novo Programado 2027 (com
+  linhas em PARAMETROS), cartão próprio no box Exportações e botão Exportar na tela.
+- Teste `teste_contratos_gestao.js` (`npm run contratos-gestao`), com a invariante de não interferência.
+
 ## Lote de 29/09/2026 — grupos de fonte e seleção de colunas
 
 Plano: [`docs/planos/grupos-fonte-e-colunas.md`](docs/planos/grupos-fonte-e-colunas.md).

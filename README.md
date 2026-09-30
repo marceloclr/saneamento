@@ -22,6 +22,10 @@ Em toda tela com valores por fonte, o filtro **Grupo de fonte** vem antes do fil
 
 Acima de cada tabela, o botão **☰ Colunas** mostra ou oculta colunas na hora (MAPP, caixa de seleção e Providência ficam sempre). As exportações seguem os filtros e as colunas da tela e trazem a aba COLUNAS OCULTAS.
 
+## Contratos de Gestão (C.G.)
+
+Na versão completa, logo depois das Regras 1 a 4, o sistema procura no título de todos os MAPPs menções a **Contrato de Gestão** ou à sigla **C.G.** (C.G, CG, C.G.). Os identificados aparecem em **Análise › Contratos de Gestão (C.G.)**, onde também se marca individualmente o MAPP que a varredura não pegou e se remove, ou restaura, uma marcação. A marcação é informativa: não interfere no saneamento. Ela vai para a sessão e para a aba **CONTRATOS DE GESTAO** de **Exportar resultado — Novo Programado 2027**, e tem cartão próprio no box Exportações.
+
 ## Manifestação dos órgãos e sessão
 
 A aba **Manifestação**, entre Análise e Decisão, gera uma planilha protegida por órgão (só as colunas de resposta são editáveis) com os MAPPs enquadrados nas Regras 1 a 4, e grava junto a nova versão da sessão, com nomes casados `DDMMAAAA-HHMM-Vnn.json` e `DDMMAAAA-HHMM-Vnn-ÓRGÃO.xlsx`. Os órgãos devolvem as planilhas pelo canal oficial; o sistema confere cada uma pelo controle interno (rodada e token por linha), registra as manifestações e as mostra na ficha e no filtro do diagnóstico. Cada planilha informa, por MAPP, o Programado 2027 e o Novo Programado 2027. A manifestação não decide nada: acatar ou rejeitar continua sendo ato humano.
