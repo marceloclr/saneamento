@@ -54,6 +54,10 @@ MAPP é um clique só, sem exigir responsável ou justificativa. A "base saneada
 é exibida na tela, sempre com linhas e colunas totalizadoras, e pode ser exportada em
 `.xlsx`, nas abas RESULTADO DO SANEAMENTO e EXCLUIDOS, com o saldo do programado por fonte em coluna própria.
 
+## Versão publicada
+
+O topo das duas páginas mostra, abaixo da pílula da base carregada, o carimbo `versão-DDMMAAAA-HHMM` (horário de Fortaleza) da publicação. Antes do commit que publica, rode `python3 ferramentas/carimbar-versao.py index.html simplificado/index.html` (só as páginas que mudaram). Só a versão atual se chama `index.html`; a anterior fica no repositório como `index-DDMMAAAA-HHMM.html`.
+
 ## Backlog
 
 Itens implementados, pendências e histórico de lotes em [`03-backlog.md`](03-backlog.md).

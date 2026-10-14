@@ -100,6 +100,8 @@ só com sessão ativa, `sessaoAtiva()`).
 Boas-vindas de abertura `modalBV` (véu `veuBV`), exibidas só no carregamento;
 apresentação completa `modalApres` (véu `veuApres`), aberta pelo botão do alto.
 Configurações em gaveta lateral `gavetaConfig`, aberta pelo botão do alto.
+Abaixo da pílula `#seloBase`, o carimbo `#versaoSistema` (`data-versao`, DDMMAAAA-HHMM, horário
+de Fortaleza) é texto fixo, gravado por `ferramentas/carimbar-versao.py` antes do commit que publica.
 
 A Visão Geral é uma página única: rito, importação (some depois de processada; fica o
 botão **Importar outra base** no alto), Saldo por exercício (com **Indícios de programação**

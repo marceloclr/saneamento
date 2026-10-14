@@ -82,6 +82,9 @@ Plano: [`docs/planos/envio-email-orgaos.md`](docs/planos/envio-email-orgaos.md).
 - **Item 7:** o bloco Programação virou a sub-seção final do Saldo por exercício, com o título
   **Indícios de programação** e o botão *Exportar grade completa* (`#seg-programacao`).
 - Teste `teste_indice_panorama.js` (`npm run indice-panorama`).
+- Carimbo `versão-DDMMAAAA-HHMM` no topo das duas páginas, abaixo da pílula da base
+  (`#versaoSistema`, gravado por `ferramentas/carimbar-versao.py`). Versões anteriores
+  guardadas como `index-14102026-0819.html` e `simplificado/index-29092026-1546.html`.
 
 ## Pendências decididas — a implementar
 

@@ -74,6 +74,7 @@ html[data-tema="escuro"] .brasao{color:#14171b}
 .topo-botoes{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .topo-botoes .btn.discreto{padding:6px 9px}
 .topo-acoes .selo-base{padding:3px 10px;font-size:11.5px}
+.versao-sistema{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--tinta-3);letter-spacing:.01em;padding:0 4px;cursor:help}
 #btnTrocarBase{margin-top:2px}
 .selo-base{
   display:flex;align-items:center;gap:8px;padding:5px 11px;border:1px solid var(--linha);
@@ -705,6 +706,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. A ficha aberta é redesenhada com as cores do novo tema.">Tema</button>
       </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
+      <span class="versao-sistema" id="versaoSistema" data-versao="14102026-0826" data-tip="Versão publicada em 14/10/2026, às 08h26 (horário de Fortaleza).&#10;Formato: DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">versão-14102026-0826</span>
       <button class="btn pequeno discreto oculto" id="btnTrocarBase" data-tip="Escolhe outra planilha de execução e refaz a importação e o processamento." data-tip-t="Importar outra base">Importar outra base</button>
     </div>
   </div>
