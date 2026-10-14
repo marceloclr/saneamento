@@ -89,8 +89,8 @@ gráficos; no bloco 11, `versaoSessao`, `rodadas`, `manifestacoes`, `destinoSess
 
 ## Abas e identificadores
 
-`p-panorama` (segmentos `seg-importacao`, `seg-indicadores`, `seg-universo`,
-`seg-saldo`), `p-diagnostico`, `p-qualidade` (rótulo “Revisão”), `p-saneamento`,
+`p-panorama` (blocos `seg-importacao`, `seg-saldo` com a sub-seção `seg-programacao`,
+`seg-graficos`, `seg-indicadores`, `seg-regras`, `seg-universo`), `p-diagnostico`, `p-qualidade` (rótulo “Revisão”), `p-saneamento`,
 `p-antesdepois` (Resultado, com o box Exportações), `p-fase2` (rótulo “Despesas de continuidade”),
 `p-contratos` (Contratos de Gestão, no grupo da Análise; `renderContratos`, `renderProcuraCG`,
 `ligarEventosContratos`; exportação `linhasCG`, aba CONTRATOS DE GESTAO em `exportarResultadoNP` e
@@ -102,9 +102,15 @@ apresentação completa `modalApres` (véu `veuApres`), aberta pelo botão do al
 Configurações em gaveta lateral `gavetaConfig`, aberta pelo botão do alto.
 
 A Visão Geral é uma página única: rito, importação (some depois de processada; fica o
-botão **Importar outra base** no alto), Saldo por exercício, inconsistências do Novo
-Programado, Programação e gráficos; os demais blocos têm a classe `recolhivel` e abrem
-recolhidos (`prepararRecolhiveis`). `irParaSegmento` rola até o bloco `#seg-<id>`.
+botão **Importar outra base** no alto), Saldo por exercício (com **Indícios de programação**
+como sub-seção final, `#seg-programacao`), inconsistências do Novo Programado e gráficos;
+os demais blocos têm a classe `recolhivel` e abrem recolhidos (`prepararRecolhiveis`).
+No topo, o índice fixo `#indicePanorama` (sticky sob `.topo`; alturas em `--alt-topo` e
+`--alt-indice`, medidas por `medirTopo`) rola até cada bloco (`rolarAteBloco`, que abre o
+recolhido), esconde os links de blocos ainda ocultos (`atualizarIndicePanorama`) e realça o
+bloco à vista (`realcarIndicePanorama`). A faixa-resumo `#faixaResumo` é preenchida por
+`renderFaixaResumo`, chamada em `renderPrevia`, e segue o recorte do Panorama.
+`irParaSegmento(id)` rola até `#seg-<id>`; os destinos antigos `programacao` e `regras` continuam válidos.
 As abas do alto trazem número e subtítulo; a antiga faixa `fluxoPrincipal` saiu.
 Na Decisão, `concluirEExportar` pede responsável e observação (`perguntar`), declara a
 conclusão e exporta. Filtros de seleção múltipla com anos mostram os anos (`faixasTexto`).

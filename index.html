@@ -604,9 +604,25 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 .fluxo-etapa span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--linha);font-weight:800;font-size:12px}
 .fluxo-etapa strong{font-size:13px}.fluxo-etapa small{display:block;color:var(--tinta-3);font-size:10px;margin-left:auto}.fluxo-etapa.atual{border-color:var(--acento,var(--ardosia));box-shadow:0 0 0 2px color-mix(in srgb,var(--ardosia) 12%,transparent)}
 .fluxo-seta{color:var(--tinta-3);font-size:18px}
-#segPanorama.oculto{display:none}
-#p-panorama .segmento{display:block!important}
-#p-panorama .segmento.oculto{display:block!important}
+/* Visão Geral em página única: índice fixo sob o topo, faixa-resumo e sub-seção da grade de saldos. */
+.indice-pan{position:sticky;top:var(--alt-topo,0px);z-index:30;display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;
+  margin:-20px -20px 16px;padding:7px 20px;background:var(--carta);border-bottom:1px solid var(--linha);box-shadow:var(--sombra)}
+.indice-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin;max-width:100%}
+.indice-links a{font-size:12.5px;color:var(--tinta-3);text-decoration:none;padding:5px 11px;border-radius:99px;white-space:nowrap}
+.indice-links a:hover{background:var(--papel-2);color:var(--tinta)}
+.indice-links a.ativo{background:var(--acento);color:var(--carta);font-weight:600}
+html[data-tema="escuro"] .indice-links a.ativo{color:#14171b}
+.indice-links a:focus-visible{outline:2px solid var(--ardosia);outline-offset:1px}
+.faixa-resumo{display:flex;gap:4px 16px;flex-wrap:wrap;margin-left:auto;font-size:12px;color:var(--tinta-3)}
+.faixa-resumo span{white-space:nowrap}
+.faixa-resumo b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--tinta)}
+.faixa-resumo .recorte{color:var(--ocre)}
+#p-panorama .bloco,#p-panorama #seg-graficos,#p-panorama .sub-secao{scroll-margin-top:calc(var(--alt-topo,0px) + var(--alt-indice,44px) + 10px)}
+.sub-secao{margin-top:22px;padding-top:16px;border-top:1px solid var(--linha)}
+.sub-secao>header{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.sub-secao>header h3{color:var(--acento)}
+.sub-secao>header .legenda{font-size:12px;color:var(--tinta-3);margin-left:auto}
+@media(max-width:760px){.indice-pan{margin:-20px -20px 14px;padding:6px 16px}.faixa-resumo{margin-left:0}}
 @media(max-width:900px){.fluxo-principal{overflow-x:auto}.fluxo-etapa{min-width:135px}.fluxo-seta{display:none}.fluxo-etapa small{display:none}}
 
 <style>
@@ -714,13 +730,18 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
 
 <!-- ============================ PANORAMA ============================ -->
 <section role="tabpanel" id="p-panorama" aria-labelledby="aba-panorama" style="--acento:var(--grafite);--acento-tenue:rgba(63,71,80,.09);--acento-medio:rgba(63,71,80,.3)">
-  <nav class="segmentos oculto" id="segPanorama" role="tablist">
-    <button class="seg" data-seg="importacao" aria-selected="true" data-tip="Leitura da planilha, reconhecimento de colunas, normalização dos estágios e retrato das três bases." data-tip-t="Importação">Importação</button>
-    <button class="seg" data-seg="indicadores" aria-selected="false" data-tip="Indicadores gerais do universo e da base integral, populações por regra e gráficos de execução." data-tip-t="Indicadores">Indicadores</button>
-    <button class="seg" data-seg="universo" aria-selected="false" data-tip="Demonstração aritmética de como cada população se formou, interseções entre regras e situações à margem." data-tip-t="Universo">Universo</button>
-    <button class="seg" data-seg="regras" aria-selected="false" data-tip="As quatro regras de saneamento tal como o sistema as aplica, com os parâmetros em vigor e a âncora temporal resolvida." data-tip-t="Regras aplicadas">Regras aplicadas</button>
-    <button class="seg" data-seg="saldo" aria-selected="false" data-tip="Saldo do programado por exercício: corrente, três anteriores, anos anteriores agregados e exercícios futuros." data-tip-t="Saldo por exercício">Saldo por exercício</button>
-    <button class="seg" data-seg="programacao" aria-selected="false" data-tip="Concentração no exercício corrente, programação sem execução e ausência de programação futura." data-tip-t="Programação">Programação</button>
+  <nav class="indice-pan" id="indicePanorama" aria-label="Índice da Visão Geral">
+    <div class="indice-links">
+      <a href="#seg-importacao" data-alvo="seg-importacao" data-tip="Rito do saneamento e importação da planilha de execução." data-tip-t="Importação">Importação</a>
+      <a href="#blocoPrevia" data-alvo="blocoPrevia" data-tip="Prévia do resultado: universo, sobreviventes, retirados e Novo Programado 2027." data-tip-t="Prévia">Prévia</a>
+      <a href="#seg-saldo" data-alvo="seg-saldo" data-tip="Saldo do programado por exercício, com os indícios de programação ao fim da grade." data-tip-t="Saldo">Saldo</a>
+      <a href="#seg-graficos" data-alvo="seg-graficos" data-tip="Gráficos por regra, exercício, estágio, secretaria e órgão." data-tip-t="Gráficos">Gráficos</a>
+      <a href="#blocoCarteira" data-alvo="blocoCarteira" data-tip="Carteira por estágio, com os MAPPs de maior volume." data-tip-t="Carteira">Carteira</a>
+      <a href="#seg-indicadores" data-alvo="seg-indicadores" data-tip="Indicadores gerais do universo e da base integral." data-tip-t="Indicadores">Indicadores</a>
+      <a href="#seg-regras" data-alvo="seg-regras" data-tip="Populações e saldo do programado por regra. O texto das regras e os parâmetros ficam no Manual." data-tip-t="Regras aplicadas">Regras aplicadas</a>
+      <a href="#seg-universo" data-alvo="seg-universo" data-tip="Composição do universo, interseções entre regras e situações à margem." data-tip-t="Universo">Universo</a>
+    </div>
+    <div class="faixa-resumo oculto" id="faixaResumo" aria-live="polite"></div>
   </nav>
   <div class="bloco" id="seg-importacao" style="--acento:var(--grafite)">
     <header><h2>Rito do saneamento</h2><span class="legenda">A alteração de situação só é admitida ao fim da sequência. Nenhuma etapa se transpõe.</span></header>
@@ -793,20 +814,20 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
       <span class="tenue pequeno" id="saldoContagem"></span>
       <button class="btn" id="btnExportarSaldo" style="margin-left:auto" data-tip="Exporta a grade de saldos por exercício, no agrupamento e no conjunto em vigor, com o Novo Programado 2027 e, em aba própria, as inconsistências apuradas.">Exportar saldos</button>
     </div>
+    <div class="sub-secao" id="seg-programacao" style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">
+      <header><h3>Indícios de programação</h3><span class="legenda">Concentração no exercício corrente, programação sem execução e ausência de programação futura.</span></header>
+      <div class="cartoes" id="cartoesProgramacao"></div>
+      <div class="grade g4" style="margin-top:12px">
+        <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados (Configurações › Grupos de fonte). Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes do grupo." data-tip-t="Grupo de fonte">?</i></span><select id="progGrupoFonte"></select></label>
+        <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da grade e os totais passam a somar só as fontes marcadas.">?</i></span><select id="progFonte"></select></label>
+      </div>
+      <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade, sob o filtro de fonte e o recorte do Panorama — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
+      <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Data de aprovação do MAPP. Referência para avaliar a urgência dos indícios apontados: quanto mais antiga a aprovação, maior o tempo decorrido sem execução." data-tip-t="Aprovação">Aprovação</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th class="num" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028 — coluna totalizadora das duas colunas de Programado anteriores." data-tip-t="Programado total">Programado total</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    </div>
   </div>
 <div class="bloco oculto" id="blocoInconsNP" style="--acento:var(--carmim);--acento-tenue:rgba(139,58,58,.08);--acento-medio:rgba(139,58,58,.3)">
     <header><h2>Inconsistências no Novo Programado 2027</h2><span class="legenda" id="inconsNPLegenda"></span></header>
     <div class="tabela-caixa"><table id="tabInconsNP"><thead><tr></tr></thead><tbody></tbody></table></div>
-  </div>
-<div class="bloco" id="seg-programacao" style="--acento:var(--ocre);--acento-tenue:rgba(134,113,35,.10);--acento-medio:rgba(134,113,35,.3)">
-    <header><h2>Programação</h2><span class="legenda">Concentração, programação sem execução e ausência de programação futura.</span></header>
-    <div class="cartoes" id="cartoesProgramacao"></div>
-    <div class="grade g4" style="margin-top:12px">
-      <label class="campo"><span>Grupo de fonte <i class="sigla" tabindex="0" data-tip="Restringe às fontes dos grupos marcados (Configurações › Grupos de fonte). Marcar um grupo limita a lista do filtro Fonte às fontes dele; sem fonte marcada, valem todas as fontes do grupo." data-tip-t="Grupo de fonte">?</i></span><select id="progGrupoFonte"></select></label>
-      <label class="campo"><span>Fonte <i class="sigla" tabindex="0" data-tip="Mostra os MAPPs que têm ao menos uma linha com a fonte selecionada. Os valores da grade e os totais passam a somar só as fontes marcadas.">?</i></span><select id="progFonte"></select></label>
-    </div>
-    <div class="barra-acoes" style="margin-top:12px"><span class="legenda" id="programacaoLegenda"></span><button class="btn" id="btnExportarProgramacao" style="margin-left:auto" data-tip="Gera planilha .xlsx com a totalidade dos MAPPs apontados nesta grade, sob o filtro de fonte e o recorte do Panorama — sem o limite de 500 linhas da exibição — e com o conjunto integral de colunas: identificação, estágio, programado e empenhado por recorte, participação no exercício corrente, indícios, regras atendidas e ação recomendada. Nada é alterado na base.">Exportar grade completa</button></div>
-    <div class="tabela-caixa" style="max-height:38vh;margin-top:12px"><table id="tabProgramacao"><thead><tr><th data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th><th data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th><th data-tip="Descrição do projeto, extraída do campo MAPP depois do travessão." data-tip-t="Título">Título</th><th class="num" data-tip="Data de aprovação do MAPP. Referência para avaliar a urgência dos indícios apontados: quanto mais antiga a aprovação, maior o tempo decorrido sem execução." data-tip-t="Aprovação">Aprovação</th><th class="num" data-tip="Programação do exercício corrente configurado." data-tip-t="Programado 2026">Programado 2026</th><th class="num" data-tip="Participação do exercício corrente no programado total do MAPP." data-tip-t="% no exercício">% no exercício</th><th class="num" data-tip="Programação prevista para os exercícios seguintes." data-tip-t="Programado 2027–28">Programado 2027–28</th><th class="num" data-tip="Soma dos empenhos do período corrente, conforme configurado." data-tip-t="Empenhado 23–26">Empenhado 23–26</th><th class="num" data-tip="Soma do programado de todos os exercícios do MAPP, de 2007 a 2028 — coluna totalizadora das duas colunas de Programado anteriores." data-tip-t="Programado total">Programado total</th><th data-tip="Apontamento da segunda fase. Não gera recomendação automática." data-tip-t="Indício">Indício</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
   <div id="seg-graficos" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
   <div class="grade g2">
@@ -866,7 +887,7 @@ html[data-tema="escuro"] .apr-elo.final{color:#14171b}
     <header><h2>Indicadores gerais</h2><span class="legenda" id="painelCriterio"></span></header>
     <div class="cartoes" id="cartoesGerais"></div>
   </div>
-<div class="bloco recolhivel" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
+<div class="bloco recolhivel" id="seg-regras" style="--acento:var(--latao);--acento-tenue:rgba(141,113,48,.10);--acento-medio:rgba(141,113,48,.3)">
     <header><h2>Populações por regra</h2><span class="legenda">Contagens por MAPP consolidado, não por linha da planilha.</span></header>
     <div class="cartoes" id="cartoesRegras"></div>
   </div>
@@ -2115,16 +2136,9 @@ function irParaAba(id){
     const mostrar=ids.indexOf(s.id.replace(/^p-/,'') )>=0;
     s.classList.toggle('oculto',!mostrar);
   });
-  // Dentro da Visão Geral, todos os segmentos são exibidos como uma única página.
-  if(id==='visao') {
-    $$('#p-panorama .segmento').forEach(function(d){ d.classList.remove('oculto'); });
-    const navSeg=$('#segPanorama'); if(navSeg) navSeg.classList.add('oculto');
-  } else {
-    const navSeg=$('#segPanorama'); if(navSeg) navSeg.classList.add('oculto');
-  }
   const etapa=document.querySelector('.fluxo-etapa[data-nav-go="'+id+'"]');
   $$('.fluxo-etapa').forEach(function(e){ e.classList.toggle('atual',e===etapa); });
-  if(id==='visao' && E.diag){ renderPrevia(); desenharGraficos(); }
+  if(id==='visao'){ if(E.diag){ renderPrevia(); desenharGraficos(); } atualizarIndicePanorama(); }
   if(id==='analise' && E.diag) { renderDiagnostico(); if(typeof renderQualidade==='function') renderQualidade(); if(typeof renderFase2==='function') renderFase2(); renderContratos(); }
   if(id==='manifestacao') renderManifestacoes();
   if(id==='resultado' && E.diag) { renderAntesDepois(); renderExportacoes(); }
@@ -2135,9 +2149,64 @@ function irParaSegmento(id){
   E.segmento=id;
   const alvo=$('#seg-'+id);
   if(!alvo || id==='importacao') return;
-  if(alvo.classList.contains('recolhido')) abrirRecolhivel(alvo);
-  if(id==='saldo' && E.diag) renderSaldo();
+  rolarAteBloco(alvo);
+}
+function rolarAteBloco(alvo){
+  const b=alvo.classList.contains('bloco') ? alvo : alvo.closest('.bloco');
+  if(b && b.classList.contains('recolhido')) abrirRecolhivel(b);
+  if((alvo.id==='seg-saldo' || alvo.id==='seg-programacao') && E.diag) renderSaldo();
   setTimeout(function(){ alvo.scrollIntoView({behavior:'smooth',block:'start'}); },40);
+}
+
+/* Índice fixo da Visão Geral: rola até o bloco, esconde os que ainda não existem
+   (antes da importação) e realça o que está à vista. */
+function atualizarIndicePanorama(){
+  $$('#indicePanorama [data-alvo]').forEach(function(a){
+    const alvo=document.getElementById(a.getAttribute('data-alvo'));
+    a.classList.toggle('oculto',!alvo || alvo.classList.contains('oculto'));
+  });
+  medirTopo();
+  realcarIndicePanorama();
+}
+function medirTopo(){
+  const t=$('.topo'), i=$('#indicePanorama'), raiz=document.documentElement.style;
+  if(t) raiz.setProperty('--alt-topo',t.offsetHeight+'px');
+  if(i && i.offsetHeight) raiz.setProperty('--alt-indice',i.offsetHeight+'px');
+}
+function realcarIndicePanorama(){
+  const p=$('#p-panorama'), nav=$('#indicePanorama');
+  if(!p || !nav || p.classList.contains('oculto')) return;
+  const limite=nav.getBoundingClientRect().bottom+16;
+  let atual=null;
+  $$('#indicePanorama [data-alvo]').forEach(function(a){
+    if(a.classList.contains('oculto')) return;
+    const alvo=document.getElementById(a.getAttribute('data-alvo'));
+    if(alvo && alvo.getBoundingClientRect().top<=limite) atual=a;
+  });
+  if(!atual) atual=nav.querySelector('[data-alvo]:not(.oculto)');
+  $$('#indicePanorama [data-alvo]').forEach(function(a){
+    const ativo=a===atual;
+    a.classList.toggle('ativo',ativo);
+    if(ativo) a.setAttribute('aria-current','location'); else a.removeAttribute('aria-current');
+  });
+}
+function ligarIndicePanorama(){
+  $('#indicePanorama').addEventListener('click',function(ev){
+    const a=ev.target.closest('[data-alvo]'); if(!a) return;
+    ev.preventDefault();
+    const alvo=document.getElementById(a.getAttribute('data-alvo')); if(alvo) rolarAteBloco(alvo);
+  });
+  let pendente=false;
+  window.addEventListener('scroll',function(){
+    if(pendente) return; pendente=true;
+    requestAnimationFrame(function(){ pendente=false; realcarIndicePanorama(); });
+  },{passive:true});
+  window.addEventListener('resize',medirTopo);
+  if(typeof ResizeObserver!=='undefined'){
+    const ro=new ResizeObserver(medirTopo);
+    [$('.topo'),$('#indicePanorama')].forEach(function(el){ if(el) ro.observe(el); });
+  }
+  medirTopo();
 }
 
 /* Blocos secundários da Visão Geral abrem recolhidos; o cabeçalho alterna. */
@@ -3351,6 +3420,7 @@ function renderPrevia(){
       'Enquadrados nas Regras 1 a 4, com ou sem decisão, e excluídos pelo usuário. Programado 2027 que deixam de levar: '+rs(tR.p27)+'.')+
     cartao('NP 2027 − Programado 2027',(tS.np-tU.p27>=0?'+':'')+rsCurto(tS.np-tU.p27),'sobreviventes × universo','var(--latao)',
       'Novo Programado 2027 dos sobreviventes ('+rs(tS.np)+') menos o Programado 2027 do universo ('+rs(tU.p27)+').');
+  renderFaixaResumo(mappsPanorama().length,U,S,R,tU,tS);
   if(typeof Chart==='undefined') return;
   grafico('gPrevia',{ type:'bar',
     data:{labels:['Antes · universo','Depois · sobreviventes'],datasets:[
@@ -3358,6 +3428,23 @@ function renderPrevia(){
       {label:'Novo Programado 2027',data:[null,tS.np],backgroundColor:PALETA[2],borderWidth:0}]},
     options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(c){ return c.dataset.label+': '+rs(c.raw); }}}},
       scales:{y:{beginAtZero:true,grid:{color:corGrade()},ticks:{callback:function(v){ return rsCurto(v); }}},x:{grid:{display:false}}}}});
+}
+/* Números-chave no índice fixo da Visão Geral, sob o recorte em vigor. */
+function renderFaixaResumo(nBase,U,S,R,tU,tS){
+  const el=$('#faixaResumo'); if(!el) return;
+  const item=function(rot,val,dica){ return '<span'+tip(dica,rot)+'>'+rot+' <b>'+val+'</b></span>'; };
+  const dif=tS.np-tU.p27;
+  el.innerHTML=
+    (recortePanorama().ativo?'<span class="recorte"'+tip('Os números seguem o Recorte do Panorama. Limpe o recorte para ver a base inteira.','Recorte ativo')+'>recorte ativo</span>':'')+
+    item('Base',n(nBase),'MAPPs consolidados da base'+(recortePanorama().ativo?' dentro do recorte':'')+' (chave ÓRGÃO + MAPP).')+
+    item('Universo',n(U.length),'MAPPs submetidos às Regras 1 a 4.')+
+    item('Retirados',n(R.length),'Enquadrados nas Regras 1 a 4 + excluídos pelo usuário.\n'+n(R.length)+' de '+n(U.length)+' do universo.')+
+    item('Sobreviventes',n(S.length),'Universo − retirados = '+n(U.length)+' − '+n(R.length)+' = '+n(S.length)+' MAPPs.')+
+    item('Prog. 2027',rsCurto(tU.p27),'Σ programado 2027 do universo = '+rs(tU.p27)+'.')+
+    item('NP 2027',rsCurto(tS.np),'Σ (programado 2027 + saldos de '+rotuloAnosNP(anosNovoProgramado())+') dos sobreviventes = '+rs(tS.np)+'.')+
+    item('Δ',(dif>=0?'+':'')+rsCurto(dif),'NP 2027 − Prog. 2027 = '+rs(tS.np)+' − '+rs(tU.p27)+' = '+rs(dif)+'.');
+  el.classList.remove('oculto');
+  medirTopo();
 }
 function renderPanoramaRecortado(){
   if(!E.diag) return;
@@ -4348,6 +4435,7 @@ function prepararFiltros(){
   prepararCarteira();
   $('#blocoPrevia').classList.remove('oculto');
   $('#blocoRecortePanorama').classList.remove('oculto');
+  atualizarIndicePanorama();
   legendaRecortePanorama();
 
   montarFiltroAnosNP('#saldoNovoAnos');
@@ -6597,9 +6685,7 @@ function ligarEventos(){
     if(tr) abrirFicha(tr.getAttribute('data-chave'));
   });
 
-  $$('#segPanorama .seg').forEach(function(b){
-    b.addEventListener('click',function(){ irParaSegmento(b.getAttribute('data-seg')); });
-  });
+  ligarIndicePanorama();
   $('#btnConfig').addEventListener('click',abrirConfig);
   $('#btnFecharConfig').addEventListener('click',fecharConfig);
   ligarEventosSaldo();
@@ -6737,7 +6823,7 @@ const APR_DESTINO = [
 const ROTULO_DESTINO = {
   panorama:'Visão Geral', diagnostico:'Análise › Diagnóstico', qualidade:'Análise › Revisão da base', saneamento:'Decisão',
   antesdepois:'Resultado › Antes e depois', fase2:'Análise › Despesas de continuidade', auditoria:'Resultado › Exportações',
-  manifestacao:'Manifestação', importacao:'Importação', indicadores:'Indicadores', universo:'Universo', regras:'Regras aplicadas', saldo:'Saldo por exercício', programacao:'Programação'
+  manifestacao:'Manifestação', importacao:'Importação', indicadores:'Indicadores', universo:'Universo', regras:'Regras aplicadas', saldo:'Saldo por exercício', programacao:'Saldo › Indícios de programação'
 };
 function rotuloDestino(d){ return d.map(function(x){ return ROTULO_DESTINO[x]||x; }).join(' › '); }
 function irParaDestino(d){

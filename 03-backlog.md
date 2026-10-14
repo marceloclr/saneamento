@@ -70,18 +70,22 @@ Plano: [`docs/planos/envio-email-orgaos.md`](docs/planos/envio-email-orgaos.md).
 - **Auditoria removida** do sistema, com o campo de responsável dos diálogos e de Configurações.
 - Manual de uso em seis passos; manual técnico em `manual-tecnico.html`.
 
+## Lote de 14/10/2026 — Visão Geral em página única (itens 3 e 7)
+
+- **Item 3:** a barra de segmentos (`#segPanorama`, já oculta) saiu. No lugar, índice fixo
+  `#indicePanorama` sob as abas, na ordem da página: Importação · Prévia · Saldo · Gráficos ·
+  Carteira · Indicadores · Regras aplicadas · Universo. Rola até o bloco, abre o recolhido e
+  realça o que está à vista. “Regras aplicadas” aponta para Populações por regra (`#seg-regras`),
+  porque o quadro das regras e parâmetros foi para o manual. Faixa-resumo `#faixaResumo` no
+  índice: base, universo, retirados, sobreviventes, Programado 2027, NP 2027 e Δ, com a fórmula
+  na dica e sob o recorte do Panorama.
+- **Item 7:** o bloco Programação virou a sub-seção final do Saldo por exercício, com o título
+  **Indícios de programação** e o botão *Exportar grade completa* (`#seg-programacao`).
+- Teste `teste_indice_panorama.js` (`npm run indice-panorama`).
+
 ## Pendências decididas — a implementar
 
-### 3. Fusão verdadeira das abas
-Substituir os segmentos que ocultam conteúdo por **página única rolável** no
-Panorama, com índice fixo que rola até o bloco (Importação · Indicadores · Universo
-· Regras aplicadas · Saldo) e faixa-resumo no topo com os números-chave. Nada de
-informação escondida atrás de pílula.
-
-### 7. Segmento “Programação”
-Extinguir como segmento próprio e absorver como bloco final da grade de saldos, sob
-o título **“Indícios de programação”**. Levar junto o botão *Exportar grade
-completa* já existente.
+Nenhuma.
 
 ## Em aberto — perguntar antes
 
