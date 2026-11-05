@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Webmapp · Diagnóstico e Saneamento de MAPPs · V-05112026-1505</title>
+<title>Webmapp · Diagnóstico e Saneamento de MAPPs · V-05112026-1509</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
@@ -719,7 +719,7 @@ html[data-tema="escuro"] .indice-links a.ativo{color:#14171b}
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. Gráficos, cartões e a ficha aberta são redesenhados com as cores do novo tema.">Tema</button>
       </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
-      <span class="versao-sistema" id="versaoSistema" data-versao="05112026-1505" data-tip="Versão publicada em 05/11/2026, às 15h05 (horário de Fortaleza).&#10;Formato: V-DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">V-05112026-1505</span>
+      <span class="versao-sistema" id="versaoSistema" data-versao="05112026-1509" data-tip="Versão publicada em 05/11/2026, às 15h09 (horário de Fortaleza).&#10;Formato: V-DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">V-05112026-1509</span>
       <button class="btn pequeno discreto oculto" id="btnTrocarBase" data-tip="Escolhe outra planilha de execução e refaz a importação e o processamento." data-tip-t="Importar outra base">Importar outra base</button>
     </div>
   </div>
@@ -5396,15 +5396,24 @@ async function alternarImunizacao(chave){
   }
   if(!m.d.regras.length){ recado('O MAPP não é alcançado por regra alguma.'); return; }
   const nomes=m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + ');
-  const r=await dialogo({ titulo:'Imunizar MAPP',
+  /* Janela de verdade (perguntar), ao contrário das demais ações: o motivo é obrigatório
+     e o botão Imunizar só se habilita com ele preenchido. */
+  const pergunta=perguntar({ titulo:'Imunizar MAPP',
     texto:'A imunização é individual e reversível (botão Revogar imunidade).',
     corpo:'<div class="aviso nota"><span class="marca">'+esc(m.codigo+' — '+(m.titulo||''))+'</span><span>O MAPP fica imune '+
       (m.d.regras.length>1?'às regras aplicadas':'à regra aplicada')+' ('+esc(nomes)+') e permanece no conjunto ativo, recebendo o Novo Programado 2027. '+
       'O enquadramento apurado, a base original e o histórico permanecem inalterados. Regra que passe a alcançá-lo depois de um recálculo volta a produzir efeito.</span></div>'+
       campoArea('motivo','Motivo da imunização','','Fundamento da manutenção — por exemplo, execução em curso não refletida na base ou manifestação do órgão.'),
-    confirmar:'Imunizar', exigir:['motivo'] });
-  if(!r) return;
-  E.imunizacoes[chave]={ regras:m.d.regras.slice(), motivo:limpo(r.motivo), responsavel:E.responsavel, data:new Date().toISOString() };
+    confirmar:'Imunizar' });
+  const btnOk=$('#modalConfirmar'), campo=$('#modalCorpo textarea[data-campo="motivo"]');
+  const conferir=function(){ btnOk.disabled=!limpo(campo&&campo.value); };
+  if(campo){ campo.addEventListener('input',conferir); setTimeout(function(){ try{ campo.focus(); }catch(e){} },60); }
+  conferir();
+  const r=await pergunta;
+  btnOk.disabled=false;
+  const motivo=r&&r.dados?limpo(r.dados.motivo):'';
+  if(!r || !motivo) return;
+  E.imunizacoes[chave]={ regras:m.d.regras.slice(), motivo:motivo, responsavel:E.responsavel, data:new Date().toISOString() };
   aposImunizacao(); recado(m.codigo+' imunizado: permanece no conjunto ativo.');
 }
 function aposImunizacao(){

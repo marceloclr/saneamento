@@ -27,8 +27,16 @@ carregar(process.argv[2]).then(async win=>{
   R.botao.ok=ok(R.botao.texto==='Imunizar' && R.botao.semRegraSemBotao);
 
   /* imunizar (o diálogo é substituído por confirmação automática) */
-  win.dialogo=async()=>({ motivo:'execução em curso' });
-  await win.alternarImunizacao(k);
+  /* janela real: abre, o botão Imunizar fica desabilitado sem motivo, habilita ao digitar */
+  const pend=win.alternarImunizacao(k);
+  const modal=doc.getElementById('modal'), conf=doc.getElementById('modalConfirmar');
+  const ta=doc.querySelector('#modalCorpo textarea[data-campo="motivo"]');
+  R.janela={ aberta:modal.classList.contains('aberto'), campo:!!ta, desabilitado:conf.disabled };
+  ta.value='execução em curso'; ta.dispatchEvent(new win.Event('input'));
+  R.janela.habilitado=!conf.disabled;
+  conf.click(); await pend;
+  R.janela.fechou=!modal.classList.contains('aberto'); R.janela.motivo=E.imunizacoes[k]&&E.imunizacoes[k].motivo;
+  R.janela.ok=ok(R.janela.aberta && R.janela.campo && R.janela.desabilitado && R.janela.habilitado && R.janela.fechou && R.janela.motivo==='execução em curso');
   const sd=win.situacaoDepois(alvo), sa=win.situacaoAntes(alvo);
   R.imune={ sobreviventes:cods(win.sobreviventes()), np:npSEPA(), naDecisao:win.conjuntoSaneamento().some(m=>m.chave===k),
     naManif:win.conjuntoEnquadrado().some(m=>m.chave===k), situacao:sd===sa, motivo:win.motivoSobrevive(alvo),
@@ -55,6 +63,11 @@ carregar(process.argv[2]).then(async win=>{
   btn().click(); await new Promise(r=>setTimeout(r,50));
   R.revogar={ sobreviventes:cods(win.sobreviventes()), np:npSEPA(), imunizacoes:Object.keys(E.imunizacoes).length };
   R.revogar.ok=ok(R.revogar.sobreviventes===R.inicio.sobreviventes && R.revogar.np===R.inicio.np && R.revogar.imunizacoes===0);
+
+  /* cancelar não imuniza */
+  const pc=win.alternarImunizacao(k); doc.getElementById('modalCancelar').click(); await pc;
+  R.cancelar={ imunizacoes:Object.keys(E.imunizacoes).length, botaoLiberado:!doc.getElementById('modalConfirmar').disabled };
+  R.cancelar.ok=ok(R.cancelar.imunizacoes===0 && R.cancelar.botaoLiberado);
 
   R.erros=win.__erros.slice(0,5);
   console.log(JSON.stringify(R,null,1));
