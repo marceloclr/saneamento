@@ -38,7 +38,10 @@ GitHub quando o usuário marca *Lembrar neste computador*.
    `mostrarAchado`, `renderFase2`.
 7. **Saneamento final** — grade do conjunto do saneamento (`conjuntoSaneamento`:
    enquadrados e excluídos pelo usuário), `ocultarMapps` (Excluir), `restabelecerMapps`,
-   `finalizarSaneamento`; núcleo do resultado: `sobrevive` (sem regra e não excluído),
+   `finalizarSaneamento`; **imunização** (`E.imunizacoes`, `imuneARegra`, `regrasAtivas`, `estaImunizado`,
+   `celulaProvidenciaDiag`, `alternarImunizacao`: o MAPP fica imune às regras gravadas na imunização;
+   `sobrevive`, `conjuntoSaneamento`, `conjuntoEnquadrado`, `regraEfeito` e `alcancadoPelaProjecao` usam
+   `regrasAtivas`); núcleo do resultado: `sobrevive` (sem regra ativa e não excluído),
    `sobreviventes`, `retirados`, `excluidos`, `linhasExcluidos`, `npDoMapp` (cache de
    `novoProgramadoMapp`), `npDaLinha`, `totaisNP` e `exportarResultadoNP`.
 8. **Antes e Depois** — `situacaoAntes`, `situacaoDepois`, `apurarAntesDepois`,

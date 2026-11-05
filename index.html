@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Webmapp · Saneamento de MAPPs · Fluxo simplificado</title>
+<title>Webmapp · Saneamento de MAPPs · Fluxo simplificado · V-05112026-1500</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
@@ -263,6 +263,10 @@ html[data-tema="escuro"] .etq.solida{color:#14171b}
 .etq.paral{--cor:var(--ocre)} .etq.insuf{--cor:var(--latao)}
 .etq.sem{--cor:var(--tinta-3)}
 .etq.excluido{--cor:var(--sepia)}
+.etq.imune{--cor:var(--musgo)}
+.etq.regra-imune{opacity:.55;text-decoration:line-through}
+.btn.imunizar{border-color:var(--musgo);color:var(--musgo)}
+.providencia-botoes{display:flex;flex-wrap:wrap;gap:4px}
 tr.ocultada{opacity:.52}
 tr.ocultada td{text-decoration:line-through;text-decoration-color:var(--linha-forte)}
 tr.ocultada td:last-child{text-decoration:none}
@@ -715,7 +719,7 @@ html[data-tema="escuro"] .indice-links a.ativo{color:#14171b}
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. Gráficos, cartões e a ficha aberta são redesenhados com as cores do novo tema.">Tema</button>
       </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
-      <span class="versao-sistema" id="versaoSistema" data-versao="14102026-0826" data-tip="Versão publicada em 14/10/2026, às 08h26 (horário de Fortaleza).&#10;Formato: DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">versão-14102026-0826</span>
+      <span class="versao-sistema" id="versaoSistema" data-versao="05112026-1500" data-tip="Versão publicada em 05/11/2026, às 15h00 (horário de Fortaleza).&#10;Formato: V-DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">V-05112026-1500</span>
       <button class="btn pequeno discreto oculto" id="btnTrocarBase" data-tip="Escolhe outra planilha de execução e refaz a importação e o processamento." data-tip-t="Importar outra base">Importar outra base</button>
     </div>
   </div>
@@ -956,7 +960,9 @@ html[data-tema="escuro"] .indice-links a.ativo{color:#14171b}
       <table id="tabDiag">
         <thead><tr>
           <th style="width:28px"></th>
-          <th style="width:112px" data-tip="Exclui o MAPP ou o restabelece. Excluído, ele sai do conjunto ativo como os MAPPs das regras, tenha ou não regra. A exclusão é individual e reversível; a base original nunca é alterada." data-tip-t="Providência">Providência</th>
+          <th style="width:190px" data-tip="Exclui o MAPP ou o restabelece. Excluído, ele sai do conjunto ativo como os MAPPs das regras, tenha ou não regra.
+Imunizar: o MAPP com regra fica imune à regra ou às regras aplicadas e permanece no conjunto ativo, recebendo o Novo Programado 2027. Revogar a imunidade devolve o efeito das regras.
+As duas providências são individuais e reversíveis; a base original nunca é alterada." data-tip-t="Providência">Providência</th>
           <th class="ordenavel" data-ord="codigo" data-tip="Código do projeto, extraído do campo MAPP antes do travessão. Na base, o mesmo código pode repetir-se em órgãos diferentes — por isso a chave técnica é ÓRGÃO + MAPP." data-tip-t="MAPP">MAPP</th>
           <th class="ordenavel" data-ord="orgao" data-tip="Órgão executor registrado na planilha. Integra a chave técnica de consolidação." data-tip-t="Órgão">Órgão</th>
           <th class="ordenavel" data-ord="secretaria" data-tip="Secretaria a que o órgão está vinculado. Divergências entre linhas do mesmo MAPP são apontadas no painel de qualidade." data-tip-t="Secretaria">Secretaria</th>
@@ -968,7 +974,7 @@ html[data-tema="escuro"] .indice-links a.ativo{color:#14171b}
           <th class="ordenavel num" data-ord="saldo" data-tip="Saldo do programado do MAPP: saldo até o exercício corrente + programado dos exercícios posteriores. É a grandeza monetária com que o sistema trabalha após a aplicação das regras." data-tip-t="Saldo do programado">Saldo do programado</th>
           <th class="ordenavel" data-ord="regra" data-tip="Regras da primeira fase que o MAPP satisfaz. Passe o ponteiro sobre cada etiqueta para ler o critério completo." data-tip-t="Regra">Regra</th>
           <th class="ordenavel" data-ord="acao" data-tip="Providência sugerida pelo sistema. O MAPP com regra sai do conjunto ativo com ou sem decisão; a decisão registra a revisão." data-tip-t="Ação recomendada">Ação recomendada</th>
-          <th class="ordenavel" data-ord="revisao" data-tip="Situação da revisão humana: pendente, acatada, rejeitada ou excluída pelo usuário." data-tip-t="Revisão">Revisão</th>
+          <th class="ordenavel" data-ord="revisao" data-tip="Situação da revisão humana: pendente, acatada, rejeitada, imunizada ou excluída pelo usuário." data-tip-t="Revisão">Revisão</th>
         </tr></thead>
         <tbody></tbody>
         <tfoot></tfoot>
@@ -1535,6 +1541,7 @@ const E = {
   cfg:Object.assign({},CFG_OFICIAL),
   decisoes:{},
   exclusoes:{}, encerramento:null, motivoExclusao:'', perguntarExclusao:true,
+  imunizacoes:{},                      /* chave → { regras, motivo, responsavel, data }: MAPP imune às regras listadas */
   cg:{ incluidos:{}, removidos:{} },   /* marcação Contrato de Gestão: manuais e automáticos removidos, por chave */
   cgAuto:new Map(),                    /* chave → trecho do título que casou com o padrão C.G. */
   filtroSan:{}, paginaSan:1, porPaginaSan:100, ordemSan:{campo:'programado',desc:true}, selecionadosSan:new Set(),
@@ -3337,6 +3344,7 @@ function desmarcarCG(chave){
 function situacaoSaneamentoCG(m){
   if(estaExcluido(m.chave)) return 'Excluído pelo usuário';
   if(!m.dentroUniverso) return 'Fora do universo';
+  if(estaImunizado(m) && !regrasAtivas(m).length) return 'Imunizado';
   if(m.d && m.d.regras.length) return m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + ');
   return 'Sobrevive';
 }
@@ -4453,7 +4461,7 @@ function prepararFiltros(){
     ['CANCELADO','Cancelados'],['PARALISADO','Paralisados']],'Todas as situações de regra');
   opcoes('#fEstagio',Object.keys(GRUPOS_ESTAGIO).map(function(g){ return [g,GRUPOS_ESTAGIO[g].rotulo]; }),'Todos os estágios');
   opcoes('#fRevisao',[['pendente','Pendente de revisão'],['acatada','Recomendação acatada'],
-    ['rejeitada','Recomendação rejeitada'],['excluido','Excluído pelo usuário']],'Todas');
+    ['rejeitada','Recomendação rejeitada'],['imunizado','Imunizado'],['excluido','Excluído pelo usuário']],'Todas');
   opcoes('#fExec',[['com','Com execução no período'],['sem','Sem execução no período']],'Indiferente');
   opcoes('#fConfianca',[['Alta','Alta'],['Média','Média'],['Baixa','Baixa']],'Todas');
   const fontesSet=new Set();
@@ -4501,7 +4509,8 @@ function filtrar(){
       const dec=E.decisoes[m.chave];
       const atende=f.revisao.some(function(r){
         if(r==='excluido') return estaExcluido(m.chave);
-        if(r==='pendente') return !dec && !estaExcluido(m.chave);
+        if(r==='imunizado') return estaImunizado(m) && !estaExcluido(m.chave);
+        if(r==='pendente') return !dec && !estaExcluido(m.chave) && !estaImunizado(m);
         return !!dec && dec.situacao===r;
       });
       if(!atende) return false;
@@ -4530,7 +4539,8 @@ function filtrar(){
     confianca:function(m){return {'Alta':1,'Média':2,'Baixa':3}[m.d.confianca]||9;},
     acao:function(m){return m.d.acao;},
     revisao:function(m){
-      if(estaExcluido(m.chave)) return 3;
+      if(estaExcluido(m.chave)) return 4;
+      if(estaImunizado(m)) return 3;
       const dec=E.decisoes[m.chave];
       return dec?(dec.situacao==='acatada'?1:2):0;
     }
@@ -4581,7 +4591,8 @@ function renderDiagnostico(){
     const d=m.d, dec=E.decisoes[m.chave];
     const etqRegras = d.regras.length
       ? d.regras.map(function(r){
-          return '<span class="etq '+REGRAS[r].classe+'"'+tip(dicaRegra(r),REGRAS[r].nome)+'>'+REGRAS[r].nome+'</span>';
+          const im=imuneARegra(m,r);
+          return '<span class="etq '+REGRAS[r].classe+(im?' regra-imune':'')+'"'+tip(dicaRegra(r)+(im?'\nImunizado: esta regra não produz efeito sobre o MAPP.':''),REGRAS[r].nome)+'>'+REGRAS[r].nome+'</span>';
         }).join(' ')
       : '<span class="etq sem"'+tip(d.classificacao==='DADOS INSUFICIENTES'
           ? 'Não se aplica: enquadramento suspenso por dados insuficientes — '+d.motivoConfianca+'\nNenhuma regra é aplicada enquanto o dado essencial não for sanado.'
@@ -4597,12 +4608,13 @@ function renderDiagnostico(){
     const revisao = estaExcluido(m.chave)
       ? '<span class="etq excluido"'+tip('Excluído pelo usuário: sai do conjunto ativo como os MAPPs das regras.\nMotivo: '+
           (ex.motivo||'—')+'\nResponsável: '+(ex.responsavel||'—'),'Excluído pelo usuário')+'>Excluído</span>'
+      : estaImunizado(m) ? etiquetaImunizado(m,'Imunizado')
       : (dec
         ? '<span class="etq '+(dec.situacao==='acatada'?'alta':'baixa')+'">'+(dec.situacao==='acatada'?'Acatada':'Rejeitada')+'</span>'
         : '<span class="etq sem">Pendente</span>');
     return '<tr class="linha-clicavel'+(E.selecionados.has(m.chave)?' selecionada':'')+(estaExcluido(m.chave)?' ocultada':'')+'" data-chave="'+esc(m.chave)+'">'+
       '<td><input type="checkbox" class="sel" data-chave="'+esc(m.chave)+'"'+(E.selecionados.has(m.chave)?' checked':'')+'></td>'+
-      celulaProvidencia(m,estaExcluido(m.chave))+
+      celulaProvidenciaDiag(m)+
       '<td class="mono">'+esc(m.codigo)+'</td>'+
       '<td>'+esc(m.orgao)+'</td>'+
       '<td>'+esc(m.secretaria)+'</td>'+
@@ -4778,6 +4790,7 @@ function abrirFicha(chave){
     par('Situação da revisão', dec?('<span class="etq '+(dec.situacao==='acatada'?'alta':'baixa')+'">'+(dec.situacao==='acatada'?'Acatada':'Rejeitada')+'</span>'):'<span class="etq sem">Pendente</span>')+
     (dec?par('Responsável',esc(dec.responsavel))+par('Data',new Date(dec.data).toLocaleString('pt-BR'))+par('Justificativa',esc(dec.justificativa)):'')+
     (estaExcluido(m.chave)?par('Exclusão',etiquetaExcluido(m)+' '+esc(E.exclusoes[m.chave].motivo||'')):'')+
+    (estaImunizado(m)?par('Imunização',etiquetaImunizado(m)+' '+esc(E.imunizacoes[m.chave].motivo||'')):'')+
     '</div></div>';
 
   $('#fichaCorpo').innerHTML=html;
@@ -5191,15 +5204,34 @@ function exportarProgramacao(){
 
 function estaExcluido(chave){ return !!E.exclusoes[chave]; }
 
+/* ------------------------------ Imunização --------------------------------
+   Imunizar torna o MAPP imune à regra ou às regras aplicadas no momento: elas
+   continuam apuradas e exibidas, mas não produzem efeito, e o MAPP permanece no
+   conjunto ativo. A imunidade vale só para as regras gravadas: regra que passe a
+   alcançar o MAPP depois de um recálculo volta a produzir efeito. A exclusão pelo
+   usuário prevalece sobre a imunidade. */
+function imuneARegra(m,r){ const im=E.imunizacoes[m.chave]; return !!im && im.regras.indexOf(r)>=0; }
+function regrasAtivas(m){ return m.d.regras.filter(function(r){ return !imuneARegra(m,r); }); }
+function estaImunizado(m){ return !!E.imunizacoes[m.chave] && m.d.regras.some(function(r){ return imuneARegra(m,r); }); }
+function etiquetaImunizado(m,rotulo){
+  const im=E.imunizacoes[m.chave]; if(!im) return '';
+  const nomes=im.regras.map(function(r){ return REGRAS[r]?REGRAS[r].nome:r; }).join(' + ');
+  const novas=regrasAtivas(m);
+  return '<span class="etq imune"'+tip('Imune a: '+nomes+'\nMotivo: '+(im.motivo||'—')+'\nResponsável: '+(im.responsavel||'—')+
+    '\nData: '+new Date(im.data).toLocaleString('pt-BR')+
+    (novas.length?'\nAtenção: '+novas.map(function(r){ return REGRAS[r].nome; }).join(' + ')+' alcança o MAPP depois da imunização e produz efeito.'
+                 :'\nEfeito: permanece no conjunto ativo e recebe o Novo Programado 2027.'),'Imunizado')+'>'+(rotulo||'Imunizado')+'</span>';
+}
+
 /* Enquadrados pelas regras (base da Manifestação aos órgãos). */
 function conjuntoEnquadrado(){
   if(!E.diag) return [];
-  return E.diag.noUniverso.filter(function(m){ return m.d.regras.length>0; });
+  return E.diag.noUniverso.filter(function(m){ return regrasAtivas(m).length>0; });
 }
 /* Conjunto da Decisão: enquadrados pelas regras e excluídos pelo usuário, com ou sem regra. */
 function conjuntoSaneamento(){
   if(!E.diag) return [];
-  return E.diag.noUniverso.filter(function(m){ return m.d.regras.length>0 || estaExcluido(m.chave); });
+  return E.diag.noUniverso.filter(function(m){ return regrasAtivas(m).length>0 || estaExcluido(m.chave); });
 }
 
 /* ------------------ Sobreviventes às regras e NP 2027 --------------------
@@ -5207,7 +5239,7 @@ function conjuntoSaneamento(){
    cada um com o Novo Programado 2027. Sobrevive quem não atende a regra alguma
    e não foi excluído pelo usuário. Acatar ou rejeitar a recomendação é registro
    da revisão: não muda quem sai. A exclusão tem o mesmo efeito de uma regra. */
-function sobrevive(m){ return !m.d.regras.length && !estaExcluido(m.chave); }
+function sobrevive(m){ return !regrasAtivas(m).length && !estaExcluido(m.chave); }
 function sobreviventes(lista){
   if(!E.diag) return [];
   return (lista||E.diag.noUniverso).filter(sobrevive);
@@ -5218,6 +5250,7 @@ function retirados(lista){
 }
 function motivoSobrevive(m){
   if(!sobrevive(m)) return '';
+  if(estaImunizado(m)) return 'Imunizado';
   if(m.estagio==='PARALISADO') return 'Sem regra (paralisado)';
   if(m.d.classificacao==='DADOS INSUFICIENTES') return 'Sem regra (dados insuficientes)';
   return 'Sem regra';
@@ -5337,6 +5370,47 @@ function celulaProvidencia(m,oculto){
       ? 'Desfaz de imediato a exclusão: sem regra, o MAPP volta a sobreviver; com regra, sai pela regra.'
       : 'Exclui de imediato este MAPP: sai do conjunto ativo como os das regras, tenha ou não regra. A exclusão é individual e reversível; a base original não é alterada.',
       'Providência')+'>'+(oculto?'Restabelecer':'Excluir')+'</button></td>';
+}
+
+/* Providência no quadro de diagnóstico: Excluir/Restabelecer e, para o MAPP com
+   regra, Imunizar/Revogar imunidade. */
+function celulaProvidenciaDiag(m){
+  const excl=estaExcluido(m.chave), imune=estaImunizado(m);
+  let im='';
+  if(!excl && m.d.regras.length){
+    const nomes=m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + ');
+    im = imune
+      ? '<button class="btn pequeno" data-imunizar="'+esc(m.chave)+'"'+tip('Revoga de imediato a imunidade: '+nomes+' volta a produzir efeito e o MAPP sai do conjunto ativo pela regra.','Revogar imunidade')+'>Revogar imunidade</button>'
+      : '<button class="btn pequeno imunizar" data-imunizar="'+esc(m.chave)+'"'+tip('Imuniza o MAPP '+(m.d.regras.length>1?'das regras aplicadas':'da regra aplicada')+' ('+nomes+'): '+
+          (m.d.regras.length>1?'elas continuam apuradas, mas não produzem efeito':'ela continua apurada, mas não produz efeito')+
+          '. O MAPP permanece no conjunto ativo e recebe o Novo Programado 2027. Reversível; a base original não é alterada.','Imunizar')+'>Imunizar</button>';
+  }
+  return celulaProvidencia(m,excl).replace('<td>','<td><div class="providencia-botoes">').replace(/<\/td>$/,im+'</div></td>');
+}
+
+async function alternarImunizacao(chave){
+  const m=E.mapps[E.indice.get(chave)]; if(!m) return;
+  if(E.imunizacoes[chave]){
+    delete E.imunizacoes[chave];
+    aposImunizacao(); recado('Imunidade revogada: '+m.codigo+' volta a sair pela regra.'); return;
+  }
+  if(!m.d.regras.length){ recado('O MAPP não é alcançado por regra alguma.'); return; }
+  const nomes=m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + ');
+  const r=await dialogo({ titulo:'Imunizar MAPP',
+    texto:'A imunização é individual e reversível (botão Revogar imunidade).',
+    corpo:'<div class="aviso nota"><span class="marca">'+esc(m.codigo+' — '+(m.titulo||''))+'</span><span>O MAPP fica imune '+
+      (m.d.regras.length>1?'às regras aplicadas':'à regra aplicada')+' ('+esc(nomes)+') e permanece no conjunto ativo, recebendo o Novo Programado 2027. '+
+      'O enquadramento apurado, a base original e o histórico permanecem inalterados. Regra que passe a alcançá-lo depois de um recálculo volta a produzir efeito.</span></div>'+
+      campoArea('motivo','Motivo da imunização','','Fundamento da manutenção — por exemplo, execução em curso não refletida na base ou manifestação do órgão.'),
+    confirmar:'Imunizar', exigir:['motivo'] });
+  if(!r) return;
+  E.imunizacoes[chave]={ regras:m.d.regras.slice(), motivo:limpo(r.motivo), responsavel:E.responsavel, data:new Date().toISOString() };
+  aposImunizacao(); recado(m.codigo+' imunizado: permanece no conjunto ativo.');
+}
+function aposImunizacao(){
+  E.selecionadosSan.clear();
+  prepararFiltrosSaneamento();   /* o imunizado sai da Decisão */
+  renderSaneamento(); renderDiagnostico(); renderExportacoes(); atualizarSelo();
 }
 
 function renderSaneamento(){
@@ -5755,7 +5829,7 @@ function situacaoAntes(m){
 
 /* Regra que responde pelo efeito, quando há sobreposição. */
 function regraEfeito(m){
-  const r=m.d.regras;
+  const r=regrasAtivas(m);
   if(r.indexOf('1.2')>=0) return '1.2';
   if(r.indexOf('1.3')>=0) return '1.3';
   if(r.indexOf('1a')>=0) return '1a';
@@ -5766,7 +5840,7 @@ function regraEfeito(m){
 /* A regra muda a situação de todo enquadrado, com ou sem decisão humana (acatar ou
    rejeitar é registro). Paralisados, cancelados e dados insuficientes ficam como estão. */
 function alcancadoPelaProjecao(m){
-  if(!m.d.regras.length) return false;
+  if(!regrasAtivas(m).length) return false;
   if(m.estagio==='CANCELADO' || m.estagio==='PARALISADO') return false;
   if(m.d.insuficiente) return false;
   return true;
@@ -6242,7 +6316,9 @@ function linhasCG(){
       'SITUAÇÃO NO SANEAMENTO':situacaoSaneamentoCG(m) }; });
 }
 function contextoRegra(m){
-  return { 'REGRAS ATENDIDAS':m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + '), 'AÇÃO RECOMENDADA':m.d.acao };
+  const im=E.imunizacoes[m.chave];
+  return { 'REGRAS ATENDIDAS':m.d.regras.map(function(r){ return REGRAS[r].nome; }).join(' + '), 'AÇÃO RECOMENDADA':m.d.acao,
+    'IMUNIZAÇÃO':estaImunizado(m)?'Imune a '+im.regras.map(function(r){ return REGRAS[r]?REGRAS[r].nome:r; }).join(' + ')+' — '+(im.motivo||''):'' };
 }
 
 /* Uma linha da planilha original, reconstruída a partir da base importada. */
@@ -6607,6 +6683,8 @@ function ligarEventos(){
   $('#tabDiag').addEventListener('click',function(ev){
     const bo=ev.target.closest('[data-ocultar]');
     if(bo){ ev.preventDefault(); ev.stopPropagation(); alternarOcultacao(bo.getAttribute('data-ocultar')); return; }
+    const bi=ev.target.closest('[data-imunizar]');
+    if(bi){ ev.preventDefault(); ev.stopPropagation(); alternarImunizacao(bi.getAttribute('data-imunizar')); return; }
     const cx=ev.target.closest('.sel');
     if(cx){
       const k=cx.getAttribute('data-chave');
@@ -7021,7 +7099,8 @@ const VERSAO_SISTEMA='completa';
 const ENDERECO_MANUAL='manual.html';
 function CARTOES_MANUAL_EXTRA(){
   return [['Decisões registradas',n(Object.keys(E.decisoes).length),'var(--ameixa)','Recomendações acatadas ou rejeitadas nesta sessão.'],
-          ['Excluídos pelo usuário',n(Object.keys(E.exclusoes).length),'var(--sepia)','MAPPs excluídos individualmente: saem do conjunto ativo como os das regras.']];
+          ['Excluídos pelo usuário',n(Object.keys(E.exclusoes).length),'var(--sepia)','MAPPs excluídos individualmente: saem do conjunto ativo como os das regras.'],
+          ['Imunizados',n(Object.keys(E.imunizacoes).length),'var(--musgo)','MAPPs imunes à regra ou às regras aplicadas: permanecem no conjunto ativo.']];
 }
 function IR_PELO_MANUAL(d){ irParaDestino(d); }
 let _janelaManual=null;
@@ -7261,7 +7340,7 @@ function montarSessao(nome){
     formato:2, versao:E.versaoSessao, nome:nome, gerado:new Date().toISOString(),
     arquivo:E.arquivo?E.arquivo.name:'', assinaturaBase:assinaturaBase(),
     cfg:E.cfg, decisoes:E.decisoes, responsavel:E.responsavel, seq:E.seq,
-    exclusoes:E.exclusoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao, npAnos:E.npAnos, cg:E.cg,
+    exclusoes:E.exclusoes, imunizacoes:E.imunizacoes, encerramento:E.encerramento, motivoExclusao:E.motivoExclusao, npAnos:E.npAnos, cg:E.cg,
     rodadas:E.rodadas, manifestacoes:E.manifestacoes, destinatarios:E.destinatarios, gruposFonte:E.gruposFonte||null,
     cfgSessao:{ destino:E.destinoSessao, github:{ repo:E.github.repo, branch:E.github.branch, pasta:E.github.pasta },
       google:{ clientId:E.google?E.google.clientId:'' }, modeloEmail:E.modeloEmail||null }
@@ -7369,7 +7448,7 @@ function aplicarSessao(d,origem){
   E.cfg=Object.assign({},CFG_OFICIAL,d.cfg||{});
   E.decisoes=d.decisoes||{};
   E.responsavel=d.responsavel||'';   /* sessões antigas trazem "auditoria": ignorada */ E.seq=d.seq||1;
-  E.exclusoes=d.exclusoes||{}; E.encerramento=d.encerramento||null; E.motivoExclusao=d.motivoExclusao||'';
+  E.exclusoes=d.exclusoes||{}; E.imunizacoes=d.imunizacoes||{}; E.encerramento=d.encerramento||null; E.motivoExclusao=d.motivoExclusao||'';
   E.cg={ incluidos:(d.cg&&d.cg.incluidos)||{}, removidos:(d.cg&&d.cg.removidos)||{} };
   if(Array.isArray(d.npAnos)) E.npAnos=d.npAnos.slice();
   E.versaoSessao=d.formato===2 ? (d.versao||0) : 0;
@@ -7397,7 +7476,7 @@ function aplicarSessao(d,origem){
   const aviso = (d.assinaturaBase && E.mapps.length && d.assinaturaBase!==assinaturaBase())
     ? ' Atenção: a sessão foi gravada sobre outra base ('+(d.arquivo||'arquivo não identificado')+').' : '';
   recado('Sessão '+(d.nome||'')+' retomada: '+Object.keys(E.decisoes).length+' decisões, '+
-    Object.keys(E.exclusoes).length+' exclusões, '+E.rodadas.length+' rodada(s) e '+
+    Object.keys(E.exclusoes).length+' exclusões, '+Object.keys(E.imunizacoes).length+' imunização(ões), '+E.rodadas.length+' rodada(s) e '+
     Object.keys(E.manifestacoes).length+' manifestação(ões).'+aviso);
 }
 

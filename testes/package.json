@@ -9,7 +9,8 @@
     "anos-sem-saldo": "node --max-old-space-size=4096 teste_anos_sem_saldo.js",
     "email-orgaos": "node --max-old-space-size=4096 teste_email_orgaos.js",
     "contratos-gestao": "node --max-old-space-size=4096 teste_contratos_gestao.js",
-    "indice-panorama": "node --max-old-space-size=4096 teste_indice_panorama.js"
+    "indice-panorama": "node --max-old-space-size=4096 teste_indice_panorama.js",
+    "imunizacao": "node --max-old-space-size=4096 teste_imunizacao.js"
   },
   "dependencies": {
     "exceljs": "^4.4.0",
