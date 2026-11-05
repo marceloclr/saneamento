@@ -48,6 +48,25 @@ carregar(process.argv[2]).then(async win=>{
   R.decisao={ filtrados:cods(filtrados), linhas:linhas.length, comEtiqueta };
   R.decisao.ok=ok(R.decisao.filtrados==='18,20' && linhas.length===2 && comEtiqueta===2);
 
+  /* ---------- janela do motivo: abre, exige o motivo, repete e cancela ---------- */
+  const modal=doc.getElementById('modal'), conf=doc.getElementById('modalConfirmar');
+  E.perguntarExclusao=true; E.motivoExclusao='Ação executada diretamente, sem diálogo de confirmação.';
+  const pc=win.ocultarMapps([porCod('5').chave],'5');
+  const vazio=(doc.querySelector('#modalCorpo textarea[data-campo="motivo"]')||{}).value;
+  const abertaC=modal.classList.contains('aberto');
+  doc.getElementById('modalCancelar').click(); await pc;
+  const pj=win.ocultarMapps([porCod('3').chave],'3');
+  const ta=doc.querySelector('#modalCorpo textarea[data-campo="motivo"]'), desab=conf.disabled;
+  ta.value='execução não refletida'; ta.dispatchEvent(new win.Event('input'));
+  const hab=!conf.disabled; doc.querySelector('#modalCorpo [data-campo="repetir"]').checked=true;
+  conf.click(); await pj;
+  R.janela={ abertaC, padraoNaoSugerido:vazio==='', cancelouSemExcluir:!win.estaExcluido(porCod('5').chave),
+    desabilitado:desab, habilitado:hab, motivo:(E.exclusoes[porCod('3').chave]||{}).motivo, repetir:E.perguntarExclusao===false,
+    fechou:!modal.classList.contains('aberto') };
+  R.janela.ok=ok(abertaC && R.janela.padraoNaoSugerido && R.janela.cancelouSemExcluir && desab && hab &&
+    R.janela.motivo==='execução não refletida' && R.janela.repetir && R.janela.fechou);
+  win.restabelecerMapps([porCod('3').chave]);
+
   /* ---------- B: excluir o MAPP 2 (sem regra) pelo caminho do botão ---------- */
   E.motivoExclusao='teste'; E.perguntarExclusao=false;
   await win.ocultarMapps([porCod('2').chave],'2');
