@@ -179,5 +179,8 @@ imprimir só o resumo.
 
 Servem de sanidade, não de meta: 31.177 linhas úteis, 21.463 MAPPs consolidados,
 universo de saneamento com 6.473, e — com âncora automática em 2026 e critério de
-empenho — regra 1.a 796, regra 1.b 688, regra 1.2 2.455, regra 1.3 538, união 4.014.
+empenho — regra 1.a 413, regra 1.b 383, regra 1.2 2.455, regra 1.3 538, união 3.326.
+Desde 05/11/2026 a âncora resolve a regra 1 como aprovados até o ano vigente − 2 e a
+regra 2 como aprovados no ano vigente − 1 (antes: vigente − 1 e vigente, que davam
+796 e 688, união 4.014). Regra 3 e período corrente continuam no ano vigente.
 Os mesmos números constam do manual técnico (seção “Números de referência”).

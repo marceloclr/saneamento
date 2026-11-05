@@ -451,10 +451,10 @@ function htmlPasso(p,i){
 
 const REGRAS_MAN = [
   { id:'1a',  nome:'Regra 1', doc:'1.a', cor:'var(--carmim)',
-    criterio:'MAPPs aprovados até o ano anterior e sem qualquer execução.', acao:'TORNAR PENDENTE',
+    criterio:'MAPPs aprovados até o ano vigente − 2 e sem valor empenhado, em qualquer fonte, em toda a série histórica.', acao:'TORNAR PENDENTE',
     desdobramento:'Listagem à Casa Civil; reativação mediante justificativa validada; sem pedido de reativação no prazo de permanência, exclusão definitiva.' },
   { id:'1b',  nome:'Regra 2', doc:'1.b', cor:'var(--ferrugem)',
-    criterio:'MAPPs aprovados no ano corrente e sem qualquer execução.', acao:'ENVIAR AO ÓRGÃO — MANIFESTAÇÃO EM 30 DIAS',
+    criterio:'MAPPs aprovados no ano vigente − 1 e sem valor empenhado, em qualquer fonte, até a avaliação.', acao:'ENVIAR AO ÓRGÃO — MANIFESTAÇÃO EM 30 DIAS',
     desdobramento:'Sem resposta no prazo, torna-se pendente por mais 120 dias; depois, exclusão definitiva.' },
   { id:'1.2', nome:'Regra 3', doc:'1.2', cor:'var(--ardosia)',
     criterio:'MAPPs com execução no período histórico e nenhuma execução no período atual.', acao:'CONCLUÍDO FÍSICO E FINANCEIRO',
@@ -493,7 +493,7 @@ const GLOSSARIO = [
   ['Movimentação positiva','Houve empenho positivo em algum momento, ainda que estornado.','completa'],
   ['Saldo líquido','Positivos menos estornos.','completa'],
   ['Saldo do programado','Grandeza monetária com que o sistema trabalha após a aplicação das regras: Σ (programado − empenhado) de cada exercício até o corrente, mais o programado dos exercícios posteriores ao corrente, que não têm empenho na base.','ambas'],
-  ['Regras 1 a 4','Regras da primeira fase: 1 — aprovado até o ano anterior e sem execução (item 1.a); 2 — aprovado no ano corrente e sem execução (item 1.b); 3 — execução encerrada (item 1.2); 4 — execução física concluída (item 1.3).','ambas'],
+  ['Regras 1 a 4','Regras da primeira fase: 1 — aprovado até o ano vigente − 2 e sem empenho (item 1.a); 2 — aprovado no ano vigente − 1 e sem empenho (item 1.b); 3 — execução encerrada (item 1.2); 4 — execução física concluída (item 1.3).','ambas'],
   ['Sobreposição','MAPP enquadrado em mais de uma regra; exige exame manual.','ambas'],
   ['Contrato de Gestão (C.G.)','MAPP marcado como contrato de gestão: identificado pelo título (“Contrato(s) de Gestão” ou a sigla C.G., CG, C.G.) ou marcado pelo usuário em Análise › Contratos de Gestão. Marcação informativa, que não interfere no saneamento.','completa'],
   ['Confiança','Alta, média ou baixa, conforme a completude e a coerência dos dados.','ambas'],
@@ -715,7 +715,7 @@ const TECNICO = [
     return '<p>'+fmtTexto('Extração de 18/09/2026 (`mapps-regis18-09.xlsx`), âncora automática em 2026 e critério de empenho. Servem de sanidade, não de meta.')+'</p>'+
       tabela(['Grandeza','Valor'],[
         ['Linhas úteis','31.177'],['MAPPs consolidados','21.463'],['Universo de saneamento','6.473'],
-        ['Regra 1 (item 1.a)','796'],['Regra 2 (item 1.b)','688'],['Regra 3 (item 1.2)','2.455'],['Regra 4 (item 1.3)','538'],['União das regras','4.014'],
+        ['Regra 1 (item 1.a)','413'],['Regra 2 (item 1.b)','383'],['Regra 3 (item 1.2)','2.455'],['Regra 4 (item 1.3)','538'],['União das regras','3.326'],
         ['Saldo do programado no exercício corrente','R$ 12,06 bi'],
         ['Novo Programado 2027 — base integral, anos 2025 e 2026','R$ 18,15 bi (1 inconsistência)']
       ],'manTabRef')+

@@ -11,7 +11,7 @@ carregar('simplificado/index.html').then(async win=>{
   const ACAO='EXCLUÍDO PELO USUÁRIO';
 
   R.inicio={ baseSaneada:cods(win.mantidos()), excluidos:win.excluidos().length };
-  R.inicio.ok=ok(R.inicio.baseSaneada==='3,4,5,6,14,17,18,20,21' && R.inicio.excluidos===0);
+  R.inicio.ok=ok(R.inicio.baseSaneada==='3,4,5,14,17,18' && R.inicio.excluidos===0);
 
   /* exclusões pelo caminho do botão, sem diálogo (motivo e responsável já informados) */
   E.motivoExclusao='teste'; E.responsavel='teste'; E.perguntarExclusao=false;
@@ -28,14 +28,14 @@ carregar('simplificado/index.html').then(async win=>{
     export2:l2['AÇÃO NA BASE SANEADA']+' / '+l2['SANEAMENTO'], export3:l3['AÇÃO NA BASE SANEADA'],
     fichaBotoes:doc.querySelectorAll('#fichaCorpo button').length,
     fichaAcao:/EXCLUÍDO PELO USUÁRIO/.test(doc.getElementById('fichaCorpo').textContent) };
-  R.excluidos.ok=ok(R.excluidos.baseSaneada==='2,3,4,5,6,14,17,18,20,21' && R.excluidos.excluidos==='2,18' &&
+  R.excluidos.ok=ok(R.excluidos.baseSaneada==='2,3,4,5,14,17,18' && R.excluidos.excluidos==='2,18' &&
     R.excluidos.filtroExcluido==='2,18' && R.excluidos.acao18===ACAO && R.excluidos.acao2===ACAO && R.excluidos.acao3!==ACAO &&
     R.excluidos.export2===ACAO+' / '+ACAO && R.excluidos.export3===porCod('3').d.acao && R.excluidos.fichaBotoes===0 && R.excluidos.fichaAcao);
 
   /* retornar o 2 (sem regra) tira da base saneada; o 18 segue com a ação da regra */
   win.restabelecerMapps([porCod('2').chave, porCod('18').chave]);
   R.retorno={ baseSaneada:cods(win.mantidos()), acao18:win.acaoSaneada(porCod('18')) };
-  R.retorno.ok=ok(R.retorno.baseSaneada==='3,4,5,6,14,17,18,20,21' && R.retorno.acao18===porCod('18').d.acao);
+  R.retorno.ok=ok(R.retorno.baseSaneada==='3,4,5,14,17,18' && R.retorno.acao18===porCod('18').d.acao);
 
   R.erros=win.__erros.slice(0,5);
   console.log(JSON.stringify(R,null,1));

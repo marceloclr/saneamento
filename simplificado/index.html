@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Webmapp Essencial · Saneamento de MAPPs</title>
+<title>Webmapp Essencial · Saneamento de MAPPs · V-05112026-1613</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
@@ -706,7 +706,7 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. A ficha aberta é redesenhada com as cores do novo tema.">Tema</button>
       </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
-      <span class="versao-sistema" id="versaoSistema" data-versao="14102026-0826" data-tip="Versão publicada em 14/10/2026, às 08h26 (horário de Fortaleza).&#10;Formato: DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">versão-14102026-0826</span>
+      <span class="versao-sistema" id="versaoSistema" data-versao="05112026-1613" data-tip="Versão publicada em 05/11/2026, às 16h13 (horário de Fortaleza).&#10;Formato: V-DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">V-05112026-1613</span>
       <button class="btn pequeno discreto oculto" id="btnTrocarBase" data-tip="Escolhe outra planilha de execução e refaz a importação e o processamento." data-tip-t="Importar outra base">Importar outra base</button>
     </div>
   </div>
@@ -930,11 +930,11 @@ pre.codigo .copiar{position:absolute;top:6px;right:6px}
 
 const REGRAS = {
   '1a':  { nome:'Regra 1', doc:'1.a', cor:'var(--carmim)',   classe:'r1a',
-           descricao:'MAPPs aprovados até o ano de corte e sem qualquer execução.',
+           descricao:'MAPPs aprovados até o ano vigente − 2 e sem valor empenhado em toda a série histórica.',
            acao:'TORNAR PENDENTE',
            desdobramento:'Listagem à Casa Civil; reativação mediante justificativa validada; sem pedido de reativação no prazo de permanência, exclusão definitiva.' },
   '1b':  { nome:'Regra 2', doc:'1.b', cor:'var(--ferrugem)', classe:'r1b',
-           descricao:'MAPPs aprovados no ano de referência e sem qualquer execução.',
+           descricao:'MAPPs aprovados no ano vigente − 1 e sem valor empenhado até a avaliação.',
            acao:'ENVIAR AO ÓRGÃO — MANIFESTAÇÃO EM 30 DIAS',
            desdobramento:'Sem resposta no prazo, torna-se pendente por mais 120 dias; depois, exclusão definitiva.' },
   '1.2': { nome:'Regra 3', doc:'1.2', cor:'var(--ardosia)',  classe:'r12',
@@ -1010,24 +1010,27 @@ function anoCorrenteEfetivo(){
 
 function aplicarAncora(){
   if(E.cfg.ancora==='manual'){
-    if(!E.cfg.ano1a) E.cfg.ano1a=anoCorrenteEfetivo()-1;
-    if(!E.cfg.ano1b) E.cfg.ano1b=anoCorrenteEfetivo();
-    if(!E.cfg.presenteIni) E.cfg.presenteIni=E.cfg.ano1b;
-    if(!E.cfg.presenteFim) E.cfg.presenteFim=E.cfg.ano1b;
-    if(!E.cfg.histFim) E.cfg.histFim=E.cfg.ano1a;
+    /* Regra 1: aprovados até o vigente − 2; Regra 2: aprovados no vigente − 1.
+       O período corrente e o fim do histórico (Regra 3) seguem o ano vigente. */
+    const cv=anoCorrenteEfetivo();
+    if(!E.cfg.ano1a) E.cfg.ano1a=cv-2;
+    if(!E.cfg.ano1b) E.cfg.ano1b=cv-1;
+    if(!E.cfg.presenteIni) E.cfg.presenteIni=cv;
+    if(!E.cfg.presenteFim) E.cfg.presenteFim=cv;
+    if(!E.cfg.histFim) E.cfg.histFim=cv-1;
     return E.cfg;
   }
   const c=anoCorrenteEfetivo();
-  E.cfg.ano1b=c; E.cfg.presenteIni=c; E.cfg.presenteFim=c;
-  E.cfg.ano1a=c-1; E.cfg.histFim=c-1;
+  E.cfg.ano1a=c-2; E.cfg.ano1b=c-1;          /* Regra 1 ≤ vigente − 2; Regra 2 = vigente − 1 */
+  E.cfg.presenteIni=c; E.cfg.presenteFim=c; E.cfg.histFim=c-1;   /* Regra 3 */
   E.cfg.histIni=(E.anos && E.anos.length)?E.anos[0]:2007;
   E.anoCorrente=c;
   return E.cfg;
 }
 
 function textoAncora(){
-  const c=E.cfg.ano1b||anoCorrenteEfetivo();
-  return 'ano corrente = '+c+' · ano anterior = '+(c-1);
+  const c=E.cfg.presenteFim||anoCorrenteEfetivo();
+  return 'ano vigente = '+c+' · regra 1 até '+(c-2)+' · regra 2 em '+(c-1);
 }
 
 /* ------------------------------- 2. Estado ------------------------------- */
@@ -2150,19 +2153,21 @@ function dicaRegra(id){
   const c=E.cfg, crit=CRITERIO_ROTULO[c.criterio];
   const rel=(c.ancora==='manual') ? '' : ' (ano anterior)';
   const relC=(c.ancora==='manual') ? '' : ' (ano corrente)';
+  const rel2=(c.ancora==='manual') ? '' : ' (ano vigente − 2)';
+  const rel1=(c.ancora==='manual') ? '' : ' (ano vigente − 1)';
   const textos={
     '1a':[
-      'Quem se enquadra: MAPP aprovado até '+c.ano1a+rel+' que nunca teve execução em exercício algum da base.',
+      'Quem se enquadra: MAPP aprovado até '+c.ano1a+rel2+' que nunca teve valor empenhado, em fonte alguma, em toda a série histórica da base.',
       'Como se apura: ANO_APROVACAO menor ou igual a '+c.ano1a+' e, pelo critério em vigor ('+crit+'), nenhum valor nos exercícios de execução considerados ('+rotuloExecAnos(c.execAnos)+').',
       'Ação recomendada: tornar PENDENTE.',
-      'Desdobramento: listagem à Casa Civil; reativação mediante justificativa validada; sem pedido de reativação em '+c.prazo120+' dias, exclusão definitiva.',
+      'Desdobramento: status PENDENTE; sem reativação junto à Casa Civil e ao governador em '+c.prazo120+' dias, exclusão automática.',
       'Ressalva: a recomendação nada altera por si — depende de decisão humana, lançada na auditoria com o responsável identificado.'
     ],
     '1b':[
-      'Quem se enquadra: MAPP aprovado em '+c.ano1b+relC+' e ainda sem qualquer execução.',
+      'Quem se enquadra: MAPP aprovado em '+c.ano1b+rel1+' e sem valor empenhado, em fonte alguma, até o momento da avaliação.',
       'Como se apura: ANO_APROVACAO igual a '+c.ano1b+' e nenhum valor pelo critério em vigor ('+crit+').',
       'Ação recomendada: enviar a listagem ao órgão e abrir prazo de '+c.prazo30+' dias para manifestação.',
-      'Desdobramento: sem resposta no prazo, o MAPP torna-se PENDENTE por mais '+c.prazo120+' dias; vencido esse período, exclusão definitiva.',
+      'Desdobramento: sem manifestação ou sem justificativa satisfatória no prazo, o MAPP torna-se PENDENTE; sem reativação junto à Casa Civil e ao governador em '+c.prazo120+' dias, exclusão automática.',
       'Ressalva: o envio ao órgão instaura o contraditório e não altera o status do MAPP.'
     ],
     '1.2':[

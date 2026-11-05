@@ -1,5 +1,5 @@
 // Excluir pelo usuário (plano excluir-pelo-usuario), com os MAPPs da SEPA: o excluído sai como
-// os das regras, a rejeição não salva o MAPP, os cartões da Decisão somam e o Resultado não
+// os das regras (Regras 1 e 2 desde 05/11/2026: aprovados até vigente − 2 e em vigente − 1), a rejeição não salva o MAPP, os cartões da Decisão somam e o Resultado não
 // conta o excluído duas vezes. Uso: node teste_exclusao.js [pagina]
 const { carregar }=require('./carregar');
 const ok=c=>c?'OK':'FALHOU';
@@ -19,7 +19,7 @@ carregar(process.argv[2]).then(async win=>{
     return E.diag.noUniverso.every(m=>win.sobrevive(m)!==cs.has(m.chave)); };
 
   R.inicio={ sepa:sepa.length, sobreviventes:cods(win.sobreviventes()), np:npSEPA(), seletorProjecao:!!doc.getElementById('adBase') };
-  R.inicio.ok=ok(sepa.length===10 && R.inicio.sobreviventes==='2' && R.inicio.np===9668515 && !R.inicio.seletorProjecao);
+  R.inicio.ok=ok(sepa.length===10 && R.inicio.sobreviventes==='2,6,20,21' && R.inicio.np===12218515 && !R.inicio.seletorProjecao);
 
   /* ---------- A: 14 acatada, 17 rejeitada, 18 excluída, 20 acatada e excluída ---------- */
   decidir('14','acatada'); decidir('17','rejeitada'); excluir('18'); decidir('20','acatada'); excluir('20');
@@ -34,10 +34,10 @@ carregar(process.argv[2]).then(async win=>{
     resultado:{ antes:o.antes, depois:o.depois, regras:o.regras, exc:o.exc, fecha:o.depois===o.antes-somaRegras-o.exc },
     ativoDepois:sepa.filter(m=>m.dentroUniverso&&win.situacaoDepois(m)==='Ativo').length,
     invariante:invariante(), cartoes };
-  R.A.ok=ok(R.A.sobreviventes==='2' && R.A.np===9668515 && R.A.mantidos===9 && R.A.excluidos===2 && !R.A.rejeitadaSobrevive &&
+  R.A.ok=ok(R.A.sobreviventes==='2,6,21' && R.A.np===10218515 && R.A.mantidos===7 && R.A.excluidos===2 && !R.A.rejeitadaSobrevive &&
     R.A.sd17==='Pendente' && R.A.sd18==='Excluído pelo usuário' && R.A.sd20==='Excluído pelo usuário' &&
-    o.antes===10 && o.depois===1 && o.exc===2 && o.regras['1a']===4 && o.regras['1b']===2 && o.regras['1.2']===1 && R.A.resultado.fecha &&
-    R.A.ativoDepois===1 && R.A.invariante);
+    o.antes===10 && o.depois===3 && o.exc===2 && o.regras['1a']===2 && o.regras['1b']===2 && o.regras['1.2']===1 && R.A.resultado.fecha &&
+    R.A.ativoDepois===3 && R.A.invariante);
 
   /* ---------- coluna Regra da Decisão e filtro "Excluído pelo usuário" ---------- */
   win.eval("MULTIS.sRegra.escolha=new Set(['excluido']); aplicarMulti('sRegra');");
@@ -57,13 +57,13 @@ carregar(process.argv[2]).then(async win=>{
     depois:o2.depois, exc:o2.exc, sd2:sd('2'), invariante:invariante(),
     exportacao:win.linhasExcluidos().filter(l=>l['ÓRGÃO']===ORG||l['ORGAO']===ORG).length,
     colunasExport:Object.keys(win.linhasExcluidos()[0]||{}).filter(k=>/EXCLUS|MOTIVO|RESPONS|DATA/.test(k)).join('|') };
-  R.B.ok=ok(R.B.sobreviventes==='' && R.B.np===0 && R.B.naDecisao==='2,18,20' && R.B.depois===0 && R.B.exc===3 &&
+  R.B.ok=ok(R.B.sobreviventes==='6,21' && R.B.np===550000 && R.B.naDecisao==='2,18,20' && R.B.depois===2 && R.B.exc===3 &&
     R.B.sd2==='Excluído pelo usuário' && R.B.invariante && R.B.exportacao===3);
 
   /* ---------- restabelecer devolve o MAPP 2 aos sobreviventes ---------- */
   win.restabelecerMapps([porCod('2').chave]);
   R.restabelecer={ sobreviventes:cods(win.sobreviventes()), np:npSEPA() };
-  R.restabelecer.ok=ok(R.restabelecer.sobreviventes==='2' && R.restabelecer.np===9668515);
+  R.restabelecer.ok=ok(R.restabelecer.sobreviventes==='2,6,21' && R.restabelecer.np===10218515);
 
   /* ---------- nomes e botões (etapa 2) ---------- */
   win.eval("MULTIS.sRegra.escolha=new Set(); aplicarMulti('sRegra');");

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Webmapp · Diagnóstico e Saneamento de MAPPs · V-05112026-1509</title>
+<title>Webmapp · Diagnóstico e Saneamento de MAPPs · V-05112026-1613</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
@@ -719,7 +719,7 @@ html[data-tema="escuro"] .indice-links a.ativo{color:#14171b}
         <button class="btn discreto" id="btnTema" aria-pressed="false" data-tip="Alterna entre o tema claro e o escuro. Gráficos, cartões e a ficha aberta são redesenhados com as cores do novo tema.">Tema</button>
       </div>
       <span class="selo-base" id="seloBase" data-tip="Situação da base carregada nesta sessão. Nada é gravado em servidor: tudo permanece na memória do navegador."><i class="pt"></i><span id="seloTexto">Nenhuma base carregada</span></span>
-      <span class="versao-sistema" id="versaoSistema" data-versao="05112026-1509" data-tip="Versão publicada em 05/11/2026, às 15h09 (horário de Fortaleza).&#10;Formato: V-DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">V-05112026-1509</span>
+      <span class="versao-sistema" id="versaoSistema" data-versao="05112026-1613" data-tip="Versão publicada em 05/11/2026, às 16h13 (horário de Fortaleza).&#10;Formato: V-DDMMAAAA-HHMM. A versão anterior fica no repositório como index-DDMMAAAA-HHMM.html." data-tip-t="Versão do sistema">V-05112026-1613</span>
       <button class="btn pequeno discreto oculto" id="btnTrocarBase" data-tip="Escolhe outra planilha de execução e refaz a importação e o processamento." data-tip-t="Importar outra base">Importar outra base</button>
     </div>
   </div>
@@ -1270,7 +1270,7 @@ As duas providências são individuais e reversíveis; a base original nunca é 
   <div class="bloco">
     <header><h2>Âncora temporal</h2><span class="legenda">As regras citam posições relativas, não anos fixos.</span></header>
     <div class="grade g2">
-      <label class="campo"><span>Origem dos anos <i class="sigla" tabindex="0" data-tip="Em “automática”, os anos das regras são derivados do ano corrente do relógio: a regra 1 passa a alcançar os aprovados até o ano anterior e a regra 2, os aprovados no ano corrente. Em “manual”, os anos voltam a ser editáveis." data-tip-t="Âncora temporal">?</i></span>
+      <label class="campo"><span>Origem dos anos <i class="sigla" tabindex="0" data-tip="Em “automática”, os anos das regras são derivados do ano corrente do relógio: a regra 1 passa a alcançar os aprovados até o ano vigente − 2 e a regra 2, os aprovados no ano vigente − 1. Em “manual”, os anos voltam a ser editáveis." data-tip-t="Âncora temporal">?</i></span>
         <select id="cfgAncora">
           <option value="relogio">Automática — ano corrente do relógio</option>
           <option value="manual">Manual — anos fixados abaixo</option>
@@ -1283,12 +1283,12 @@ As duas providências são individuais e reversíveis; a base original nunca é 
   <div class="bloco">
     <header><h2>Parâmetros das regras da primeira fase</h2></header>
     <div class="grade g4">
-      <label class="campo"><span>Regra 1 — ano de corte <i class="sigla" tabindex="0" data-tip="MAPPs aprovados até este ano, inclusive, e sem execução, são enquadrados na regra 1. Valor oficial: ano anterior ao corrente, resolvido pela âncora (o documento, redigido em 2023, cita 2022).">?</i></span><select id="cfgAno1a"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022" selected>2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
-      <label class="campo"><span>Regra 2 — ano <i class="sigla" tabindex="0" data-tip="Ano de aprovação que caracteriza a regra 2. Valor oficial: ano corrente, resolvido pela âncora (o documento cita 2023).">?</i></span><select id="cfgAno1b"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023" selected>2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
-      <label class="campo"><span>Exercício inicial do presente <i class="sigla" tabindex="0" data-tip="Primeiro exercício do período considerado “atual” na regra 3, em que não pode haver execução. Valor oficial: ano corrente, resolvido pela âncora (o documento cita 2023).">?</i></span><select id="cfgPresenteIni"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023" selected>2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
+      <label class="campo"><span>Regra 1 — ano de corte <i class="sigla" tabindex="0" data-tip="MAPPs aprovados até este ano, inclusive, e sem execução, são enquadrados na regra 1. Valor oficial: ano vigente − 2, resolvido pela âncora.">?</i></span><select id="cfgAno1a"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022" selected>2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
+      <label class="campo"><span>Regra 2 — ano <i class="sigla" tabindex="0" data-tip="Ano de aprovação que caracteriza a regra 2. Valor oficial: ano vigente − 1, resolvido pela âncora.">?</i></span><select id="cfgAno1b"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023" selected>2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
+      <label class="campo"><span>Exercício inicial do presente <i class="sigla" tabindex="0" data-tip="Primeiro exercício do período considerado “atual” na regra 3, em que não pode haver execução. Valor oficial: ano corrente, resolvido pela âncora.">?</i></span><select id="cfgPresenteIni"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023" selected>2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
       <label class="campo"><span>Exercício final do presente <i class="sigla" tabindex="0" data-tip="Último exercício com execução conhecida na base. Valor apurado automaticamente na importação.">?</i></span><select id="cfgPresenteFim"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
       <label class="campo"><span>Regra 3 — exercício inicial do histórico <i class="sigla" tabindex="0" data-tip="Primeiro exercício considerado no somatório de execução pretérita. Padrão: primeiro exercício da base.">?</i></span><select id="cfgHistIni"><option value="2007" selected>2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
-      <label class="campo"><span>Regra 3 — exercício final do histórico <i class="sigla" tabindex="0" data-tip="Último exercício do somatório de execução pretérita da regra 3. Valor oficial: ano anterior ao corrente, resolvido pela âncora (o documento cita 2022).">?</i></span><select id="cfgHistFim"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022" selected>2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
+      <label class="campo"><span>Regra 3 — exercício final do histórico <i class="sigla" tabindex="0" data-tip="Último exercício do somatório de execução pretérita da regra 3. Valor oficial: ano anterior ao corrente, resolvido pela âncora.">?</i></span><select id="cfgHistFim"><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022" selected>2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option></select></label>
       <label class="campo"><span>Prazo de manifestação (dias) <i class="sigla" tabindex="0" data-tip="Prazo concedido ao órgão para se posicionar. Valor oficial: 30 dias.">?</i></span><select id="cfgPrazo30"><option value="15">15 dias</option><option value="30" selected>30 dias</option><option value="45">45 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="120">120 dias</option><option value="150">150 dias</option><option value="180">180 dias</option></select></label>
       <label class="campo"><span>Prazo de permanência em pendente (dias) <i class="sigla" tabindex="0" data-tip="Período em que o MAPP permanece pendente antes da exclusão definitiva. Valor oficial: 120 dias.">?</i></span><select id="cfgPrazo120"><option value="15">15 dias</option><option value="30">30 dias</option><option value="45">45 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="120" selected>120 dias</option><option value="150">150 dias</option><option value="180">180 dias</option></select></label>
     </div>
@@ -1431,11 +1431,11 @@ As duas providências são individuais e reversíveis; a base original nunca é 
 
 const REGRAS = {
   '1a':  { nome:'Regra 1', doc:'1.a', cor:'var(--carmim)',   classe:'r1a',
-           descricao:'MAPPs aprovados até o ano de corte e sem qualquer execução.',
+           descricao:'MAPPs aprovados até o ano vigente − 2 e sem valor empenhado em toda a série histórica.',
            acao:'TORNAR PENDENTE',
            desdobramento:'Listagem à Casa Civil; reativação mediante justificativa validada; sem pedido de reativação no prazo de permanência, exclusão definitiva.' },
   '1b':  { nome:'Regra 2', doc:'1.b', cor:'var(--ferrugem)', classe:'r1b',
-           descricao:'MAPPs aprovados no ano de referência e sem qualquer execução.',
+           descricao:'MAPPs aprovados no ano vigente − 1 e sem valor empenhado até a avaliação.',
            acao:'ENVIAR AO ÓRGÃO — MANIFESTAÇÃO EM 30 DIAS',
            desdobramento:'Sem resposta no prazo, torna-se pendente por mais 120 dias; depois, exclusão definitiva.' },
   '1.2': { nome:'Regra 3', doc:'1.2', cor:'var(--ardosia)',  classe:'r12',
@@ -1511,24 +1511,27 @@ function anoCorrenteEfetivo(){
 
 function aplicarAncora(){
   if(E.cfg.ancora==='manual'){
-    if(!E.cfg.ano1a) E.cfg.ano1a=anoCorrenteEfetivo()-1;
-    if(!E.cfg.ano1b) E.cfg.ano1b=anoCorrenteEfetivo();
-    if(!E.cfg.presenteIni) E.cfg.presenteIni=E.cfg.ano1b;
-    if(!E.cfg.presenteFim) E.cfg.presenteFim=E.cfg.ano1b;
-    if(!E.cfg.histFim) E.cfg.histFim=E.cfg.ano1a;
+    /* Regra 1: aprovados até o vigente − 2; Regra 2: aprovados no vigente − 1.
+       O período corrente e o fim do histórico (Regra 3) seguem o ano vigente. */
+    const cv=anoCorrenteEfetivo();
+    if(!E.cfg.ano1a) E.cfg.ano1a=cv-2;
+    if(!E.cfg.ano1b) E.cfg.ano1b=cv-1;
+    if(!E.cfg.presenteIni) E.cfg.presenteIni=cv;
+    if(!E.cfg.presenteFim) E.cfg.presenteFim=cv;
+    if(!E.cfg.histFim) E.cfg.histFim=cv-1;
     return E.cfg;
   }
   const c=anoCorrenteEfetivo();
-  E.cfg.ano1b=c; E.cfg.presenteIni=c; E.cfg.presenteFim=c;
-  E.cfg.ano1a=c-1; E.cfg.histFim=c-1;
+  E.cfg.ano1a=c-2; E.cfg.ano1b=c-1;          /* Regra 1 ≤ vigente − 2; Regra 2 = vigente − 1 */
+  E.cfg.presenteIni=c; E.cfg.presenteFim=c; E.cfg.histFim=c-1;   /* Regra 3 */
   E.cfg.histIni=(E.anos && E.anos.length)?E.anos[0]:2007;
   E.anoCorrente=c;
   return E.cfg;
 }
 
 function textoAncora(){
-  const c=E.cfg.ano1b||anoCorrenteEfetivo();
-  return 'ano corrente = '+c+' · ano anterior = '+(c-1);
+  const c=E.cfg.presenteFim||anoCorrenteEfetivo();
+  return 'ano vigente = '+c+' · regra 1 até '+(c-2)+' · regra 2 em '+(c-1);
 }
 
 /* ------------------------------- 2. Estado ------------------------------- */
@@ -2839,19 +2842,21 @@ function dicaRegra(id){
   const c=E.cfg, crit=CRITERIO_ROTULO[c.criterio];
   const rel=(c.ancora==='manual') ? '' : ' (ano anterior)';
   const relC=(c.ancora==='manual') ? '' : ' (ano corrente)';
+  const rel2=(c.ancora==='manual') ? '' : ' (ano vigente − 2)';
+  const rel1=(c.ancora==='manual') ? '' : ' (ano vigente − 1)';
   const textos={
     '1a':[
-      'Quem se enquadra: MAPP aprovado até '+c.ano1a+rel+' que nunca teve execução em exercício algum da base.',
+      'Quem se enquadra: MAPP aprovado até '+c.ano1a+rel2+' que nunca teve valor empenhado, em fonte alguma, em toda a série histórica da base.',
       'Como se apura: ANO_APROVACAO menor ou igual a '+c.ano1a+' e, pelo critério em vigor ('+crit+'), nenhum valor nos exercícios de execução considerados ('+rotuloExecAnos(c.execAnos)+').',
       'Ação recomendada: tornar PENDENTE.',
-      'Desdobramento: listagem à Casa Civil; reativação mediante justificativa validada; sem pedido de reativação em '+c.prazo120+' dias, exclusão definitiva.',
+      'Desdobramento: status PENDENTE; sem reativação junto à Casa Civil e ao governador em '+c.prazo120+' dias, exclusão automática.',
       'Ressalva: a recomendação nada altera por si — depende de decisão humana registrada.'
     ],
     '1b':[
-      'Quem se enquadra: MAPP aprovado em '+c.ano1b+relC+' e ainda sem qualquer execução.',
+      'Quem se enquadra: MAPP aprovado em '+c.ano1b+rel1+' e sem valor empenhado, em fonte alguma, até o momento da avaliação.',
       'Como se apura: ANO_APROVACAO igual a '+c.ano1b+' e nenhum valor pelo critério em vigor ('+crit+').',
       'Ação recomendada: enviar a listagem ao órgão e abrir prazo de '+c.prazo30+' dias para manifestação.',
-      'Desdobramento: sem resposta no prazo, o MAPP torna-se PENDENTE por mais '+c.prazo120+' dias; vencido esse período, exclusão definitiva.',
+      'Desdobramento: sem manifestação ou sem justificativa satisfatória no prazo, o MAPP torna-se PENDENTE; sem reativação junto à Casa Civil e ao governador em '+c.prazo120+' dias, exclusão automática.',
       'Ressalva: o envio ao órgão instaura o contraditório e não altera o status do MAPP.'
     ],
     '1.2':[
@@ -5885,8 +5890,8 @@ function rotuloEstrato(){ return ROTULO_ESTRATO[campoEstrato()] || 'Estrato'; }
 function resumoRegra(id){
   const c=E.cfg;
   const presente = c.presenteIni===c.presenteFim ? String(c.presenteIni) : c.presenteIni+'–'+c.presenteFim;
-  return { '1a':'aprovado até '+c.ano1a+' (ano anterior) e sem execução alguma',
-           '1b':'aprovado em '+c.ano1b+' (ano corrente) e sem execução alguma',
+  return { '1a':'aprovado até '+c.ano1a+' (ano vigente − 2) e sem empenho algum',
+           '1b':'aprovado em '+c.ano1b+' (ano vigente − 1) e sem empenho algum',
            '1.2':'executou até '+c.histFim+' e nada executou em '+presente,
            '1.3':'estágio de execução física concluída' }[id];
 }
@@ -6545,7 +6550,7 @@ function cfgParaTela(){
   });
   const res=$('#cfgAncoraResolvida');
   if(res) res.textContent = automatica
-    ? 'regra 1 até '+E.cfg.ano1a+' (corrente − 1) · regra 2 em '+E.cfg.ano1b+' (corrente) · período corrente '+
+    ? 'regra 1 até '+E.cfg.ano1a+' (vigente − 2) · regra 2 em '+E.cfg.ano1b+' (vigente − 1) · período corrente '+
       (E.cfg.presenteIni===E.cfg.presenteFim?E.cfg.presenteIni:E.cfg.presenteIni+'–'+E.cfg.presenteFim)
     : 'anos fixados manualmente';
   const av=$('#cfgAvisoAncora');
@@ -6616,7 +6621,7 @@ async function aplicarConfig(){
 async function restaurarConfig(){
   const r=await dialogo({titulo:'Restaurar valores oficiais',
     texto:'Todos os parâmetros retornam ao previsto no documento de saneamento.',
-    corpo:'<div class="aviso nota"><span class="marca">Valores oficiais</span><span>Âncora automática — regra 1 até o ano anterior, regra 2 no ano corrente; execução por empenho; prazos de 30 e 120 dias; todos os exercícios de execução da base; universo de saneamento, sem concluídos físico-financeiros nem cancelados.</span></div>',
+    corpo:'<div class="aviso nota"><span class="marca">Valores oficiais</span><span>Âncora automática — regra 1 até o ano vigente − 2, regra 2 no ano vigente − 1; execução por empenho; prazos de 30 e 120 dias; todos os exercícios de execução da base; universo de saneamento, sem concluídos físico-financeiros nem cancelados.</span></div>',
     confirmar:'Restaurar'});
   if(!r) return;
   E.cfg=Object.assign({},CFG_OFICIAL);
@@ -7720,8 +7725,8 @@ async function montarPlanilhaOrgao(rodada,orgao,itens,rks){
     ['NOVO PROGRAMADO 2027: programado 2027 somado aos saldos (programado − empenhado) de '+rotuloAnosNP(anosNovoProgramado())+'. Ano com empenho acima do programado não é somado.',false],
     ['',false],
     ['O que significa cada regra',true],
-    ['Regra 1 (item 1.a) — aprovado até o ano anterior e sem execução: tornar pendente; a reativação depende de justificativa validada.',false],
-    ['Regra 2 (item 1.b) — aprovado no ano corrente e sem execução: manifestação em 30 dias; sem resposta, pendente por 120 dias e depois exclusão.',false],
+    ['Regra 1 (item 1.a) — aprovado até o ano vigente − 2 e sem empenho em toda a série histórica: tornar pendente; sem reativação junto à Casa Civil e ao governador em 120 dias, exclusão.',false],
+    ['Regra 2 (item 1.b) — aprovado no ano vigente − 1 e sem empenho até a avaliação: manifestação em 30 dias; sem justificativa satisfatória, pendente e, sem reativação em 120 dias, exclusão.',false],
     ['Regra 3 (item 1.2) — execução encerrada: concluído físico e financeiro.',false],
     ['Regra 4 (item 1.3) — execução física concluída: manifestação em 30 dias; depois, concluído físico e financeiro.',false],
     ['Sobreposição — o MAPP atende a mais de uma regra; manifeste-se sobre a ação proposta.',false]
